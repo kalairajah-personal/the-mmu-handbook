@@ -1,0 +1,12 @@
+title: "Memory Management Units and TLBs"
+description: "Architecture, Implementation, and AI Workloads"
+baseurl: "/the-mmu-handbook"
+url: "https://the-mmu-handbook.github.io"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  parse_block_html: true
+
+theme: minima
