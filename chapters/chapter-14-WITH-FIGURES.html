@@ -751,86 +751,86 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 <hr>
 
 <h2 id="section-14.3">14.3 Software-Managed Memory: The vLLM System</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-14-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker>
-<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker></defs>
+<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">vLLM PagedAttention: Software Memory Management for LLM KV Cache</text>
-<rect x="30" y="40" width="400" height="260" rx="6" fill="#F5F5F5" stroke="#E65100" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="40" width="400" height="28" rx="6" fill="#E65100"/>
+<rect x="30" y="40" width="400" height="260" rx="6" fill="#F5F5F5" stroke="#BF616A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="30" y="40" width="400" height="28" rx="6" fill="#BF616A"/>
 <text x="230" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Traditional LLM KV Cache: Fragmentation Problem</text>
 <text x="230" y="90" text-anchor="middle" font-size="13" fill="#212121">Pre-allocate max_seq_len per request</text>
 <text x="230" y="108" text-anchor="middle" font-size="13" fill="#212121">80 GB GPU: GPT-3 KV at 2048 tokens = 1 GB/req</text>
-<rect x="48" y="120" width="76" height="50" rx="3" fill="#1565C0"/>
+<rect x="48" y="120" width="76" height="50" rx="3" fill="#5E81AC"/>
 <text x="86" y="142" text-anchor="middle" font-size="11" fill="white">Req A</text>
 <text x="86" y="158" text-anchor="middle" font-size="11" fill="white">512 tok</text>
 <rect x="132" y="120" width="76" height="50" rx="3" fill="#9E9E9E" fill-opacity="0.4" stroke="#9E9E9E" stroke-dasharray="3,2"/>
 <text x="170" y="150" text-anchor="middle" font-size="11" fill="#9E9E9E">wasted</text>
-<rect x="216" y="120" width="76" height="50" rx="3" fill="#1565C0"/>
+<rect x="216" y="120" width="76" height="50" rx="3" fill="#5E81AC"/>
 <text x="254" y="142" text-anchor="middle" font-size="11" fill="white">Req B</text>
 <text x="254" y="158" text-anchor="middle" font-size="11" fill="white">800 tok</text>
 <rect x="300" y="120" width="76" height="50" rx="3" fill="#9E9E9E" fill-opacity="0.4" stroke="#9E9E9E" stroke-dasharray="3,2"/>
 <text x="338" y="150" text-anchor="middle" font-size="11" fill="#9E9E9E">wasted</text>
-<text x="230" y="192" text-anchor="middle" font-size="13" fill="#E65100">60-70% GPU memory wasted on internal fragmentation</text>
-<text x="230" y="212" text-anchor="middle" font-size="13" fill="#E65100">Result: 2-4x fewer concurrent requests possible</text>
+<text x="230" y="192" text-anchor="middle" font-size="13" fill="#BF616A">60-70% GPU memory wasted on internal fragmentation</text>
+<text x="230" y="212" text-anchor="middle" font-size="13" fill="#BF616A">Result: 2-4x fewer concurrent requests possible</text>
 <text x="230" y="240" text-anchor="middle" font-size="13" fill="#212121">TLB reach crisis: 2048 tokens x layers x heads</text>
 <text x="230" y="258" text-anchor="middle" font-size="13" fill="#212121">= millions of pages, far exceeds TLB capacity</text>
 <text x="230" y="282" text-anchor="middle" font-size="12" fill="#616161">Each token lookup: TLB miss storm, 100-300 ns each</text>
-<rect x="460" y="40" width="410" height="260" rx="6" fill="#F5F5F5" stroke="#00796B" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="460" y="40" width="410" height="28" rx="6" fill="#00796B"/>
+<rect x="460" y="40" width="410" height="260" rx="6" fill="#F5F5F5" stroke="#4A8A99" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="460" y="40" width="410" height="28" rx="6" fill="#4A8A99"/>
 <text x="665" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">vLLM PagedAttention: OS-Inspired Solution</text>
 <text x="665" y="90" text-anchor="middle" font-size="13" fill="#212121">KV Cache divided into fixed blocks (pages)</text>
 <text x="665" y="108" text-anchor="middle" font-size="13" fill="#212121">Block table maps logical -&gt; physical blocks</text>
-<rect x="475" y="118" width="80" height="36" rx="3" fill="#1565C0"/>
+<rect x="475" y="118" width="80" height="36" rx="3" fill="#5E81AC"/>
 <text x="515" y="134" text-anchor="middle" font-size="11" fill="white">Req A</text>
 <text x="515" y="148" text-anchor="middle" font-size="11" fill="white">Block 0,3,7</text>
-<rect x="475" y="160" width="80" height="36" rx="3" fill="#1565C0"/>
+<rect x="475" y="160" width="80" height="36" rx="3" fill="#5E81AC"/>
 <text x="515" y="176" text-anchor="middle" font-size="11" fill="white">Req B</text>
 <text x="515" y="190" text-anchor="middle" font-size="11" fill="white">Block 1,4</text>
-<rect x="475" y="202" width="80" height="36" rx="3" fill="#1565C0"/>
+<rect x="475" y="202" width="80" height="36" rx="3" fill="#5E81AC"/>
 <text x="515" y="218" text-anchor="middle" font-size="11" fill="white">Req C</text>
 <text x="515" y="232" text-anchor="middle" font-size="11" fill="white">Block 2,5,6</text>
-<line x1="555" y1="136" x2="575" y2="136" stroke="#1565C0" stroke-width="1.5" marker-end="url(#a)"/>
-<line x1="555" y1="178" x2="575" y2="178" stroke="#1565C0" stroke-width="1.5" marker-end="url(#a)"/>
-<line x1="555" y1="220" x2="575" y2="220" stroke="#1565C0" stroke-width="1.5" marker-end="url(#a)"/>
-<rect x="575" y="118" width="274" height="125" rx="4" fill="#00796B" fill-opacity="0.15" stroke="#00796B"/>
-<text x="712" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">Physical Block Pool</text>
-<rect x="585" y="146" width="56" height="28" rx="2" fill="#00796B"/>
+<line x1="555" y1="136" x2="575" y2="136" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="555" y1="178" x2="575" y2="178" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="555" y1="220" x2="575" y2="220" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="575" y="118" width="274" height="125" rx="4" fill="#4A8A99" fill-opacity="0.15" stroke="#4A8A99"/>
+<text x="712" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Physical Block Pool</text>
+<rect x="585" y="146" width="56" height="28" rx="2" fill="#4A8A99"/>
 <text x="613" y="165" text-anchor="middle" font-size="12" fill="white">Blk 0</text>
-<rect x="649" y="146" width="56" height="28" rx="2" fill="#1565C0"/>
+<rect x="649" y="146" width="56" height="28" rx="2" fill="#5E81AC"/>
 <text x="677" y="165" text-anchor="middle" font-size="12" fill="white">Blk 1</text>
-<rect x="713" y="146" width="56" height="28" rx="2" fill="#E65100"/>
+<rect x="713" y="146" width="56" height="28" rx="2" fill="#BF616A"/>
 <text x="741" y="165" text-anchor="middle" font-size="12" fill="white">Blk 2</text>
-<rect x="777" y="146" width="56" height="28" rx="2" fill="#00796B"/>
+<rect x="777" y="146" width="56" height="28" rx="2" fill="#4A8A99"/>
 <text x="805" y="165" text-anchor="middle" font-size="12" fill="white">Blk 3</text>
-<rect x="585" y="182" width="56" height="28" rx="2" fill="#1565C0"/>
+<rect x="585" y="182" width="56" height="28" rx="2" fill="#5E81AC"/>
 <text x="613" y="201" text-anchor="middle" font-size="12" fill="white">Blk 4</text>
-<rect x="649" y="182" width="56" height="28" rx="2" fill="#E65100"/>
+<rect x="649" y="182" width="56" height="28" rx="2" fill="#BF616A"/>
 <text x="677" y="201" text-anchor="middle" font-size="12" fill="white">Blk 5</text>
-<rect x="713" y="182" width="56" height="28" rx="2" fill="#E65100"/>
+<rect x="713" y="182" width="56" height="28" rx="2" fill="#BF616A"/>
 <text x="741" y="201" text-anchor="middle" font-size="12" fill="white">Blk 6</text>
-<rect x="777" y="182" width="56" height="28" rx="2" fill="#00796B"/>
+<rect x="777" y="182" width="56" height="28" rx="2" fill="#4A8A99"/>
 <text x="805" y="201" text-anchor="middle" font-size="12" fill="white">Blk 7</text>
 <text x="712" y="232" text-anchor="middle" font-size="12" fill="#212121">No internal waste: blocks used fully</text>
-<text x="665" y="263" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">Result: 2.2x more concurrent requests served</text>
+<text x="665" y="263" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Result: 2.2x more concurrent requests served</text>
 <text x="665" y="282" text-anchor="middle" font-size="12" fill="#616161">Prefix caching: shared blocks across same-prompt requests</text>
 <rect x="30" y="320" width="840" height="218" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
 <rect x="30" y="320" width="840" height="28" rx="6" fill="#212121"/>
 <text x="450" y="339" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Direct Segment Addressing: Bypass the MMU for LLM Inference</text>
-<text x="230" y="372" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Standard Virtual Memory</text>
+<text x="230" y="372" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Standard Virtual Memory</text>
 <text x="230" y="390" text-anchor="middle" font-size="13" fill="#212121">Every access: VA -&gt; TLB -&gt; PTE -&gt; PA</text>
 <text x="230" y="408" text-anchor="middle" font-size="13" fill="#212121">LLM model weights: 70 GB, millions of PTEs</text>
 <text x="230" y="426" text-anchor="middle" font-size="13" fill="#212121">TLB reach at 4 KB: 6 MB (far less than 70 GB)</text>
-<text x="230" y="444" text-anchor="middle" font-size="13" fill="#E65100">TLB miss rate: 40-60% for weight tensors</text>
-<text x="230" y="462" text-anchor="middle" font-size="13" fill="#E65100">Each miss: 100-300 ns = major inference bottleneck</text>
+<text x="230" y="444" text-anchor="middle" font-size="13" fill="#BF616A">TLB miss rate: 40-60% for weight tensors</text>
+<text x="230" y="462" text-anchor="middle" font-size="13" fill="#BF616A">Each miss: 100-300 ns = major inference bottleneck</text>
 <line x1="440" y1="352" x2="440" y2="510" stroke="#9E9E9E" stroke-width="1"/>
-<text x="665" y="372" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Direct Segment (Basu et al.)</text>
+<text x="665" y="372" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Direct Segment (Basu et al.)</text>
 <text x="665" y="390" text-anchor="middle" font-size="13" fill="#212121">One dedicated hardware register: base + limit + offset</text>
 <text x="665" y="408" text-anchor="middle" font-size="13" fill="#212121">Covers entire model in 1 TLB entry (1 GB segment)</text>
 <text x="665" y="426" text-anchor="middle" font-size="13" fill="#212121">VA in [base, base+limit]: bypass TLB entirely</text>
-<text x="665" y="444" text-anchor="middle" font-size="13" fill="#00796B">TLB miss rate for weights: ~0% (one segment covers all)</text>
-<text x="665" y="462" text-anchor="middle" font-size="13" fill="#00796B">8-16% total inference throughput improvement</text>
+<text x="665" y="444" text-anchor="middle" font-size="13" fill="#4A8A99">TLB miss rate for weights: ~0% (one segment covers all)</text>
+<text x="665" y="462" text-anchor="middle" font-size="13" fill="#4A8A99">8-16% total inference throughput improvement</text>
 <text x="665" y="492" text-anchor="middle" font-size="12" fill="#616161">Tradeoff: loses fine-grained per-page protection for that region</text>
 </svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 14.1:</strong> vLLM PagedAttention: software memory management bypassing MMU fragmentation limits. Traditional LLM serving pre-allocates contiguous KV-cache regions per request, wasting 60-70% of GPU memory. PagedAttention divides the KV cache into fixed-size blocks managed by a software block table analogous to OS page tables. Direct Segment Addressing extends this by mapping the entire 70 GB model weights to a single hardware register, eliminating TLB misses for weight tensors entirely.</figcaption></figure>
 

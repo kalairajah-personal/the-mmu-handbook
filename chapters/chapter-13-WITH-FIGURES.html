@@ -505,49 +505,49 @@ ML works on workloads with learnable patterns (CDN viral content, DL training ep
 <hr>
 
 <h2 id="section-13.2">13.2 Pythia: Why Hardware RL Failed</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-13-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker></defs>
+<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">ML for MMU: Pythia RL Prefetcher vs LeCaR Replacement Policy</text>
 <rect x="30" y="40" width="400" height="280" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="40" width="400" height="28" rx="6" fill="#E65100"/>
+<rect x="30" y="40" width="400" height="28" rx="6" fill="#BF616A"/>
 <text x="230" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Pythia: RL-Based TLB Prefetcher (Why It Failed)</text>
 <text x="230" y="90" text-anchor="middle" font-size="13" fill="#212121">Q-Learning: state = recent miss sequence</text>
 <text x="230" y="108" text-anchor="middle" font-size="13" fill="#212121">Action: prefetch 1-4 pages ahead of miss</text>
 <text x="230" y="126" text-anchor="middle" font-size="13" fill="#212121">Reward: +1 hit, -1 late, -2 wrong</text>
 <rect x="48" y="138" width="364" height="130" rx="4" fill="white" stroke="#9E9E9E"/>
-<text x="230" y="160" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">Key Problems</text>
+<text x="230" y="160" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Key Problems</text>
 <text x="60" y="182" font-size="13" fill="#212121">1. 20 ns TLB miss budget: RL inference too slow</text>
 <text x="60" y="200" font-size="13" fill="#212121">2. State explosion: 2^32 possible page sequences</text>
 <text x="60" y="218" font-size="13" fill="#212121">3. Sparse reward: only 1-5% of prefetches hit</text>
 <text x="60" y="236" font-size="13" fill="#212121">4. Workload shift: model trained on spec2017</text>
 <text x="60" y="254" font-size="13" fill="#212121">   fails on cloud/ML workloads</text>
-<text x="230" y="282" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">Lesson: Hardware timing constraints exclude RL</text>
+<text x="230" y="282" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Lesson: Hardware timing constraints exclude RL</text>
 <text x="230" y="300" text-anchor="middle" font-size="12" fill="#616161">Rule-based stride detector outperforms in practice</text>
 <rect x="460" y="40" width="410" height="280" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="460" y="40" width="410" height="28" rx="6" fill="#00796B"/>
+<rect x="460" y="40" width="410" height="28" rx="6" fill="#4A8A99"/>
 <text x="665" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">LeCaR: Learned Cache Replacement (Why It Works)</text>
 <text x="665" y="90" text-anchor="middle" font-size="13" fill="#212121">Meta-learning: choose LRU or LFU per workload</text>
 <text x="665" y="108" text-anchor="middle" font-size="13" fill="#212121">Regret minimization with exponential weights</text>
 <rect x="475" y="120" width="380" height="130" rx="4" fill="white" stroke="#9E9E9E"/>
-<text x="665" y="144" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">Key Advantages</text>
+<text x="665" y="144" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Key Advantages</text>
 <text x="487" y="166" font-size="13" fill="#212121">1. Software-only: no hardware timing constraints</text>
 <text x="487" y="184" font-size="13" fill="#212121">2. Small state: weight vector of size 2 (LRU, LFU)</text>
 <text x="487" y="202" font-size="13" fill="#212121">3. Online learning: adapts to current workload</text>
 <text x="487" y="220" font-size="13" fill="#212121">4. Provable regret bound vs optimal offline policy</text>
 <text x="487" y="238" font-size="13" fill="#212121">5. 2-5% miss rate reduction vs pure LRU</text>
-<text x="665" y="270" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">Lesson: ML works when latency budget exists</text>
+<text x="665" y="270" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Lesson: ML works when latency budget exists</text>
 <text x="665" y="288" text-anchor="middle" font-size="12" fill="#616161">Used in: page cache replacement, buffer pool mgmt</text>
 <rect x="30" y="340" width="840" height="178" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
 <rect x="30" y="340" width="840" height="28" rx="6" fill="#212121"/>
 <text x="450" y="359" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Decision Framework: When Does ML for MMU Work?</text>
-<text x="60" y="390" font-size="14" font-weight="bold" fill="#00796B">Works When:</text>
+<text x="60" y="390" font-size="14" font-weight="bold" fill="#4A8A99">Works When:</text>
 <text x="60" y="410" font-size="13" fill="#212121">+ Decision is in SOFTWARE (OS, runtime, allocator) - ms or us budget</text>
 <text x="60" y="428" font-size="13" fill="#212121">+ Training data matches deployment workload (same application class)</text>
 <text x="60" y="446" font-size="13" fill="#212121">+ Action space is small and bounded (LRU vs LFU, not arbitrary prefetch)</text>
 <text x="60" y="464" font-size="13" fill="#212121">+ Reward signal is dense and immediate (cache hit/miss per access)</text>
-<text x="60" y="490" font-size="14" font-weight="bold" fill="#E65100">Fails When:</text>
+<text x="60" y="490" font-size="14" font-weight="bold" fill="#BF616A">Fails When:</text>
 <text x="60" y="508" font-size="13" fill="#212121">- Decision is in HARDWARE - sub-microsecond TLB timing budget</text>
 </svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 13.1:</strong> ML for MMU: Pythia (RL TLB prefetcher) vs LeCaR (learned cache replacement). Pythia fails because its RL inference cannot fit within the 20 ns TLB miss budget and suffers sparse rewards and state explosion. LeCaR succeeds because it operates in software (OS page cache), uses a two-weight regret-minimization meta-learner, and achieves a provable regret bound - reducing miss rates by 2-5% in production workloads.</figcaption></figure>
 

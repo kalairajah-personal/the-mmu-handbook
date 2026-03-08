@@ -1119,7 +1119,7 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
 
 <p>vPIM targets modern HBM-based PIM systems:</p>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-15-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1127,7 +1127,7 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
       <path d="M0,0 L0,6 L9,3 z" fill="#212121"/>
     </marker>
     <marker id="arrb" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
-      <path d="M9,0 L9,6 L0,3 z" fill="#1565C0"/>
+      <path d="M9,0 L9,6 L0,3 z" fill="#5E81AC"/>
     </marker>
     <filter id="sh" x="-5%" y="-5%" width="115%" height="115%">
       <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.18)"/>
@@ -1141,30 +1141,30 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
   <text x="190" y="73" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#607D8B" text-anchor="middle">HBM3 Stack</text>
 
   <!-- DRAM layers 8..1 (each 40px tall) -->
-  <rect x="75" y="82" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1"/>
+  <rect x="75" y="82" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1"/>
   <text x="190" y="106" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 8</text>
 
-  <rect x="75" y="123" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1"/>
+  <rect x="75" y="123" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1"/>
   <text x="190" y="147" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 7</text>
 
-  <rect x="75" y="164" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.85"/>
+  <rect x="75" y="164" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1" opacity="0.85"/>
   <text x="190" y="188" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 6</text>
 
-  <rect x="75" y="205" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.7"/>
+  <rect x="75" y="205" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1" opacity="0.7"/>
   <text x="190" y="229" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layers 5–3</text>
 
-  <rect x="75" y="246" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.6"/>
+  <rect x="75" y="246" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1" opacity="0.6"/>
   <text x="190" y="270" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 2</text>
 
-  <rect x="75" y="287" width="230" height="38" rx="3" fill="#00796B" stroke="#004D40" stroke-width="1" opacity="0.5"/>
+  <rect x="75" y="287" width="230" height="38" rx="3" fill="#4A8A99" stroke="#004D40" stroke-width="1" opacity="0.5"/>
   <text x="190" y="311" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#fff" text-anchor="middle">DRAM Layer 1</text>
 
   <!-- Logic layer (highlighted) -->
-  <rect x="75" y="338" width="230" height="100" rx="4" fill="#E65100" stroke="#BF360C" stroke-width="2.5"/>
+  <rect x="75" y="338" width="230" height="100" rx="4" fill="#BF616A" stroke="#BF360C" stroke-width="2.5"/>
   <text x="190" y="362" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">Logic Layer ← PIM here</text>
-  <text x="190" y="384" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">PIM Cores (RISC-V)</text>
-  <text x="190" y="402" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">TLB: 512 entries</text>
-  <text x="190" y="420" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#FFE0B2" text-anchor="middle">Page Table Walker</text>
+  <text x="190" y="384" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#F0D9D9" text-anchor="middle">PIM Cores (RISC-V)</text>
+  <text x="190" y="402" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#F0D9D9" text-anchor="middle">TLB: 512 entries</text>
+  <text x="190" y="420" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#F0D9D9" text-anchor="middle">Page Table Walker</text>
 
   <!-- TSV connections (vertical lines through stack) -->
   <line x1="145" y1="82" x2="145" y2="338" stroke="#9E9E9E" stroke-width="1" stroke-dasharray="4,3"/>
@@ -1176,16 +1176,16 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
   <text x="190" y="468" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Silicon Interposer / Package</text>
 
   <!-- Bidirectional arrow to Host GPU -->
-  <line x1="322" y1="400" x2="395" y2="400" stroke="#1565C0" stroke-width="2.5" marker-start="url(#arrb)" marker-end="url(#arr)"/>
-  <text x="358" y="390" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle">HBM bus</text>
-  <text x="358" y="415" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle">TSV fabric</text>
+  <line x1="322" y1="400" x2="395" y2="400" stroke="#5E81AC" stroke-width="2.5" marker-start="url(#arrb)" marker-end="url(#arr)"/>
+  <text x="358" y="390" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#5E81AC" text-anchor="middle">HBM bus</text>
+  <text x="358" y="415" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#5E81AC" text-anchor="middle">TSV fabric</text>
 
   <!-- Host GPU -->
-  <rect x="395" y="340" width="200" height="120" rx="6" fill="#1565C0" stroke="#0D47A1" stroke-width="2" filter="url(#sh)"/>
+  <rect x="395" y="340" width="200" height="120" rx="6" fill="#5E81AC" stroke="#0D47A1" stroke-width="2" filter="url(#sh)"/>
   <text x="495" y="372" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">Host GPU</text>
-  <text x="495" y="394" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">GPU MMU issues</text>
-  <text x="495" y="412" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">address translations</text>
-  <text x="495" y="430" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BBDEFB" text-anchor="middle">to logic layer TLB</text>
+  <text x="495" y="394" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#DDEAF5" text-anchor="middle">GPU MMU issues</text>
+  <text x="495" y="412" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#DDEAF5" text-anchor="middle">address translations</text>
+  <text x="495" y="430" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#DDEAF5" text-anchor="middle">to logic layer TLB</text>
   <text x="495" y="450" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#90CAF9" text-anchor="middle">via in-stack PIM cores</text>
 
   <!-- Right panel: why this matters -->
@@ -1202,13 +1202,13 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
   <text x="635" y="221" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">logic layer — right next</text>
   <text x="635" y="239" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">to the DRAM data.</text>
 
-  <text x="630" y="270" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#1565C0">Key specs:</text>
+  <text x="630" y="270" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#5E81AC">Key specs:</text>
   <text x="635" y="290" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">TLB: 512 entries in-stack</text>
   <text x="635" y="308" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">Walker: accesses page</text>
   <text x="635" y="326" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">tables in DRAM layers</text>
   <text x="635" y="344" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">at ~10 ns (vs 100 ns).</text>
 
-  <text x="630" y="375" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#E65100">Bandwidth saved:</text>
+  <text x="630" y="375" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#BF616A">Bandwidth saved:</text>
   <text x="635" y="393" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">TLB misses resolved</text>
   <text x="635" y="411" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">locally — HBM bus freed</text>
   <text x="635" y="429" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">for actual data transfers.</text>

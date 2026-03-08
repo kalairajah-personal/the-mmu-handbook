@@ -1916,7 +1916,7 @@ void benchmark_nx_overhead(void) {
 <p><strong>Bottom Line:</strong> NX/XD/XN is the <strong>single most effective hardware security feature</strong> ever added to processors. Every modern system should have it enabled—and nearly all do by default.</p>
 <hr>
 <h2 id="6.4-privilege-levels-and-protection-rings">6.4 Privilege Levels and Protection Rings</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
@@ -1926,78 +1926,78 @@ void benchmark_nx_overhead(void) {
   <text x="450" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Privilege Level Architecture: x86-64 · ARM64 · RISC-V</text>
 
   <!-- x86-64 Rings (concentric) -->
-  <text x="150" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565C0">x86-64 Protection Rings</text>
+  <text x="150" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#5E81AC">x86-64 Protection Rings</text>
 
   <!-- Ring 0 innermost -->
-  <circle cx="150" cy="290" r="95" fill="#1565C0" filter="url(#sh)"/>
+  <circle cx="150" cy="290" r="95" fill="#5E81AC" filter="url(#sh)"/>
   <text x="150" y="268" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Ring 0</text>
   <text x="150" y="286" text-anchor="middle" font-size="12" fill="white">Kernel</text>
   <text x="150" y="303" text-anchor="middle" font-size="11" fill="white">Full access</text>
   <text x="150" y="319" text-anchor="middle" font-size="11" fill="white">CR0-CR4 · MSRs</text>
 
-  <circle cx="150" cy="290" r="130" fill="none" stroke="#1565C0" stroke-width="28" stroke-opacity="0.35"/>
-  <text x="150" y="183" text-anchor="middle" font-size="12" fill="#1565C0">Ring 1/2 (unused)</text>
+  <circle cx="150" cy="290" r="130" fill="none" stroke="#5E81AC" stroke-width="28" stroke-opacity="0.35"/>
+  <text x="150" y="183" text-anchor="middle" font-size="12" fill="#5E81AC">Ring 1/2 (unused)</text>
 
-  <circle cx="150" cy="290" r="163" fill="none" stroke="#00796B" stroke-width="28" stroke-opacity="0.50"/>
-  <text x="268" y="193" text-anchor="middle" font-size="12" fill="#00796B">Ring 3</text>
-  <text x="280" y="208" text-anchor="middle" font-size="11" fill="#00796B">User space</text>
-  <text x="280" y="223" text-anchor="middle" font-size="11" fill="#00796B">Restricted</text>
+  <circle cx="150" cy="290" r="163" fill="none" stroke="#4A8A99" stroke-width="28" stroke-opacity="0.50"/>
+  <text x="268" y="193" text-anchor="middle" font-size="12" fill="#4A8A99">Ring 3</text>
+  <text x="280" y="208" text-anchor="middle" font-size="11" fill="#4A8A99">User space</text>
+  <text x="280" y="223" text-anchor="middle" font-size="11" fill="#4A8A99">Restricted</text>
 
   <!-- Ring label: SYSCALL -->
   <text x="150" y="470" text-anchor="middle" font-size="12" fill="#616161">CPL=3 → CPL=0 via SYSCALL</text>
   <text x="150" y="488" text-anchor="middle" font-size="12" fill="#616161">CPL=0 → CPL=3 via SYSRET</text>
 
   <!-- ARM64 Exception Levels -->
-  <text x="450" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565C0">ARM64 Exception Levels</text>
+  <text x="450" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#5E81AC">ARM64 Exception Levels</text>
 
   <!-- Stacked levels -->
   <g filter="url(#sh)"><rect x="350" y="90" width="200" height="46" rx="6" fill="#9E9E9E"/></g>
   <text x="450" y="111" text-anchor="middle" font-size="14" font-weight="bold" fill="white">EL3 — Secure Monitor</text>
   <text x="450" y="128" text-anchor="middle" font-size="12" fill="white">TrustZone / firmware</text>
 
-  <g filter="url(#sh)"><rect x="350" y="148" width="200" height="46" rx="6" fill="#E65100"/></g>
+  <g filter="url(#sh)"><rect x="350" y="148" width="200" height="46" rx="6" fill="#BF616A"/></g>
   <text x="450" y="169" text-anchor="middle" font-size="14" font-weight="bold" fill="white">EL2 — Hypervisor</text>
   <text x="450" y="186" text-anchor="middle" font-size="12" fill="white">VM host, stage-2 tables</text>
 
-  <g filter="url(#sh)"><rect x="350" y="206" width="200" height="46" rx="6" fill="#1565C0"/></g>
+  <g filter="url(#sh)"><rect x="350" y="206" width="200" height="46" rx="6" fill="#5E81AC"/></g>
   <text x="450" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="white">EL1 — OS Kernel</text>
   <text x="450" y="244" text-anchor="middle" font-size="12" fill="white">TTBR0/1, stage-1 tables</text>
 
-  <g filter="url(#sh)"><rect x="350" y="264" width="200" height="46" rx="6" fill="#00796B"/></g>
+  <g filter="url(#sh)"><rect x="350" y="264" width="200" height="46" rx="6" fill="#4A8A99"/></g>
   <text x="450" y="285" text-anchor="middle" font-size="14" font-weight="bold" fill="white">EL0 — User Space</text>
   <text x="450" y="302" text-anchor="middle" font-size="12" fill="white">Apps, restricted access</text>
 
   <!-- ARM transitions -->
   <line x1="510" y1="194" x2="510" y2="206" stroke="#9E9E9E" stroke-width="1.5"/>
   <line x1="510" y1="252" x2="510" y2="264" stroke="#9E9E9E" stroke-width="1.5"/>
-  <text x="560" y="178" font-size="12" fill="#E65100">HVC (EL1→EL2)</text>
-  <text x="560" y="233" font-size="12" fill="#1565C0">SVC (EL0→EL1)</text>
+  <text x="560" y="178" font-size="12" fill="#BF616A">HVC (EL1→EL2)</text>
+  <text x="560" y="233" font-size="12" fill="#5E81AC">SVC (EL0→EL1)</text>
   <text x="560" y="288" font-size="12" fill="#9E9E9E">SMC (→EL3)</text>
   <text x="450" y="340" text-anchor="middle" font-size="11" fill="#616161">TTBR0_EL1: user VA</text>
   <text x="450" y="356" text-anchor="middle" font-size="11" fill="#616161">TTBR1_EL1: kernel VA</text>
 
   <!-- RISC-V Privilege Modes -->
-  <text x="760" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565C0">RISC-V Privilege Modes</text>
+  <text x="760" y="70" text-anchor="middle" font-size="16" font-weight="bold" fill="#5E81AC">RISC-V Privilege Modes</text>
 
-  <g filter="url(#sh)"><rect x="660" y="90" width="200" height="46" rx="6" fill="#E65100"/></g>
+  <g filter="url(#sh)"><rect x="660" y="90" width="200" height="46" rx="6" fill="#BF616A"/></g>
   <text x="760" y="111" text-anchor="middle" font-size="14" font-weight="bold" fill="white">M-mode (Machine)</text>
   <text x="760" y="128" text-anchor="middle" font-size="12" fill="white">Firmware / bare metal</text>
 
-  <g filter="url(#sh)"><rect x="660" y="148" width="200" height="46" rx="6" fill="#1565C0"/></g>
+  <g filter="url(#sh)"><rect x="660" y="148" width="200" height="46" rx="6" fill="#5E81AC"/></g>
   <text x="760" y="169" text-anchor="middle" font-size="14" font-weight="bold" fill="white">HS-mode (Hypervisor)</text>
   <text x="760" y="186" text-anchor="middle" font-size="12" fill="white">G-stage tables (H ext.)</text>
 
-  <g filter="url(#sh)"><rect x="660" y="206" width="200" height="46" rx="6" fill="#1565C0" fill-opacity="0.75"/></g>
+  <g filter="url(#sh)"><rect x="660" y="206" width="200" height="46" rx="6" fill="#5E81AC" fill-opacity="0.75"/></g>
   <text x="760" y="227" text-anchor="middle" font-size="14" font-weight="bold" fill="white">S-mode (Supervisor)</text>
   <text x="760" y="244" text-anchor="middle" font-size="12" fill="white">OS kernel, satp register</text>
 
-  <g filter="url(#sh)"><rect x="660" y="264" width="200" height="46" rx="6" fill="#00796B"/></g>
+  <g filter="url(#sh)"><rect x="660" y="264" width="200" height="46" rx="6" fill="#4A8A99"/></g>
   <text x="760" y="285" text-anchor="middle" font-size="14" font-weight="bold" fill="white">U-mode (User)</text>
   <text x="760" y="302" text-anchor="middle" font-size="12" fill="white">Applications</text>
 
   <!-- RISC-V transitions -->
-  <text x="760" y="340" text-anchor="middle" font-size="12" fill="#1565C0">ECALL (U→S→M)</text>
-  <text x="760" y="356" text-anchor="middle" font-size="12" fill="#1565C0">MRET/SRET (return)</text>
+  <text x="760" y="340" text-anchor="middle" font-size="12" fill="#5E81AC">ECALL (U→S→M)</text>
+  <text x="760" y="356" text-anchor="middle" font-size="12" fill="#5E81AC">MRET/SRET (return)</text>
   <text x="760" y="374" text-anchor="middle" font-size="11" fill="#616161">satp: Sv39/48/57 paging</text>
   <text x="760" y="390" text-anchor="middle" font-size="11" fill="#616161">PMP: physical memory protection</text>
 
@@ -2005,9 +2005,9 @@ void benchmark_nx_overhead(void) {
   <rect x="30" y="415" width="840" height="120" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
   <text x="450" y="437" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Comparison</text>
   <!-- Headers -->
-  <text x="120" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">x86-64</text>
-  <text x="280" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">ARM64</text>
-  <text x="450" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">RISC-V</text>
+  <text x="120" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">x86-64</text>
+  <text x="280" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">ARM64</text>
+  <text x="450" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">RISC-V</text>
   <text x="680" y="458" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Feature</text>
   <line x1="40" y1="463" x2="860" y2="463" stroke="#9E9E9E" stroke-width="1"/>
   <text x="120" y="480" text-anchor="middle" font-size="12" fill="#212121">CPL field in CS</text>
@@ -2637,12 +2637,12 @@ Kernel Space (Upper Half):
 <p><strong>Why Split Address Space?</strong></p>
 
 <h3 id="kernel-page-table-isolation-kpti">Kernel Page-Table Isolation (KPTI)</h3>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
     <marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#c62828"/></marker>
   </defs>
 
@@ -2656,7 +2656,7 @@ Kernel Space (Upper Half):
   <rect x="60" y="90" width="240" height="28" rx="3" fill="#c62828" opacity="0.8"/>
   <text x="180" y="109" text-anchor="middle" font-size="12" fill="white">0xFFFF_FFFF_FFFF_FFFF</text>
 
-  <rect x="60" y="120" width="240" height="120" rx="0" fill="#1565C0"/>
+  <rect x="60" y="120" width="240" height="120" rx="0" fill="#5E81AC"/>
   <text x="180" y="148" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Kernel Space</text>
   <text x="180" y="168" text-anchor="middle" font-size="12" fill="white">U/S=0 pages</text>
   <text x="180" y="186" text-anchor="middle" font-size="12" fill="white">code · data · stack</text>
@@ -2667,26 +2667,26 @@ Kernel Space (Upper Half):
   <rect x="60" y="242" width="240" height="30" rx="0" fill="#9E9E9E" fill-opacity="0.30" stroke="#9E9E9E" stroke-dasharray="4,3"/>
   <text x="180" y="262" text-anchor="middle" font-size="12" fill="#616161">Canonical address hole</text>
 
-  <rect x="60" y="274" width="240" height="120" rx="0" fill="#00796B"/>
+  <rect x="60" y="274" width="240" height="120" rx="0" fill="#4A8A99"/>
   <text x="180" y="302" text-anchor="middle" font-size="14" font-weight="bold" fill="white">User Space</text>
   <text x="180" y="322" text-anchor="middle" font-size="12" fill="white">U/S=1 pages</text>
   <text x="180" y="342" text-anchor="middle" font-size="12" fill="white">text · heap · stack</text>
   <text x="180" y="362" text-anchor="middle" font-size="12" fill="white">0x0000_0000_0000_0000</text>
 
   <!-- CR3 label -->
-  <text x="60" y="420" font-size="13" fill="#1565C0">CR3 → single set of</text>
-  <text x="60" y="438" font-size="13" fill="#1565C0">page tables (both)</text>
+  <text x="60" y="420" font-size="13" fill="#5E81AC">CR3 → single set of</text>
+  <text x="60" y="438" font-size="13" fill="#5E81AC">page tables (both)</text>
 
   <!-- Right: Post-KPTI split -->
   <text x="660" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#212121">Post-KPTI: Split Page Tables</text>
-  <text x="660" y="75" text-anchor="middle" font-size="12" fill="#00796B">(Meltdown mitigated)</text>
+  <text x="660" y="75" text-anchor="middle" font-size="12" fill="#4A8A99">(Meltdown mitigated)</text>
 
   <!-- User-mode CR3 -->
   <rect x="490" y="90" width="160" height="220" rx="4" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
   <text x="570" y="110" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">User CR3</text>
   <text x="570" y="126" text-anchor="middle" font-size="11" fill="#616161">(runs in Ring 3)</text>
 
-  <rect x="500" y="132" width="140" height="36" rx="3" fill="#00796B"/>
+  <rect x="500" y="132" width="140" height="36" rx="3" fill="#4A8A99"/>
   <text x="570" y="148" text-anchor="middle" font-size="12" fill="white">User pages ✓</text>
   <text x="570" y="164" text-anchor="middle" font-size="11" fill="white">(U/S=1)</text>
 
@@ -2694,7 +2694,7 @@ Kernel Space (Upper Half):
   <text x="570" y="195" text-anchor="middle" font-size="12" fill="#616161">Kernel: ABSENT</text>
   <text x="570" y="211" text-anchor="middle" font-size="11" fill="#616161">(not mapped)</text>
 
-  <rect x="500" y="220" width="140" height="36" rx="3" fill="#1565C0" fill-opacity="0.50"/>
+  <rect x="500" y="220" width="140" height="36" rx="3" fill="#5E81AC" fill-opacity="0.50"/>
   <text x="570" y="239" text-anchor="middle" font-size="12" fill="white">Trampoline only</text>
   <text x="570" y="255" text-anchor="middle" font-size="11" fill="white">(for SYSCALL entry)</text>
 
@@ -2706,11 +2706,11 @@ Kernel Space (Upper Half):
   <text x="760" y="110" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Kernel CR3</text>
   <text x="760" y="126" text-anchor="middle" font-size="11" fill="#616161">(runs in Ring 0)</text>
 
-  <rect x="690" y="132" width="140" height="36" rx="3" fill="#1565C0"/>
+  <rect x="690" y="132" width="140" height="36" rx="3" fill="#5E81AC"/>
   <text x="760" y="148" text-anchor="middle" font-size="12" fill="white">Kernel pages ✓</text>
   <text x="760" y="164" text-anchor="middle" font-size="11" fill="white">(U/S=0)</text>
 
-  <rect x="690" y="176" width="140" height="36" rx="3" fill="#00796B"/>
+  <rect x="690" y="176" width="140" height="36" rx="3" fill="#4A8A99"/>
   <text x="760" y="195" text-anchor="middle" font-size="12" fill="white">User pages ✓</text>
   <text x="760" y="211" text-anchor="middle" font-size="11" fill="white">(U/S=1)</text>
 
@@ -2722,9 +2722,9 @@ Kernel Space (Upper Half):
   <text x="760" y="284" text-anchor="middle" font-size="11" fill="#212121">CR4.PCE → PCID N|0x800</text>
 
   <!-- CR3 switch arrow -->
-  <line x1="660" y1="330" x2="660" y2="348" stroke="#1565C0" stroke-width="1"/>
-  <text x="490" y="340" font-size="12" fill="#E65100">SYSCALL: CR3 ← Kernel CR3</text>
-  <text x="490" y="360" font-size="12" fill="#E65100">SYSRET:  CR3 ← User CR3</text>
+  <line x1="660" y1="330" x2="660" y2="348" stroke="#5E81AC" stroke-width="1"/>
+  <text x="490" y="340" font-size="12" fill="#BF616A">SYSCALL: CR3 ← Kernel CR3</text>
+  <text x="490" y="360" font-size="12" fill="#BF616A">SYSRET:  CR3 ← User CR3</text>
   <text x="490" y="380" font-size="11" fill="#616161">PCID avoids full TLB flush on switch</text>
 
   <!-- Performance impact note -->
@@ -3027,23 +3027,23 @@ END IF
 <li><strong>Cloud confidential computing:</strong> Process sensitive data in untrusted cloud</li>
 </ul>
 <h3 id="arm-trustzone-the-dominant-mobile-tee">ARM TrustZone: The Dominant Mobile TEE</h3>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
   </defs>
 
   <text x="450" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Trusted Execution Environments: ARM TrustZone · Intel SGX · AMD SEV</text>
 
   <!-- Panel 1: ARM TrustZone -->
-  <text x="150" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565C0">ARM TrustZone</text>
+  <text x="150" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#5E81AC">ARM TrustZone</text>
 
   <rect x="30" y="70" width="240" height="290" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <!-- Normal World -->
-  <rect x="45" y="82" width="100" height="165" rx="4" fill="#00796B"/>
+  <rect x="45" y="82" width="100" height="165" rx="4" fill="#4A8A99"/>
   <text x="95" y="102" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Normal World</text>
   <rect x="52" y="110" width="86" height="28" rx="3" fill="white" fill-opacity="0.20"/>
   <text x="95" y="128" text-anchor="middle" font-size="11" fill="white">Rich OS (Linux)</text>
@@ -3054,7 +3054,7 @@ END IF
   <text x="95" y="235" text-anchor="middle" font-size="10" fill="white">EL0/EL1/EL2</text>
 
   <!-- Secure World -->
-  <rect x="155" y="82" width="100" height="165" rx="4" fill="#E65100"/>
+  <rect x="155" y="82" width="100" height="165" rx="4" fill="#BF616A"/>
   <text x="205" y="102" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Secure World</text>
   <rect x="162" y="110" width="86" height="28" rx="3" fill="white" fill-opacity="0.20"/>
   <text x="205" y="128" text-anchor="middle" font-size="11" fill="white">Trusted OS</text>
@@ -3074,7 +3074,7 @@ END IF
   <text x="150" y="350" text-anchor="middle" font-size="11" fill="#616161">Use: mobile payments · DRM · biometrics</text>
 
   <!-- Panel 2: Intel SGX -->
-  <text x="450" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565C0">Intel SGX</text>
+  <text x="450" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#5E81AC">Intel SGX</text>
 
   <rect x="330" y="70" width="240" height="290" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
@@ -3083,7 +3083,7 @@ END IF
   <text x="450" y="107" text-anchor="middle" font-size="12" fill="white">Untrusted Application (Ring 3)</text>
 
   <!-- SGX Enclave -->
-  <rect x="345" y="132" width="210" height="110" rx="4" fill="#E65100"/>
+  <rect x="345" y="132" width="210" height="110" rx="4" fill="#BF616A"/>
   <text x="450" y="152" text-anchor="middle" font-size="13" font-weight="bold" fill="white">SGX Enclave (EPC)</text>
   <text x="450" y="170" text-anchor="middle" font-size="12" fill="white">Encrypted memory region</text>
   <text x="450" y="188" text-anchor="middle" font-size="12" fill="white">AES-256 (MEE)</text>
@@ -3102,7 +3102,7 @@ END IF
   <text x="450" y="348" text-anchor="middle" font-size="11" fill="#616161">Use: cloud confidential compute · AI model IP</text>
 
   <!-- Panel 3: AMD SEV-SNP -->
-  <text x="760" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565C0">AMD SEV-SNP</text>
+  <text x="760" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#5E81AC">AMD SEV-SNP</text>
 
   <rect x="640" y="70" width="240" height="290" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
@@ -3111,7 +3111,7 @@ END IF
   <text x="760" y="105" text-anchor="middle" font-size="12" fill="white">VMM / Hypervisor (untrusted)</text>
 
   <!-- CVM (Confidential VM) -->
-  <rect x="655" y="128" width="210" height="130" rx="4" fill="#1565C0"/>
+  <rect x="655" y="128" width="210" height="130" rx="4" fill="#5E81AC"/>
   <text x="760" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Confidential VM (CVM)</text>
   <text x="760" y="168" text-anchor="middle" font-size="12" fill="white">Memory encrypted per-VM</text>
   <text x="760" y="186" text-anchor="middle" font-size="12" fill="white">AES-128 XTS (SME)</text>
@@ -3120,7 +3120,7 @@ END IF
   <text x="760" y="241" text-anchor="middle" font-size="11" fill="white">Reverse Map Table: owner check</text>
 
   <!-- PSP (secure processor) -->
-  <rect x="655" y="268" width="210" height="36" rx="4" fill="#E65100"/>
+  <rect x="655" y="268" width="210" height="36" rx="4" fill="#BF616A"/>
   <text x="760" y="291" text-anchor="middle" font-size="12" font-weight="bold" fill="white">AMD PSP (Secure Processor)</text>
 
   <text x="760" y="318" text-anchor="middle" font-size="11" fill="#616161">C-bit in PTE marks encrypted pages</text>
@@ -3131,9 +3131,9 @@ END IF
   <rect x="30" y="385" width="840" height="145" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
   <text x="450" y="406" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Comparison</text>
   <line x1="40" y1="412" x2="860" y2="412" stroke="#9E9E9E"/>
-  <text x="160" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">ARM TrustZone</text>
-  <text x="450" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">Intel SGX</text>
-  <text x="740" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">AMD SEV-SNP</text>
+  <text x="160" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">ARM TrustZone</text>
+  <text x="450" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Intel SGX</text>
+  <text x="740" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">AMD SEV-SNP</text>
   <text x="160" y="450" text-anchor="middle" font-size="12" fill="#212121">Two worlds: Secure/Normal</text>
   <text x="450" y="450" text-anchor="middle" font-size="12" fill="#212121">Per-app encrypted region</text>
   <text x="740" y="450" text-anchor="middle" font-size="12" fill="#212121">Per-VM encryption</text>
@@ -5342,60 +5342,60 @@ void clear_secret_barrier(char *secret, size_t len) {
 <h2 id="6.11-confidential-computing-hardware-based-vm-isolation">6.11 Confidential Computing: Hardware-Based VM Isolation</h2>
 <p>Confidential computing extends TEE concepts to entire virtual machines, providing strong isolation even in untrusted cloud environments.</p>
 <h3 id="amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging">AMD SEV-SNP (Secure Encrypted Virtualization - Secure Nested Paging)</h3>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
+    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
   </defs>
 
   <text x="450" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Confidential Computing: SEV-SNP · TDX · ARM CCA</text>
 
   <!-- SEV-SNP Panel -->
-  <text x="150" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">AMD SEV-SNP</text>
+  <text x="150" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">AMD SEV-SNP</text>
   <rect x="30" y="68" width="240" height="260" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <rect x="45" y="80" width="210" height="36" rx="4" fill="#9E9E9E" fill-opacity="0.50"/>
   <text x="150" y="103" text-anchor="middle" font-size="13" fill="#212121">Hypervisor (Untrusted)</text>
 
-  <rect x="45" y="126" width="210" height="110" rx="4" fill="#1565C0"/>
+  <rect x="45" y="126" width="210" height="110" rx="4" fill="#5E81AC"/>
   <text x="150" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Confidential VM</text>
   <text x="150" y="166" text-anchor="middle" font-size="12" fill="white">Memory: AES-128 (SME)</text>
   <text x="150" y="184" text-anchor="middle" font-size="12" fill="white">ASID = enc. key selector</text>
   <text x="150" y="202" text-anchor="middle" font-size="12" fill="white">C-bit in PTE marks pages</text>
   <text x="150" y="220" text-anchor="middle" font-size="11" fill="white">RMP: reverse-map integrity</text>
 
-  <rect x="45" y="246" width="210" height="36" rx="4" fill="#E65100"/>
+  <rect x="45" y="246" width="210" height="36" rx="4" fill="#BF616A"/>
   <text x="150" y="269" text-anchor="middle" font-size="12" font-weight="bold" fill="white">AMD PSP (ARM TrustZone core)</text>
 
   <text x="150" y="310" text-anchor="middle" font-size="12" fill="#212121">Threat model: malicious hypervisor</text>
-  <text x="150" y="327" text-anchor="middle" font-size="12" fill="#00796B">✓ Memory encrypted at DRAM</text>
-  <text x="150" y="344" text-anchor="middle" font-size="12" fill="#00796B">✓ VMM cannot read guest pages</text>
+  <text x="150" y="327" text-anchor="middle" font-size="12" fill="#4A8A99">✓ Memory encrypted at DRAM</text>
+  <text x="150" y="344" text-anchor="middle" font-size="12" fill="#4A8A99">✓ VMM cannot read guest pages</text>
 
   <!-- TDX Panel -->
-  <text x="450" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Intel TDX</text>
+  <text x="450" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Intel TDX</text>
   <rect x="330" y="68" width="240" height="260" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <rect x="345" y="80" width="210" height="36" rx="4" fill="#9E9E9E" fill-opacity="0.50"/>
   <text x="450" y="103" text-anchor="middle" font-size="13" fill="#212121">VMM (Untrusted)</text>
 
-  <rect x="345" y="126" width="210" height="110" rx="4" fill="#1565C0"/>
+  <rect x="345" y="126" width="210" height="110" rx="4" fill="#5E81AC"/>
   <text x="450" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Trust Domain (TD)</text>
   <text x="450" y="166" text-anchor="middle" font-size="12" fill="white">EPT-based isolation</text>
   <text x="450" y="184" text-anchor="middle" font-size="12" fill="white">SEAM mode (TDX module)</text>
   <text x="450" y="202" text-anchor="middle" font-size="12" fill="white">AES-256 XTS encryption</text>
   <text x="450" y="220" text-anchor="middle" font-size="11" fill="white">GPA≠HPA enforced by TDCS</text>
 
-  <rect x="345" y="246" width="210" height="36" rx="4" fill="#E65100"/>
+  <rect x="345" y="246" width="210" height="36" rx="4" fill="#BF616A"/>
   <text x="450" y="269" text-anchor="middle" font-size="12" font-weight="bold" fill="white">TDX Module (Intel SEAM)</text>
 
   <text x="450" y="310" text-anchor="middle" font-size="12" fill="#212121">TD can verify its own state</text>
-  <text x="450" y="327" text-anchor="middle" font-size="12" fill="#00796B">✓ Hardware attestation chain</text>
-  <text x="450" y="344" text-anchor="middle" font-size="12" fill="#00796B">✓ Measurement in TDReport</text>
+  <text x="450" y="327" text-anchor="middle" font-size="12" fill="#4A8A99">✓ Hardware attestation chain</text>
+  <text x="450" y="344" text-anchor="middle" font-size="12" fill="#4A8A99">✓ Measurement in TDReport</text>
 
   <!-- ARM CCA Panel -->
-  <text x="760" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">ARM CCA</text>
+  <text x="760" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">ARM CCA</text>
   <rect x="640" y="68" width="240" height="260" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <rect x="655" y="80" width="100" height="84" rx="4" fill="#9E9E9E" fill-opacity="0.50"/>
@@ -5410,12 +5410,12 @@ void clear_secret_barrier(char *secret, size_t len) {
   <text x="815" y="138" text-anchor="middle" font-size="11" fill="#616161">TrustZone</text>
   <text x="815" y="155" text-anchor="middle" font-size="11" fill="#616161">TAs</text>
 
-  <rect x="655" y="174" width="210" height="60" rx="4" fill="#1565C0"/>
+  <rect x="655" y="174" width="210" height="60" rx="4" fill="#5E81AC"/>
   <text x="760" y="197" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Realm World (new)</text>
   <text x="760" y="215" text-anchor="middle" font-size="12" fill="white">Confidential VMs + apps</text>
   <text x="760" y="231" text-anchor="middle" font-size="11" fill="white">GPT (Granule Protection Table)</text>
 
-  <rect x="655" y="244" width="210" height="36" rx="4" fill="#E65100"/>
+  <rect x="655" y="244" width="210" height="36" rx="4" fill="#BF616A"/>
   <text x="760" y="267" text-anchor="middle" font-size="12" font-weight="bold" fill="white">RMM (Realm Mgmt Monitor)</text>
 
   <rect x="655" y="292" width="210" height="28" rx="4" fill="#9E9E9E"/>
@@ -6338,23 +6338,23 @@ void process_data_gpu(void *sensitive_data) {
 <li><strong>Multi-Tenancy:</strong> Cloud GPUs shared between VMs</li>
 </ol>
 <h3 id="gpu-memory-architecture">GPU Memory Architecture</h3>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-6-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="480" viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker>
+    <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/></marker>
   </defs>
 
   <text x="450" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Heterogeneous Security: GPU Memory Architecture and Unified Memory</text>
 
   <!-- Discrete GPU model -->
-  <text x="215" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Discrete GPU (NVIDIA / AMD)</text>
+  <text x="215" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Discrete GPU (NVIDIA / AMD)</text>
   <rect x="30" y="68" width="370" height="270" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <!-- CPU side -->
-  <rect x="45" y="80" width="150" height="130" rx="5" fill="#1565C0"/>
+  <rect x="45" y="80" width="150" height="130" rx="5" fill="#5E81AC"/>
   <text x="120" y="100" text-anchor="middle" font-size="13" font-weight="bold" fill="white">CPU Host</text>
   <rect x="55" y="110" width="130" height="28" rx="3" fill="white" fill-opacity="0.20"/>
   <text x="120" y="129" text-anchor="middle" font-size="12" fill="white">CPU MMU + TLB</text>
@@ -6364,12 +6364,12 @@ void process_data_gpu(void *sensitive_data) {
   <text x="120" y="197" text-anchor="middle" font-size="11" fill="white">IOMMU for DMA</text>
 
   <!-- PCIe bus -->
-  <rect x="195" y="122" width="50" height="28" rx="3" fill="#E65100"/>
+  <rect x="195" y="122" width="50" height="28" rx="3" fill="#BF616A"/>
   <text x="220" y="140" text-anchor="middle" font-size="11" fill="white">PCIe</text>
   <text x="220" y="155" text-anchor="middle" font-size="10" fill="white">16 GB/s</text>
 
   <!-- GPU side -->
-  <rect x="245" y="80" width="140" height="130" rx="5" fill="#E65100"/>
+  <rect x="245" y="80" width="140" height="130" rx="5" fill="#BF616A"/>
   <text x="315" y="100" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU Device</text>
   <rect x="255" y="110" width="120" height="28" rx="3" fill="white" fill-opacity="0.20"/>
   <text x="315" y="129" text-anchor="middle" font-size="12" fill="white">GPU MMU/TLB</text>
@@ -6379,8 +6379,8 @@ void process_data_gpu(void *sensitive_data) {
   <text x="315" y="197" text-anchor="middle" font-size="11" fill="white">Separate VA space</text>
 
   <!-- Arrows PCIe -->
-  <line x1="195" y1="136" x2="247" y2="136" stroke="#E65100" stroke-width="2" marker-end="url(#a)"/>
-  <line x1="245" y1="148" x2="193" y2="148" stroke="#E65100" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="195" y1="136" x2="247" y2="136" stroke="#BF616A" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="245" y1="148" x2="193" y2="148" stroke="#BF616A" stroke-width="2" marker-end="url(#a)"/>
 
   <!-- Notes -->
   <text x="200" y="240" text-anchor="middle" font-size="12" fill="#212121">Separate page tables</text>
@@ -6390,27 +6390,27 @@ void process_data_gpu(void *sensitive_data) {
   <text x="200" y="310" text-anchor="middle" font-size="11" fill="#616161">encrypts PCIe + VRAM with AES-GCM</text>
 
   <!-- Unified Memory model -->
-  <text x="670" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Unified Memory (Apple M-series)</text>
+  <text x="670" y="58" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Unified Memory (Apple M-series)</text>
   <rect x="500" y="68" width="370" height="270" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
 
   <!-- SoC box -->
-  <rect x="515" y="80" width="340" height="200" rx="5" fill="#1565C0" fill-opacity="0.12" stroke="#1565C0" stroke-dasharray="5,3"/>
-  <text x="685" y="98" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">Apple Silicon SoC</text>
+  <rect x="515" y="80" width="340" height="200" rx="5" fill="#5E81AC" fill-opacity="0.12" stroke="#5E81AC" stroke-dasharray="5,3"/>
+  <text x="685" y="98" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Apple Silicon SoC</text>
 
   <!-- CPU cores -->
-  <rect x="525" y="106" width="140" height="60" rx="4" fill="#1565C0"/>
+  <rect x="525" y="106" width="140" height="60" rx="4" fill="#5E81AC"/>
   <text x="595" y="127" text-anchor="middle" font-size="13" font-weight="bold" fill="white">CPU Cores</text>
   <text x="595" y="145" text-anchor="middle" font-size="12" fill="white">ARM64 + MMU</text>
   <text x="595" y="162" text-anchor="middle" font-size="11" fill="white">TTBR0/TTBR1</text>
 
   <!-- GPU cores -->
-  <rect x="685" y="106" width="140" height="60" rx="4" fill="#E65100"/>
+  <rect x="685" y="106" width="140" height="60" rx="4" fill="#BF616A"/>
   <text x="755" y="127" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU Cores</text>
   <text x="755" y="145" text-anchor="middle" font-size="12" fill="white">Apple custom</text>
   <text x="755" y="162" text-anchor="middle" font-size="11" fill="white">Shared page tables</text>
 
   <!-- Shared memory bus -->
-  <rect x="525" y="186" width="300" height="36" rx="4" fill="#00796B"/>
+  <rect x="525" y="186" width="300" height="36" rx="4" fill="#4A8A99"/>
   <text x="675" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Shared LPDDR / HBM (400 GB/s+)</text>
 
   <!-- IOMMUs -->
@@ -6420,11 +6420,11 @@ void process_data_gpu(void *sensitive_data) {
   <text x="733" y="257" text-anchor="middle" font-size="11" fill="white">GPU IOMMU</text>
 
   <!-- Arrows: CPU/GPU → shared mem -->
-  <line x1="595" y1="166" x2="595" y2="184" stroke="#1565C0" stroke-width="1.5" marker-end="url(#a)"/>
-  <line x1="755" y1="166" x2="755" y2="184" stroke="#E65100" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="595" y1="166" x2="595" y2="184" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="755" y1="166" x2="755" y2="184" stroke="#BF616A" stroke-width="1.5" marker-end="url(#a)"/>
 
   <text x="685" y="315" text-anchor="middle" font-size="12" fill="#212121">Zero-copy: both use same PA</text>
-  <text x="685" y="333" text-anchor="middle" font-size="12" fill="#00796B">✓ No PCIe transfer overhead</text>
+  <text x="685" y="333" text-anchor="middle" font-size="12" fill="#4A8A99">✓ No PCIe transfer overhead</text>
   <text x="685" y="351" text-anchor="middle" font-size="11" fill="#616161">TLB coherency required across CPU+GPU</text>
 
   <!-- Bottom legend -->

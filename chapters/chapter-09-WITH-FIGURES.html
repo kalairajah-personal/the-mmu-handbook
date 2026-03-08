@@ -671,83 +671,83 @@ available: Kernel Samepage Merging.</p>
 <hr />
 <h2 id="memory-deduplication-kernel-samepage-merging">9.2 Memory
 Deduplication: Kernel Samepage Merging</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-9-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker>
-<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker></defs>
+<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">KSM Deduplication and NUMA-Aware Page Placement</text>
 <rect x="30" y="40" width="400" height="295" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="40" width="400" height="28" rx="6" fill="#1565C0"/>
+<rect x="30" y="40" width="400" height="28" rx="6" fill="#5E81AC"/>
 <text x="230" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">KSM: Kernel Samepage Merging</text>
 <text x="230" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Before KSM: 3 VMs, same libc page</text>
-<rect x="50" y="96" width="100" height="50" rx="4" fill="#1565C0"/>
+<rect x="50" y="96" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="100" y="118" text-anchor="middle" font-size="13" fill="white">VM1</text>
 <text x="100" y="134" text-anchor="middle" font-size="12" fill="white">PA: 0x1000</text>
-<rect x="180" y="96" width="100" height="50" rx="4" fill="#1565C0"/>
+<rect x="180" y="96" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="230" y="118" text-anchor="middle" font-size="13" fill="white">VM2</text>
 <text x="230" y="134" text-anchor="middle" font-size="12" fill="white">PA: 0x2000</text>
-<rect x="310" y="96" width="100" height="50" rx="4" fill="#1565C0"/>
+<rect x="310" y="96" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="360" y="118" text-anchor="middle" font-size="13" fill="white">VM3</text>
 <text x="360" y="134" text-anchor="middle" font-size="12" fill="white">PA: 0x3000</text>
 <text x="100" y="165" text-anchor="middle" font-size="11" fill="#616161">content=libc</text>
 <text x="230" y="165" text-anchor="middle" font-size="11" fill="#616161">content=libc</text>
 <text x="360" y="165" text-anchor="middle" font-size="11" fill="#616161">content=libc</text>
-<text x="230" y="190" text-anchor="middle" font-size="13" font-weight="bold" fill="#00796B">After KSM: merged to 1 physical page</text>
-<rect x="50" y="198" width="100" height="50" rx="4" fill="#1565C0"/>
+<text x="230" y="190" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">After KSM: merged to 1 physical page</text>
+<rect x="50" y="198" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="100" y="220" text-anchor="middle" font-size="13" fill="white">VM1</text>
 <text x="100" y="236" text-anchor="middle" font-size="11" fill="white">PTE -&gt; 0x1000</text>
-<rect x="180" y="198" width="100" height="50" rx="4" fill="#1565C0"/>
+<rect x="180" y="198" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="230" y="220" text-anchor="middle" font-size="13" fill="white">VM2</text>
 <text x="230" y="236" text-anchor="middle" font-size="11" fill="white">PTE -&gt; 0x1000</text>
-<rect x="310" y="198" width="100" height="50" rx="4" fill="#1565C0"/>
+<rect x="310" y="198" width="100" height="50" rx="4" fill="#5E81AC"/>
 <text x="360" y="220" text-anchor="middle" font-size="13" fill="white">VM3</text>
 <text x="360" y="236" text-anchor="middle" font-size="11" fill="white">PTE -&gt; 0x1000</text>
-<line x1="100" y1="248" x2="195" y2="268" stroke="#00796B" stroke-width="1.5" marker-end="url(#ag)"/>
-<line x1="230" y1="248" x2="230" y2="268" stroke="#00796B" stroke-width="1.5" marker-end="url(#ag)"/>
-<line x1="360" y1="248" x2="265" y2="268" stroke="#00796B" stroke-width="1.5" marker-end="url(#ag)"/>
-<rect x="170" y="268" width="120" height="34" rx="4" fill="#00796B"/>
+<line x1="100" y1="248" x2="195" y2="268" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="230" y1="248" x2="230" y2="268" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="360" y1="248" x2="265" y2="268" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="170" y="268" width="120" height="34" rx="4" fill="#4A8A99"/>
 <text x="230" y="284" text-anchor="middle" font-size="13" font-weight="bold" fill="white">Shared PA: 0x1000</text>
 <text x="230" y="300" text-anchor="middle" font-size="11" fill="white">read-only, CoW on write</text>
 <text x="230" y="318" text-anchor="middle" font-size="13" fill="#212121">Saves: 2 pages x 4 KB = 8 KB per dedup</text>
 <text x="230" y="334" text-anchor="middle" font-size="12" fill="#616161">Cloud VMs: 20-40% RAM savings typical</text>
 <rect x="460" y="40" width="410" height="295" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="460" y="40" width="410" height="28" rx="6" fill="#1565C0"/>
+<rect x="460" y="40" width="410" height="28" rx="6" fill="#5E81AC"/>
 <text x="665" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">NUMA: Non-Uniform Memory Access</text>
-<rect x="475" y="76" width="175" height="120" rx="5" fill="#1565C0" fill-opacity="0.15" stroke="#1565C0" stroke-width="1.5"/>
-<text x="562" y="96" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">NUMA Node 0</text>
-<rect x="490" y="104" width="145" height="26" rx="3" fill="#1565C0"/>
+<rect x="475" y="76" width="175" height="120" rx="5" fill="#5E81AC" fill-opacity="0.15" stroke="#5E81AC" stroke-width="1.5"/>
+<text x="562" y="96" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">NUMA Node 0</text>
+<rect x="490" y="104" width="145" height="26" rx="3" fill="#5E81AC"/>
 <text x="562" y="122" text-anchor="middle" font-size="13" fill="white">CPU 0-7</text>
-<rect x="490" y="136" width="145" height="26" rx="3" fill="#00796B"/>
+<rect x="490" y="136" width="145" height="26" rx="3" fill="#4A8A99"/>
 <text x="562" y="154" text-anchor="middle" font-size="13" fill="white">Local RAM 64 GB</text>
-<text x="562" y="183" text-anchor="middle" font-size="12" fill="#00796B">Local: 80 ns</text>
-<rect x="665" y="76" width="175" height="120" rx="5" fill="#E65100" fill-opacity="0.12" stroke="#E65100" stroke-width="1.5"/>
-<text x="752" y="96" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">NUMA Node 1</text>
-<rect x="680" y="104" width="145" height="26" rx="3" fill="#1565C0"/>
+<text x="562" y="183" text-anchor="middle" font-size="12" fill="#4A8A99">Local: 80 ns</text>
+<rect x="665" y="76" width="175" height="120" rx="5" fill="#BF616A" fill-opacity="0.12" stroke="#BF616A" stroke-width="1.5"/>
+<text x="752" y="96" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">NUMA Node 1</text>
+<rect x="680" y="104" width="145" height="26" rx="3" fill="#5E81AC"/>
 <text x="752" y="122" text-anchor="middle" font-size="13" fill="white">CPU 8-15</text>
-<rect x="680" y="136" width="145" height="26" rx="3" fill="#00796B"/>
+<rect x="680" y="136" width="145" height="26" rx="3" fill="#4A8A99"/>
 <text x="752" y="154" text-anchor="middle" font-size="13" fill="white">Remote RAM 64 GB</text>
-<text x="752" y="183" text-anchor="middle" font-size="12" fill="#E65100">Remote: 120-140 ns</text>
-<line x1="650" y1="136" x2="665" y2="136" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2"/>
-<text x="657" y="132" text-anchor="middle" font-size="11" fill="#E65100">QPI/UPI</text>
+<text x="752" y="183" text-anchor="middle" font-size="12" fill="#BF616A">Remote: 120-140 ns</text>
+<line x1="650" y1="136" x2="665" y2="136" stroke="#BF616A" stroke-width="2" stroke-dasharray="4,2"/>
+<text x="657" y="132" text-anchor="middle" font-size="11" fill="#BF616A">QPI/UPI</text>
 <text x="665" y="218" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">NUMA Balancing Strategy</text>
-<rect x="475" y="226" width="375" height="26" rx="3" fill="#00796B"/>
+<rect x="475" y="226" width="375" height="26" rx="3" fill="#4A8A99"/>
 <text x="662" y="244" text-anchor="middle" font-size="13" fill="white">First-touch: allocate on node where fault occurs</text>
-<rect x="475" y="258" width="375" height="26" rx="3" fill="#1565C0"/>
+<rect x="475" y="258" width="375" height="26" rx="3" fill="#5E81AC"/>
 <text x="662" y="276" text-anchor="middle" font-size="13" fill="white">Automatic NUMA Balancing: migrate hot remote pages</text>
 <rect x="475" y="290" width="375" height="26" rx="3" fill="#9E9E9E"/>
 <text x="662" y="308" text-anchor="middle" font-size="13" fill="white">numactl --membind: pin process to local memory</text>
 <text x="665" y="332" text-anchor="middle" font-size="12" fill="#616161">Remote access overhead: 50-75% slower than local</text>
 <rect x="30" y="360" width="840" height="170" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
-<rect x="30" y="360" width="840" height="28" rx="6" fill="#00796B"/>
+<rect x="30" y="360" width="840" height="28" rx="6" fill="#4A8A99"/>
 <text x="450" y="379" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Advanced Huge Page Strategies</text>
-<text x="220" y="412" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">Transparent Huge Pages (THP)</text>
+<text x="220" y="412" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">Transparent Huge Pages (THP)</text>
 <text x="220" y="430" text-anchor="middle" font-size="13" fill="#212121">OS auto-promotes 512 contiguous 4 KB</text>
 <text x="220" y="448" text-anchor="middle" font-size="13" fill="#212121">pages to 1 x 2 MB page</text>
 <text x="220" y="466" text-anchor="middle" font-size="13" fill="#212121">TLB reach: 64 entries x 2 MB = 128 MB</text>
 <text x="220" y="484" text-anchor="middle" font-size="12" fill="#616161">Risk: promotion/demotion latency spikes</text>
 <line x1="440" y1="392" x2="440" y2="500" stroke="#9E9E9E" stroke-width="1"/>
-<text x="665" y="412" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">HugeTLBfs / Explicit Pages</text>
+<text x="665" y="412" text-anchor="middle" font-size="14" font-weight="bold" fill="#5E81AC">HugeTLBfs / Explicit Pages</text>
 <text x="665" y="430" text-anchor="middle" font-size="13" fill="#212121">Pre-reserved 2 MB or 1 GB pages</text>
 <text x="665" y="448" text-anchor="middle" font-size="13" fill="#212121">No promotion cost, guaranteed contiguous</text>
 <text x="665" y="466" text-anchor="middle" font-size="13" fill="#212121">Used by: databases, JVM, DPDK</text>

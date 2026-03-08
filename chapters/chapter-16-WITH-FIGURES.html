@@ -597,7 +597,7 @@ Action: Create single 32KB coalesced TLB entry
 <table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
 <caption style="font-weight:bold;font-size:15px;color:#212121;text-align:left;margin-bottom:6px;">ARM64 PTE Format with Contiguous Bit (ARMv8-A)</caption>
 <thead>
-<tr style="background:#1565C0;color:#fff;">
+<tr style="background:#5E81AC;color:#fff;">
   <th style="padding:8px 10px;border:1px solid #0D47A1;text-align:center;">Bits [63:52]</th>
   <th style="padding:8px 10px;border:1px solid #0D47A1;text-align:center;">Bits [51:48]</th>
   <th style="padding:8px 10px;border:1px solid #0D47A1;text-align:center;">Bits [47:12]</th>
@@ -607,17 +607,17 @@ Action: Create single 32KB coalesced TLB entry
 </tr>
 </thead>
 <tbody>
-<tr style="background:#E3F2FD;">
-  <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;">Reserved / SW use<br><span style="font-size:12px;color:#E65100;font-weight:bold;">Bit 52 = Contiguous</span></td>
+<tr style="background:#EAF2F8;">
+  <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;">Reserved / SW use<br><span style="font-size:12px;color:#BF616A;font-weight:bold;">Bit 52 = Contiguous</span></td>
   <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;">Upper attributes<br><span style="font-size:12px;color:#616161;">(UXN, PXN, AF…)</span></td>
-  <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;color:#00796B;font-weight:bold;">Physical Page Number<br><span style="font-size:12px;color:#616161;">Output address</span></td>
+  <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;color:#4A8A99;font-weight:bold;">Physical Page Number<br><span style="font-size:12px;color:#616161;">Output address</span></td>
   <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;">Lower attributes<br><span style="font-size:12px;color:#616161;">AP, SH, AttrIndx</span></td>
   <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;">Present<br><span style="font-size:12px;color:#616161;">P bit</span></td>
   <td style="padding:7px 10px;border:1px solid #9E9E9E;text-align:center;color:#2E7D32;font-weight:bold;">Valid<br><span style="font-size:12px;">V=1</span></td>
 </tr>
 </tbody>
 </table>
-<p style="font-size:13px;color:#616161;margin-top:6px;padding:8px;background:#FFF8E1;border-left:3px solid #E65100;">
+<p style="font-size:13px;color:#616161;margin-top:6px;padding:8px;background:#FFF8E1;border-left:3px solid #BF616A;">
 <strong>Contiguous bit (bit 52):</strong> When set on 16 consecutive 4 KB PTEs mapping 64 KB of contiguous PA,
 the TLB may merge them into a single entry — reducing TLB pressure for large buffers by 16×.
 The OS must ensure all 16 PTEs share identical attributes (AP, SH, cacheability) for the hint to be valid.
@@ -822,7 +822,7 @@ Result: 6 × 200ns = 1200ns total translation time</code></pre>
 
 <p>The core innovation: add a <strong>coalescing buffer</strong> between the TLB and page walk unit that aggregates multiple outstanding walk requests:</p>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="850" height="400" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1303,7 +1303,7 @@ Avoid prefetching 0x510, 0x7FF (low probability, waste bandwidth)
 
 <p>SnakeByte maintains a <strong>Miss Sequence Table (MST)</strong> that records recent miss history and learns transition probabilities:</p>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="850" height="500" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1862,7 +1862,7 @@ Single TLB entry covers ENTIRE 2.1 GB tensor!
 
 <h3 id="section-16.7.3">16.7.3 FlexPointer TLB Entry Format</h3>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="440" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1874,28 +1874,28 @@ Single TLB entry covers ENTIRE 2.1 GB tensor!
   <text x="450" y="28" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="bold" fill="#212121" text-anchor="middle">FlexPointer TLB Entry Format (128-byte Range-Based Entry)</text>
 
   <!-- Entry layout — horizontal field strip -->
-  <rect x="20" y="50" width="860" height="55" rx="4" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/>
+  <rect x="20" y="50" width="860" height="55" rx="4" fill="#EAF2F8" stroke="#5E81AC" stroke-width="2"/>
 
   <!-- Field dividers and labels -->
-  <rect x="20" y="50" width="200" height="55" rx="0" fill="#1565C0" stroke="#0D47A1" stroke-width="1"/>
+  <rect x="20" y="50" width="200" height="55" rx="0" fill="#5E81AC" stroke="#0D47A1" stroke-width="1"/>
   <text x="120" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Virtual Base Address</text>
-  <text x="120" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BBDEFB" text-anchor="middle">64 bits</text>
+  <text x="120" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#DDEAF5" text-anchor="middle">64 bits</text>
 
-  <rect x="220" y="50" width="200" height="55" rx="0" fill="#1565C0" stroke="#0D47A1" stroke-width="1"/>
+  <rect x="220" y="50" width="200" height="55" rx="0" fill="#5E81AC" stroke="#0D47A1" stroke-width="1"/>
   <text x="320" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Virtual Limit Address</text>
-  <text x="320" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#BBDEFB" text-anchor="middle">64 bits</text>
+  <text x="320" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#DDEAF5" text-anchor="middle">64 bits</text>
 
-  <rect x="420" y="50" width="200" height="55" rx="0" fill="#00796B" stroke="#004D40" stroke-width="1"/>
+  <rect x="420" y="50" width="200" height="55" rx="0" fill="#4A8A99" stroke="#004D40" stroke-width="1"/>
   <text x="520" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Physical Base Address</text>
-  <text x="520" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#B2DFDB" text-anchor="middle">64 bits</text>
+  <text x="520" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#CCE8EC" text-anchor="middle">64 bits</text>
 
-  <rect x="620" y="50" width="120" height="55" rx="0" fill="#E65100" stroke="#BF360C" stroke-width="1"/>
+  <rect x="620" y="50" width="120" height="55" rx="0" fill="#BF616A" stroke="#BF360C" stroke-width="1"/>
   <text x="680" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Perms</text>
-  <text x="680" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#FFE0B2" text-anchor="middle">R/W/X U/S 16b</text>
+  <text x="680" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#F0D9D9" text-anchor="middle">R/W/X U/S 16b</text>
 
-  <rect x="740" y="50" width="80" height="55" rx="0" fill="#E65100" stroke="#BF360C" stroke-width="1"/>
+  <rect x="740" y="50" width="80" height="55" rx="0" fill="#BF616A" stroke="#BF360C" stroke-width="1"/>
   <text x="780" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">ASID</text>
-  <text x="780" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#FFE0B2" text-anchor="middle">16 bits</text>
+  <text x="780" y="92" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#F0D9D9" text-anchor="middle">16 bits</text>
 
   <rect x="820" y="50" width="60" height="55" rx="0" fill="#9E9E9E" stroke="#757575" stroke-width="1"/>
   <text x="850" y="74" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">V</text>
@@ -1916,23 +1916,23 @@ Single TLB entry covers ENTIRE 2.1 GB tensor!
   <rect x="620" y="145" width="260" height="45" rx="0" fill="#455A64" stroke="#37474F" stroke-width="1"/>
   <text x="750" y="170" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#ECEFF1" text-anchor="middle">ASID + Valid</text>
 
-  <text x="450" y="210" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#E65100" text-anchor="middle" font-weight="bold">Classic: 1 entry = 1 page (4 KB). FlexPointer: 1 entry = entire VA range (any size).</text>
+  <text x="450" y="210" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#BF616A" text-anchor="middle" font-weight="bold">Classic: 1 entry = 1 page (4 KB). FlexPointer: 1 entry = entire VA range (any size).</text>
 
   <!-- Translation logic diagram -->
   <rect x="20" y="225" width="500" height="190" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-  <text x="270" y="248" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#1565C0" text-anchor="middle">FlexPointer Translation Logic</text>
+  <text x="270" y="248" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#5E81AC" text-anchor="middle">FlexPointer Translation Logic</text>
 
   <text x="35" y="272" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" font-family="monospace">if (VA ≥ VirtualBase</text>
   <text x="55" y="290" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">  AND VA &lt; VirtualLimit) {</text>
-  <text x="65" y="310" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#00796B" font-weight="bold">  offset = VA − VirtualBase;</text>
-  <text x="65" y="330" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#1565C0" font-weight="bold">  PA = PhysicalBase + offset;</text>
+  <text x="65" y="310" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#4A8A99" font-weight="bold">  offset = VA − VirtualBase;</text>
+  <text x="65" y="330" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#5E81AC" font-weight="bold">  PA = PhysicalBase + offset;</text>
   <text x="65" y="350" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">  return PA with cached Perms;</text>
   <text x="35" y="370" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">}  // else: TLB miss</text>
   <text x="35" y="400" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" font-style="italic">Eliminates page-granularity entries for contiguous ranges (e.g. 1 entry for 1 GB model weights)</text>
 
   <!-- Right: capacity comparison -->
-  <rect x="540" y="225" width="340" height="190" rx="6" fill="#FFF3E0" stroke="#E65100" stroke-width="1.5" filter="url(#sh)"/>
-  <text x="710" y="248" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#E65100" text-anchor="middle">Capacity Advantage</text>
+  <rect x="540" y="225" width="340" height="190" rx="6" fill="#FFF3E0" stroke="#BF616A" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="710" y="248" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#BF616A" text-anchor="middle">Capacity Advantage</text>
 
   <text x="555" y="272" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#212121">Classic TLB (1,024 entries, 4 KB):</text>
   <text x="560" y="292" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">Covers: 1,024 × 4 KB = <strong>4 MB</strong></text>
@@ -2401,17 +2401,17 @@ Critical finding: APUs benefit most because VA→IA can be device-local
 <div style="margin:1.5em 0;padding:16px;background:#E8F5E9;border-left:4px solid #2E7D32;border-radius:4px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.9;">
 <strong style="font-size:15px;color:#1B5E20;">TLB Optimisation Technique Selection Decision Tree</strong><br><br>
 <strong>Q1: Is production deployment required?</strong><br>
-&nbsp;&nbsp;├─ <strong>YES →</strong> <span style="color:#1565C0;font-weight:bold;">Use COLT</span> (only production-deployed technique)<br>
+&nbsp;&nbsp;├─ <strong>YES →</strong> <span style="color:#5E81AC;font-weight:bold;">Use COLT</span> (only production-deployed technique)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + ARM contiguous bit if on ARM64 platform<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + Combine with huge pages for best results<br>
 &nbsp;&nbsp;└─ <strong>NO →</strong> Continue to Q2<br><br>
 <strong>Q2: What is the memory access pattern?</strong><br>
 &nbsp;&nbsp;├─ <strong>Sequential</strong> (database scans, model weight loading)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#00796B;font-weight:bold;">COLT</span> or <span style="color:#00796B;font-weight:bold;">FlexPointer</span> (if range-based TLB available)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#4A8A99;font-weight:bold;">COLT</span> or <span style="color:#4A8A99;font-weight:bold;">FlexPointer</span> (if range-based TLB available)<br>
 &nbsp;&nbsp;├─ <strong>Strided</strong> (tensor ops, matrix multiply, attention heads)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#00796B;font-weight:bold;">Avatar speculation</span> or <span style="color:#00796B;font-weight:bold;">FlexPointer</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#4A8A99;font-weight:bold;">Avatar speculation</span> or <span style="color:#4A8A99;font-weight:bold;">FlexPointer</span><br>
 &nbsp;&nbsp;└─ <strong>Random</strong> (graph traversal, hash tables, pointer chasing)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#E65100;font-weight:bold;">SnakeByte</span> (irregular access prediction)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span style="color:#BF616A;font-weight:bold;">SnakeByte</span> (irregular access prediction)
 </div>
 
 <h3 id="section-16.9.3">16.9.3 Synergistic Combinations</h3>

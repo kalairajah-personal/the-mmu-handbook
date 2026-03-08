@@ -611,69 +611,69 @@ Picture</a></li>
 </nav>
 <h2 id="page-replacement-algorithms-making-the-eviction-decision">8.5
 Page Replacement Algorithms: Making the Eviction Decision</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-8-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker>
-<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker></defs>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Page Replacement: Clock Algorithm and Linux Two-List LRU</text>
 <rect x="30" y="40" width="380" height="300" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="40" width="380" height="28" rx="6" fill="#1565C0"/>
+<rect x="30" y="40" width="380" height="28" rx="6" fill="#5E81AC"/>
 <text x="220" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Clock (Second-Chance) Algorithm</text>
 <text x="220" y="90" text-anchor="middle" font-size="13" fill="#212121">Clock hand sweeps frame list. If A-bit=1: clear it,</text>
 <text x="220" y="106" text-anchor="middle" font-size="13" fill="#212121">advance. If A-bit=0: evict this frame.</text>
 <circle cx="220" cy="210" r="90" fill="none" stroke="#9E9E9E" stroke-width="1.5"/>
-<rect x="280" y="130" width="52" height="30" rx="4" fill="#00796B"/>
+<rect x="280" y="130" width="52" height="30" rx="4" fill="#4A8A99"/>
 <text x="306" y="150" text-anchor="middle" font-size="13" fill="white">A=1</text>
-<rect x="308" y="183" width="52" height="30" rx="4" fill="#00796B"/>
+<rect x="308" y="183" width="52" height="30" rx="4" fill="#4A8A99"/>
 <text x="334" y="203" text-anchor="middle" font-size="13" fill="white">A=1</text>
 <rect x="290" y="240" width="52" height="30" rx="4" fill="#9E9E9E"/>
 <text x="316" y="260" text-anchor="middle" font-size="13" fill="white">A=0</text>
 <rect x="240" y="270" width="52" height="30" rx="4" fill="#9E9E9E"/>
 <text x="266" y="290" text-anchor="middle" font-size="13" fill="white">A=0</text>
-<rect x="160" y="258" width="52" height="30" rx="4" fill="#E65100"/>
+<rect x="160" y="258" width="52" height="30" rx="4" fill="#BF616A"/>
 <text x="186" y="278" text-anchor="middle" font-size="13" fill="white">EVICT</text>
-<rect x="116" y="206" width="52" height="30" rx="4" fill="#00796B"/>
+<rect x="116" y="206" width="52" height="30" rx="4" fill="#4A8A99"/>
 <text x="142" y="226" text-anchor="middle" font-size="13" fill="white">A=1</text>
 <rect x="130" y="148" width="52" height="30" rx="4" fill="#9E9E9E"/>
 <text x="156" y="168" text-anchor="middle" font-size="13" fill="white">A=0</text>
-<rect x="174" y="110" width="52" height="30" rx="4" fill="#1565C0"/>
+<rect x="174" y="110" width="52" height="30" rx="4" fill="#5E81AC"/>
 <text x="200" y="130" text-anchor="middle" font-size="13" fill="white">A=1</text>
-<line x1="186" y1="258" x2="186" y2="240" stroke="#E65100" stroke-width="2" marker-end="url(#ao)"/>
+<line x1="186" y1="258" x2="186" y2="240" stroke="#BF616A" stroke-width="2" marker-end="url(#ao)"/>
 <text x="120" y="310" font-size="12" fill="#616161">Clock hand pointer</text>
 <text x="120" y="326" font-size="12" fill="#616161">A=1 cleared on pass</text>
-<text x="120" y="342" font-size="12" fill="#E65100">A=0 = evict candidate</text>
+<text x="120" y="342" font-size="12" fill="#BF616A">A=0 = evict candidate</text>
 <rect x="490" y="40" width="380" height="300" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="490" y="40" width="380" height="28" rx="6" fill="#1565C0"/>
+<rect x="490" y="40" width="380" height="28" rx="6" fill="#5E81AC"/>
 <text x="680" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Linux Two-List LRU (Active + Inactive)</text>
-<text x="680" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565C0">Active List (hot pages)</text>
-<rect x="505" y="96" width="350" height="28" rx="3" fill="#1565C0"/>
+<text x="680" y="88" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Active List (hot pages)</text>
+<rect x="505" y="96" width="350" height="28" rx="3" fill="#5E81AC"/>
 <text x="680" y="115" text-anchor="middle" font-size="13" fill="white">Page A - recently accessed x2</text>
-<rect x="505" y="128" width="350" height="28" rx="3" fill="#1565C0"/>
+<rect x="505" y="128" width="350" height="28" rx="3" fill="#5E81AC"/>
 <text x="680" y="147" text-anchor="middle" font-size="13" fill="white">Page B - recently accessed x2</text>
-<rect x="505" y="160" width="350" height="28" rx="3" fill="#1565C0"/>
+<rect x="505" y="160" width="350" height="28" rx="3" fill="#5E81AC"/>
 <text x="680" y="179" text-anchor="middle" font-size="13" fill="white">Page C - recently accessed x2</text>
-<line x1="680" y1="196" x2="680" y2="210" stroke="#E65100" stroke-width="2" marker-end="url(#ao)"/>
-<text x="760" y="206" font-size="12" fill="#E65100">demoted on age</text>
-<text x="680" y="228" text-anchor="middle" font-size="13" font-weight="bold" fill="#E65100">Inactive List (cold pages)</text>
+<line x1="680" y1="196" x2="680" y2="210" stroke="#BF616A" stroke-width="2" marker-end="url(#ao)"/>
+<text x="760" y="206" font-size="12" fill="#BF616A">demoted on age</text>
+<text x="680" y="228" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Inactive List (cold pages)</text>
 <rect x="505" y="236" width="350" height="28" rx="3" fill="#9E9E9E"/>
 <text x="680" y="255" text-anchor="middle" font-size="13" fill="white">Page D - accessed once</text>
-<rect x="505" y="268" width="350" height="28" rx="3" fill="#E65100"/>
+<rect x="505" y="268" width="350" height="28" rx="3" fill="#BF616A"/>
 <text x="680" y="287" text-anchor="middle" font-size="13" fill="white">Page E - eviction candidate (tail)</text>
 <line x1="680" y1="212" x2="680" y2="232" stroke="#212121" stroke-width="1.5" stroke-dasharray="4,2"/>
 <text x="500" y="318" font-size="12" fill="#616161">Accessed again from inactive: promoted to active head</text>
 <text x="500" y="334" font-size="12" fill="#616161">Not accessed: drifts to inactive tail, then evicted</text>
 <rect x="30" y="362" width="840" height="170" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
-<rect x="30" y="362" width="840" height="28" rx="6" fill="#00796B"/>
+<rect x="30" y="362" width="840" height="28" rx="6" fill="#4A8A99"/>
 <text x="450" y="381" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Linux Memory Pressure: Watermarks and Reclaim Thresholds</text>
-<text x="120" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#00796B">HIGH watermark</text>
+<text x="120" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">HIGH watermark</text>
 <text x="120" y="433" text-anchor="middle" font-size="13" fill="#212121">Normal: kswapd sleeps</text>
 <text x="120" y="451" text-anchor="middle" font-size="13" fill="#212121">No reclaim pressure</text>
 <line x1="250" y1="395" x2="250" y2="510" stroke="#9E9E9E" stroke-width="1"/>
-<text x="450" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#E65100">LOW watermark</text>
+<text x="450" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#BF616A">LOW watermark</text>
 <text x="450" y="433" text-anchor="middle" font-size="13" fill="#212121">kswapd wakes, background</text>
 <text x="450" y="451" text-anchor="middle" font-size="13" fill="#212121">reclaim starts</text>
 <line x1="650" y1="395" x2="650" y2="510" stroke="#9E9E9E" stroke-width="1"/>
-<text x="780" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#E65100">MIN watermark</text>
+<text x="780" y="415" text-anchor="middle" font-size="14" font-weight="bold" fill="#BF616A">MIN watermark</text>
 <text x="780" y="433" text-anchor="middle" font-size="13" fill="#212121">Direct reclaim: allocating</text>
 <text x="780" y="451" text-anchor="middle" font-size="13" fill="#212121">process reclaims pages</text>
 <text x="780" y="469" text-anchor="middle" font-size="13" fill="#212121">itself (allocation stalls)</text>
@@ -1161,7 +1161,7 @@ pressure:</p>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    WMARK_HIGH<span class="op">,</span>  <span class="co">// Comfortable—enough free memory</span></span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
 <p>The watermarks define three states:</p>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-8-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1186,8 +1186,8 @@ pressure:</p>
   <text x="180" y="136" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#E8F5E9" text-anchor="middle">(≥ 96 MB free)</text>
 
   <!-- WMARK_HIGH line -->
-  <rect x="120" y="175" width="120" height="3" fill="#1565C0"/>
-  <text x="50" y="179" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#1565C0" text-anchor="end">WMARK_HIGH</text>
+  <rect x="120" y="175" width="120" height="3" fill="#5E81AC"/>
+  <text x="50" y="179" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#5E81AC" text-anchor="end">WMARK_HIGH</text>
   <text x="50" y="194" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="end">96 MB (1.2%)</text>
 
   <!-- Zone 2: Background reclaim -->
@@ -1197,8 +1197,8 @@ pressure:</p>
   <text x="180" y="258" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#FFF8E1" text-anchor="middle">kswapd active</text>
 
   <!-- WMARK_LOW line -->
-  <rect x="120" y="298" width="120" height="3" fill="#E65100"/>
-  <text x="50" y="302" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#E65100" text-anchor="end">WMARK_LOW</text>
+  <rect x="120" y="298" width="120" height="3" fill="#BF616A"/>
+  <text x="50" y="302" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#BF616A" text-anchor="end">WMARK_LOW</text>
   <text x="50" y="317" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="end">64 MB (0.8%)</text>
 
   <!-- Zone 3: Critical / Direct reclaim -->
@@ -1233,7 +1233,7 @@ pressure:</p>
 
   <!-- Background reclaim -->
   <rect x="305" y="195" width="550" height="95" rx="4" fill="#FFF8E1" stroke="#FF9800" stroke-width="1.5"/>
-  <text x="315" y="217" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#E65100">● Background Reclaim Zone (LOW → HIGH)</text>
+  <text x="315" y="217" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#BF616A">● Background Reclaim Zone (LOW → HIGH)</text>
   <text x="325" y="237" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">• kswapd thread wakes up, scans LRU lists</text>
   <text x="325" y="255" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">• Evicts cold pages, writes dirty pages to swap asynchronously</text>
   <text x="325" y="273" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121">• Allocation requests still succeed (no stalls yet)</text>

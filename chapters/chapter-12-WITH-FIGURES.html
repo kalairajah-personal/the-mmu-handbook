@@ -565,61 +565,61 @@
 
 
 <h2 id="section-12.2">12.2 Multi-GPU TLB Coordination - The O(N) Scaling Problem</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-12-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker></defs>
+<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Multi-GPU TLB Coordination: O(N) Shootdown Scaling Problem</text>
 <rect x="30" y="40" width="840" height="185" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="40" width="840" height="28" rx="6" fill="#1565C0"/>
+<rect x="30" y="40" width="840" height="28" rx="6" fill="#5E81AC"/>
 <text x="450" y="59" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Unified Virtual Address Space: 8-GPU Training Job</text>
-<rect x="50" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="50" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="95" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 0</text>
 <text x="95" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="160" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="160" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="205" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 1</text>
 <text x="205" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="270" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="270" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="315" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 2</text>
 <text x="315" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="380" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="380" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="425" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 3</text>
 <text x="425" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="490" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="490" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="535" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 4</text>
 <text x="535" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="600" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="600" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="645" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 5</text>
 <text x="645" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="710" y="76" width="90" height="60" rx="5" fill="#1565C0"/>
+<rect x="710" y="76" width="90" height="60" rx="5" fill="#5E81AC"/>
 <text x="755" y="101" text-anchor="middle" font-size="13" font-weight="bold" fill="white">GPU 6</text>
 <text x="755" y="118" text-anchor="middle" font-size="11" fill="white">80 GB HBM</text>
-<rect x="50" y="148" width="750" height="18" rx="3" fill="#00796B"/>
+<rect x="50" y="148" width="750" height="18" rx="3" fill="#4A8A99"/>
 <text x="425" y="161" text-anchor="middle" font-size="12" fill="white">Shared Virtual Address Space (NVLink / NVSwitch fabric)</text>
 <text x="450" y="197" text-anchor="middle" font-size="13" fill="#212121">When any GPU unmaps a page: ALL 7 peer GPUs must invalidate their TLB entries for that VA</text>
-<rect x="30" y="245" width="400" height="155" rx="6" fill="#F5F5F5" stroke="#E65100" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="30" y="245" width="400" height="28" rx="6" fill="#E65100"/>
+<rect x="30" y="245" width="400" height="155" rx="6" fill="#F5F5F5" stroke="#BF616A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="30" y="245" width="400" height="28" rx="6" fill="#BF616A"/>
 <text x="230" y="264" text-anchor="middle" font-size="14" font-weight="bold" fill="white">TLB Shootdown Scaling: O(N) Problem</text>
 <text x="230" y="296" text-anchor="middle" font-size="13" fill="#212121">Shootdown sequence per unmap event:</text>
-<rect x="48" y="306" width="364" height="22" rx="3" fill="#E65100" fill-opacity="0.2"/>
+<rect x="48" y="306" width="364" height="22" rx="3" fill="#BF616A" fill-opacity="0.2"/>
 <text x="230" y="322" text-anchor="middle" font-size="13" fill="#212121">1. Initiating GPU broadcasts invalidation</text>
-<rect x="48" y="332" width="364" height="22" rx="3" fill="#E65100" fill-opacity="0.2"/>
+<rect x="48" y="332" width="364" height="22" rx="3" fill="#BF616A" fill-opacity="0.2"/>
 <text x="230" y="348" text-anchor="middle" font-size="13" fill="#212121">2. All N-1 GPUs flush matching TLB entries</text>
-<rect x="48" y="358" width="364" height="22" rx="3" fill="#E65100" fill-opacity="0.2"/>
+<rect x="48" y="358" width="364" height="22" rx="3" fill="#BF616A" fill-opacity="0.2"/>
 <text x="230" y="374" text-anchor="middle" font-size="13" fill="#212121">3. Initiating GPU waits for N-1 ACKs</text>
-<text x="230" y="396" text-anchor="middle" font-size="13" fill="#E65100">Latency: 24-100 us x (N-1) GPUs</text>
-<rect x="460" y="245" width="410" height="155" rx="6" fill="#F5F5F5" stroke="#00796B" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="460" y="245" width="410" height="28" rx="6" fill="#00796B"/>
+<text x="230" y="396" text-anchor="middle" font-size="13" fill="#BF616A">Latency: 24-100 us x (N-1) GPUs</text>
+<rect x="460" y="245" width="410" height="155" rx="6" fill="#F5F5F5" stroke="#4A8A99" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="460" y="245" width="410" height="28" rx="6" fill="#4A8A99"/>
 <text x="665" y="264" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Mitigation Strategies</text>
-<rect x="475" y="280" width="380" height="22" rx="3" fill="#00796B" fill-opacity="0.2"/>
+<rect x="475" y="280" width="380" height="22" rx="3" fill="#4A8A99" fill-opacity="0.2"/>
 <text x="665" y="296" text-anchor="middle" font-size="13" fill="#212121">Lazy unmapping: batch shootdowns until threshold</text>
-<rect x="475" y="306" width="380" height="22" rx="3" fill="#00796B" fill-opacity="0.2"/>
+<rect x="475" y="306" width="380" height="22" rx="3" fill="#4A8A99" fill-opacity="0.2"/>
 <text x="665" y="322" text-anchor="middle" font-size="13" fill="#212121">Epoch-based reclaim: defer all unmaps per epoch</text>
-<rect x="475" y="332" width="380" height="22" rx="3" fill="#00796B" fill-opacity="0.2"/>
+<rect x="475" y="332" width="380" height="22" rx="3" fill="#4A8A99" fill-opacity="0.2"/>
 <text x="665" y="348" text-anchor="middle" font-size="13" fill="#212121">Oversubscription: evict without invalidating (HMM)</text>
-<rect x="475" y="358" width="380" height="22" rx="3" fill="#00796B" fill-opacity="0.2"/>
+<rect x="475" y="358" width="380" height="22" rx="3" fill="#4A8A99" fill-opacity="0.2"/>
 <text x="665" y="374" text-anchor="middle" font-size="13" fill="#212121">ATS + PASID: per-process address spaces reduce scope</text>
-<text x="665" y="396" text-anchor="middle" font-size="13" fill="#00796B">Target: &lt;2% training iteration overhead from TLB ops</text>
+<text x="665" y="396" text-anchor="middle" font-size="13" fill="#4A8A99">Target: &lt;2% training iteration overhead from TLB ops</text>
 <rect x="30" y="420" width="840" height="118" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
 <rect x="30" y="420" width="840" height="28" rx="6" fill="#212121"/>
 <text x="450" y="439" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Measured Overhead: 8-GPU A100 DGX (LLM Training)</text>
@@ -628,13 +628,13 @@
 <text x="180" y="504" text-anchor="middle" font-size="13" fill="#212121">TLB overhead</text>
 <text x="360" y="468" text-anchor="middle" font-size="13" fill="#212121">1</text>
 <text x="360" y="486" text-anchor="middle" font-size="13" fill="#212121">~200</text>
-<text x="360" y="504" text-anchor="middle" font-size="13" fill="#00796B">~0.1%</text>
+<text x="360" y="504" text-anchor="middle" font-size="13" fill="#4A8A99">~0.1%</text>
 <text x="520" y="468" text-anchor="middle" font-size="13" fill="#212121">8</text>
 <text x="520" y="486" text-anchor="middle" font-size="13" fill="#212121">~1,600</text>
-<text x="520" y="504" text-anchor="middle" font-size="13" fill="#E65100">~1.8%</text>
+<text x="520" y="504" text-anchor="middle" font-size="13" fill="#BF616A">~1.8%</text>
 <text x="680" y="468" text-anchor="middle" font-size="13" fill="#212121">128</text>
 <text x="680" y="486" text-anchor="middle" font-size="13" fill="#212121">~25,000</text>
-<text x="680" y="504" text-anchor="middle" font-size="13" fill="#E65100">~12% (unmitigated)</text>
+<text x="680" y="504" text-anchor="middle" font-size="13" fill="#BF616A">~12% (unmitigated)</text>
 </svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.1:</strong> Multi-GPU TLB coordination: the O(N) shootdown scaling problem. When GPUs share a unified virtual address space via NVLink/NVSwitch, unmapping any page requires broadcasting TLB invalidations to all N-1 peer GPUs and awaiting acknowledgements. At 128 GPUs this adds ~12% training overhead without mitigation. Solutions include lazy batched unmaps, epoch-based reclaim, and per-process PASID address spaces that reduce the invalidation fan-out.</figcaption></figure>
 
 <p>Modern AI training distributes computation across hundreds or thousands of GPUs sharing a unified virtual address space. This creates a fundamental challenge: when one GPU modifies its page tables, all other GPUs caching those translations must be notified. The naive serial protocol—sending invalidation messages one GPU at a time—scales O(N) and becomes the dominant bottleneck at scale. This section examines five approaches to the TLB coherence problem, from measurement studies establishing the baseline cost to both hardware and software solutions that eliminate the O(N) scaling bottleneck.</p>

@@ -919,34 +919,34 @@ system where hardware and software cooperate to provide secure,
 flexible, and performant virtual memory.</p>
 <hr />
 <h2 id="page-fault-fundamentals">7.2 Page Fault Fundamentals</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<figure id="fig-7-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
-<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker>
-<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker></defs>
+<marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#BF616A"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/></marker></defs>
 <text x="450" y="26" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Page Fault Handling: From CPU Exception to OS Resolution</text>
-<rect x="340" y="40" width="220" height="46" rx="6" fill="#1565C0" filter="url(#sh)"/>
+<rect x="340" y="40" width="220" height="46" rx="6" fill="#5E81AC" filter="url(#sh)"/>
 <text x="450" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="white">CPU: Memory Access</text>
 <text x="450" y="76" text-anchor="middle" font-size="13" fill="white">Load/Store with virtual address</text>
-<line x1="450" y1="86" x2="450" y2="110" stroke="#1565C0" stroke-width="2" marker-end="url(#a)"/>
-<rect x="320" y="110" width="260" height="40" rx="6" fill="#00796B" filter="url(#sh)"/>
+<line x1="450" y1="86" x2="450" y2="110" stroke="#5E81AC" stroke-width="2" marker-end="url(#a)"/>
+<rect x="320" y="110" width="260" height="40" rx="6" fill="#4A8A99" filter="url(#sh)"/>
 <text x="450" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="white">TLB Lookup</text>
 <text x="450" y="141" text-anchor="middle" font-size="12" fill="white">Check L1 dTLB, L2 STLB</text>
-<line x1="340" y1="130" x2="240" y2="130" stroke="#00796B" stroke-width="1.5" marker-end="url(#ag)"/>
-<text x="220" y="126" text-anchor="end" font-size="13" font-weight="bold" fill="#00796B">HIT</text>
-<text x="220" y="142" text-anchor="end" font-size="12" fill="#00796B">1-7 cycles</text>
-<line x1="450" y1="150" x2="450" y2="174" stroke="#E65100" stroke-width="2" marker-end="url(#ao)"/>
-<text x="460" y="168" font-size="12" fill="#E65100">TLB miss</text>
-<rect x="300" y="174" width="300" height="40" rx="6" fill="#E65100" filter="url(#sh)"/>
+<line x1="340" y1="130" x2="240" y2="130" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="220" y="126" text-anchor="end" font-size="13" font-weight="bold" fill="#4A8A99">HIT</text>
+<text x="220" y="142" text-anchor="end" font-size="12" fill="#4A8A99">1-7 cycles</text>
+<line x1="450" y1="150" x2="450" y2="174" stroke="#BF616A" stroke-width="2" marker-end="url(#ao)"/>
+<text x="460" y="168" font-size="12" fill="#BF616A">TLB miss</text>
+<rect x="300" y="174" width="300" height="40" rx="6" fill="#BF616A" filter="url(#sh)"/>
 <text x="450" y="189" text-anchor="middle" font-size="14" font-weight="bold" fill="white">HW Page Table Walker</text>
 <text x="450" y="205" text-anchor="middle" font-size="12" fill="white">Read CR3/TTBR/satp, walk 4-5 levels</text>
-<line x1="600" y1="194" x2="700" y2="194" stroke="#E65100" stroke-width="1.5" marker-end="url(#ao)"/>
-<text x="702" y="190" font-size="13" font-weight="bold" fill="#00796B">PTE valid</text>
-<text x="702" y="206" font-size="12" fill="#00796B">Fill TLB, retry</text>
-<text x="702" y="222" font-size="12" fill="#00796B">100-300 ns</text>
-<line x1="450" y1="214" x2="450" y2="238" stroke="#E65100" stroke-width="2" marker-end="url(#ao)"/>
-<text x="460" y="232" font-size="12" fill="#E65100">PTE not present / bad</text>
-<rect x="270" y="238" width="360" height="46" rx="6" fill="#E65100" filter="url(#sh)"/>
+<line x1="600" y1="194" x2="700" y2="194" stroke="#BF616A" stroke-width="1.5" marker-end="url(#ao)"/>
+<text x="702" y="190" font-size="13" font-weight="bold" fill="#4A8A99">PTE valid</text>
+<text x="702" y="206" font-size="12" fill="#4A8A99">Fill TLB, retry</text>
+<text x="702" y="222" font-size="12" fill="#4A8A99">100-300 ns</text>
+<line x1="450" y1="214" x2="450" y2="238" stroke="#BF616A" stroke-width="2" marker-end="url(#ao)"/>
+<text x="460" y="232" font-size="12" fill="#BF616A">PTE not present / bad</text>
+<rect x="270" y="238" width="360" height="46" rx="6" fill="#BF616A" filter="url(#sh)"/>
 <text x="450" y="256" text-anchor="middle" font-size="15" font-weight="bold" fill="white">#PF / Data Abort Exception</text>
 <text x="450" y="274" text-anchor="middle" font-size="13" fill="white">CPU saves state, jumps to OS fault handler</text>
 <line x1="450" y1="284" x2="450" y2="308" stroke="#212121" stroke-width="2" marker-end="url(#a)"/>
@@ -956,17 +956,17 @@ flexible, and performant virtual memory.</p>
 <text x="320" y="360" text-anchor="middle" font-size="12" fill="#212121">not yet mapped</text>
 <text x="320" y="376" text-anchor="middle" font-size="12" fill="#212121">(demand paging,</text>
 <text x="320" y="392" text-anchor="middle" font-size="12" fill="#212121">CoW, new anon)</text>
-<text x="320" y="408" text-anchor="middle" font-size="12" fill="#00796B">~1-10 us</text>
+<text x="320" y="408" text-anchor="middle" font-size="12" fill="#4A8A99">~1-10 us</text>
 <rect x="500" y="308" width="160" height="110" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
 <text x="580" y="326" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Major Fault</text>
 <text x="580" y="344" text-anchor="middle" font-size="12" fill="#212121">Page on disk</text>
 <text x="580" y="360" text-anchor="middle" font-size="12" fill="#212121">(swap or mmap)</text>
 <text x="580" y="376" text-anchor="middle" font-size="12" fill="#212121">Block I/O read,</text>
 <text x="580" y="392" text-anchor="middle" font-size="12" fill="#212121">process sleeps</text>
-<text x="580" y="408" text-anchor="middle" font-size="12" fill="#E65100">~1-10 ms</text>
+<text x="580" y="408" text-anchor="middle" font-size="12" fill="#BF616A">~1-10 ms</text>
 <line x1="320" y1="418" x2="420" y2="455" stroke="#212121" stroke-width="1.5" marker-end="url(#a)"/>
 <line x1="580" y1="418" x2="480" y2="455" stroke="#212121" stroke-width="1.5" marker-end="url(#a)"/>
-<rect x="310" y="455" width="280" height="46" rx="6" fill="#00796B" filter="url(#sh)"/>
+<rect x="310" y="455" width="280" height="46" rx="6" fill="#4A8A99" filter="url(#sh)"/>
 <text x="450" y="473" text-anchor="middle" font-size="14" font-weight="bold" fill="white">OS: Map Page, Update PTE</text>
 <text x="450" y="491" text-anchor="middle" font-size="13" fill="white">Install PTE, flush TLB entry, return to user</text>
 <rect x="30" y="520" width="840" height="46" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
@@ -5824,7 +5824,7 @@ all page fault types. Less detail means more work for software, but
 simpler hardware.</p>
 <h3 id="hardware-vs-software-responsibility">7.13.2 Hardware vs Software
 Responsibility</h3>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-7-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="420" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -5836,47 +5836,47 @@ Responsibility</h3>
   <text x="450" y="30" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="bold" fill="#212121" text-anchor="middle">Page Fault Handling: Hardware vs. Software Responsibilities by ISA</text>
 
   <!-- Column headers -->
-  <rect x="20" y="45" width="200" height="40" rx="4" fill="#1565C0"/>
+  <rect x="20" y="45" width="200" height="40" rx="4" fill="#5E81AC"/>
   <text x="120" y="70" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">x86-64</text>
 
-  <rect x="230" y="45" width="200" height="40" rx="4" fill="#1565C0"/>
+  <rect x="230" y="45" width="200" height="40" rx="4" fill="#5E81AC"/>
   <text x="330" y="70" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">ARM64</text>
 
-  <rect x="440" y="45" width="200" height="40" rx="4" fill="#00796B"/>
+  <rect x="440" y="45" width="200" height="40" rx="4" fill="#4A8A99"/>
   <text x="540" y="70" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">RISC-V</text>
 
   <rect x="650" y="45" width="230" height="40" rx="4" fill="#9E9E9E"/>
   <text x="765" y="70" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">MIPS (historical)</text>
 
   <!-- HARDWARE row label -->
-  <rect x="0" y="95" width="15" height="150" rx="3" fill="#1565C0"/>
+  <rect x="0" y="95" width="15" height="150" rx="3" fill="#5E81AC"/>
   <text x="7" y="175" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle" transform="rotate(-90,7,175)">HARDWARE</text>
 
   <!-- Hardware boxes x86-64 -->
-  <rect x="20" y="95" width="200" height="150" rx="4" fill="#E3F2FD" stroke="#1565C0" stroke-width="1.5"/>
-  <text x="120" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#1565C0" text-anchor="middle">Detect fault</text>
+  <rect x="20" y="95" width="200" height="150" rx="4" fill="#EAF2F8" stroke="#5E81AC" stroke-width="1.5"/>
+  <text x="120" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#5E81AC" text-anchor="middle">Detect fault</text>
   <text x="120" y="140" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">Walk page table</text>
   <text x="120" y="158" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">Load TLB entry</text>
   <text x="120" y="178" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#616161" text-anchor="middle" font-style="italic">(no SW needed)</text>
-  <rect x="25" y="222" width="190" height="18" rx="3" fill="#1565C0" opacity="0.15"/>
-  <text x="120" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle" font-weight="bold">Full HW walk → minimal OS cost</text>
+  <rect x="25" y="222" width="190" height="18" rx="3" fill="#5E81AC" opacity="0.15"/>
+  <text x="120" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#5E81AC" text-anchor="middle" font-weight="bold">Full HW walk → minimal OS cost</text>
 
   <!-- Hardware boxes ARM64 -->
-  <rect x="230" y="95" width="200" height="150" rx="4" fill="#E3F2FD" stroke="#1565C0" stroke-width="1.5"/>
-  <text x="330" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#1565C0" text-anchor="middle">Detect fault</text>
+  <rect x="230" y="95" width="200" height="150" rx="4" fill="#EAF2F8" stroke="#5E81AC" stroke-width="1.5"/>
+  <text x="330" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#5E81AC" text-anchor="middle">Detect fault</text>
   <text x="330" y="140" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">Walk page table</text>
   <text x="330" y="158" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">Load TLB entry</text>
   <text x="330" y="178" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#616161" text-anchor="middle" font-style="italic">(no SW needed)</text>
-  <rect x="235" y="222" width="190" height="18" rx="3" fill="#1565C0" opacity="0.15"/>
-  <text x="330" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#1565C0" text-anchor="middle" font-weight="bold">Full HW walk → minimal OS cost</text>
+  <rect x="235" y="222" width="190" height="18" rx="3" fill="#5E81AC" opacity="0.15"/>
+  <text x="330" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#5E81AC" text-anchor="middle" font-weight="bold">Full HW walk → minimal OS cost</text>
 
   <!-- Hardware boxes RISC-V -->
-  <rect x="440" y="95" width="200" height="150" rx="4" fill="#E0F2F1" stroke="#00796B" stroke-width="1.5"/>
-  <text x="540" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#00796B" text-anchor="middle">Detect fault</text>
+  <rect x="440" y="95" width="200" height="150" rx="4" fill="#E0F2F1" stroke="#4A8A99" stroke-width="1.5"/>
+  <text x="540" y="118" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#4A8A99" text-anchor="middle">Detect fault</text>
   <text x="540" y="140" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">Trap to supervisor</text>
   <text x="540" y="158" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#616161" text-anchor="middle" font-style="italic">(no HW PT walk)</text>
-  <rect x="445" y="222" width="190" height="18" rx="3" fill="#00796B" opacity="0.15"/>
-  <text x="540" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#00796B" text-anchor="middle" font-weight="bold">SW-managed TLB → OS flexibility</text>
+  <rect x="445" y="222" width="190" height="18" rx="3" fill="#4A8A99" opacity="0.15"/>
+  <text x="540" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#4A8A99" text-anchor="middle" font-weight="bold">SW-managed TLB → OS flexibility</text>
 
   <!-- Hardware boxes MIPS -->
   <rect x="650" y="95" width="230" height="150" rx="4" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
@@ -5887,12 +5887,12 @@ Responsibility</h3>
   <text x="765" y="235" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="middle" font-weight="bold">SW TLB — legacy, high miss cost</text>
 
   <!-- SOFTWARE row label -->
-  <rect x="0" y="255" width="15" height="155" rx="3" fill="#E65100"/>
+  <rect x="0" y="255" width="15" height="155" rx="3" fill="#BF616A"/>
   <text x="7" y="335" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle" transform="rotate(-90,7,335)">SOFTWARE (OS)</text>
 
   <!-- Software boxes x86 / ARM64 (combined) -->
-  <rect x="20" y="255" width="410" height="145" rx="4" fill="#FFF3E0" stroke="#E65100" stroke-width="1.5"/>
-  <text x="225" y="278" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#E65100" text-anchor="middle">x86-64 &amp; ARM64 OS responsibilities</text>
+  <rect x="20" y="255" width="410" height="145" rx="4" fill="#FFF3E0" stroke="#BF616A" stroke-width="1.5"/>
+  <text x="225" y="278" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#BF616A" text-anchor="middle">x86-64 &amp; ARM64 OS responsibilities</text>
   <text x="225" y="300" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Allocate physical frame (page frame allocator)</text>
   <text x="225" y="320" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Swap page in/out (swap daemon / kswapd)</text>
   <text x="225" y="340" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Apply replacement policy (LRU, Clock)</text>
@@ -5900,8 +5900,8 @@ Responsibility</h3>
   <text x="225" y="385" font-family="Arial,Helvetica,sans-serif" font-size="12" fill="#616161" text-anchor="middle" font-style="italic">Hardware resumes faulting instruction automatically</text>
 
   <!-- Software boxes RISC-V / MIPS (full SW TLB) -->
-  <rect x="440" y="255" width="440" height="145" rx="4" fill="#E0F2F1" stroke="#00796B" stroke-width="1.5"/>
-  <text x="660" y="278" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#00796B" text-anchor="middle">RISC-V &amp; MIPS SW handler adds</text>
+  <rect x="440" y="255" width="440" height="145" rx="4" fill="#E0F2F1" stroke="#4A8A99" stroke-width="1.5"/>
+  <text x="660" y="278" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="bold" fill="#4A8A99" text-anchor="middle">RISC-V &amp; MIPS SW handler adds</text>
   <text x="660" y="300" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Walk page table (SW replaces HW walker)</text>
   <text x="660" y="320" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Write TLB entry (privileged SFENCE/TLBWR)</text>
   <text x="660" y="340" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#212121" text-anchor="middle">• Allocate frame, swap, policy (same as above)</text>

@@ -576,7 +576,7 @@
 <p>Let's begin our detailed exploration of page table structures.</p>
 
 <h2 id="3.2-single-level-page-tables-the-simplest-approach">3.2 Single-Level Page Tables: The Simplest Approach</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="950" height="550" viewBox="0 0 950 550" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -593,10 +593,10 @@
   <rect x="70" y="120" width="340" height="130" fill="#ffffff" stroke="#95a5a6" stroke-width="1"/>
   
   <!-- TLB Entry Structure -->
-  <text x="80" y="145" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#1565C0">
+  <text x="80" y="145" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#5E81AC">
     TLB Entry:
   </text>
-  <rect x="90" y="155" width="120" height="30" fill="#1565C0" stroke="#2980b9" stroke-width="1"/>
+  <rect x="90" y="155" width="120" height="30" fill="#5E81AC" stroke="#2980b9" stroke-width="1"/>
   <text x="150" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">
     VPN (Tag)
   </text>
@@ -606,13 +606,13 @@
     ASID
   </text>
   
-  <rect x="270" y="155" width="120" height="30" fill="#00796B" stroke="#229954" stroke-width="1"/>
+  <rect x="270" y="155" width="120" height="30" fill="#4A8A99" stroke="#229954" stroke-width="1"/>
   <text x="330" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">
     PFN (Data)
   </text>
   
   <!-- Problem -->
-  <text x="80" y="210" font-family="Arial, sans-serif" font-size="10" fill="#E65100" font-weight="bold">
+  <text x="80" y="210" font-family="Arial, sans-serif" font-size="10" fill="#BF616A" font-weight="bold">
     Problem with VMs:
   </text>
   <text x="90" y="228" font-family="Arial, sans-serif" font-size="9" fill="#34495e">
@@ -635,12 +635,12 @@
     TLB Entry with VPID/VMID:
   </text>
   
-  <rect x="560" y="155" width="90" height="30" fill="#E65100" stroke="#c0392b" stroke-width="1"/>
+  <rect x="560" y="155" width="90" height="30" fill="#BF616A" stroke="#c0392b" stroke-width="1"/>
   <text x="605" y="175" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">
     VPID/VMID
   </text>
   
-  <rect x="660" y="155" width="110" height="30" fill="#1565C0" stroke="#2980b9" stroke-width="1"/>
+  <rect x="660" y="155" width="110" height="30" fill="#5E81AC" stroke="#2980b9" stroke-width="1"/>
   <text x="715" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">
     VPN (Tag)
   </text>
@@ -650,7 +650,7 @@
     ASID
   </text>
   
-  <rect x="830" y="155" width="50" height="30" fill="#00796B" stroke="#229954" stroke-width="1"/>
+  <rect x="830" y="155" width="50" height="30" fill="#4A8A99" stroke="#229954" stroke-width="1"/>
   <text x="855" y="175" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">
     PFN
   </text>
@@ -661,7 +661,7 @@
   </text>
   
   <!-- VM 1 entry -->
-  <rect x="560" y="220" width="90" height="22" fill="#ffeaa7" stroke="#E65100" stroke-width="1"/>
+  <rect x="560" y="220" width="90" height="22" fill="#ffeaa7" stroke="#BF616A" stroke-width="1"/>
   <text x="605" y="235" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#212121">
     VPID: 1
   </text>
@@ -679,7 +679,7 @@
   </text>
   
   <!-- VM 2 entry (same VPN!) -->
-  <rect x="560" y="250" width="90" height="22" fill="#1565C0" stroke="#1565C0" stroke-width="1"/>
+  <rect x="560" y="250" width="90" height="22" fill="#5E81AC" stroke="#5E81AC" stroke-width="1"/>
   <text x="605" y="265" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">
     VPID: 2
   </text>
@@ -697,7 +697,7 @@
   </text>
   
   <!-- VM 1 different process -->
-  <rect x="560" y="280" width="90" height="22" fill="#ffeaa7" stroke="#E65100" stroke-width="1"/>
+  <rect x="560" y="280" width="90" height="22" fill="#ffeaa7" stroke="#BF616A" stroke-width="1"/>
   <text x="605" y="295" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#212121">
     VPID: 1
   </text>
@@ -719,14 +719,14 @@
   </text>
   
   <!-- Platform Support -->
-  <rect x="50" y="300" width="860" height="220" fill="#ffffff" stroke="#1565C0" stroke-width="2"/>
+  <rect x="50" y="300" width="860" height="220" fill="#ffffff" stroke="#5E81AC" stroke-width="2"/>
   <text x="480" y="330" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#212121">
     Platform Support
   </text>
   
   <!-- Intel -->
-  <rect x="70" y="350" width="250" height="150" fill="#e8f4fd" stroke="#1565C0" stroke-width="1"/>
-  <text x="195" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#1565C0">
+  <rect x="70" y="350" width="250" height="150" fill="#e8f4fd" stroke="#5E81AC" stroke-width="1"/>
+  <text x="195" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#5E81AC">
     Intel VT-x (VPID)
   </text>
   <text x="80" y="400" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
@@ -767,8 +767,8 @@
   </text>
   
   <!-- RISC-V -->
-  <rect x="630" y="350" width="260" height="150" fill="#e8fdf4" stroke="#00796B" stroke-width="1"/>
-  <text x="760" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <rect x="630" y="350" width="260" height="150" fill="#e8fdf4" stroke="#4A8A99" stroke-width="1"/>
+  <text x="760" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     RISC-V (VMID in hgatp)
   </text>
   <text x="640" y="400" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
@@ -798,7 +798,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="750" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -807,7 +807,7 @@
   </text>
   
   <!-- Start: Memory Access -->
-  <rect x="350" y="70" width="200" height="50" rx="25" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="350" y="70" width="200" height="50" rx="25" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="450" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Memory Access (VA)
   </text>
@@ -815,7 +815,7 @@
   <!-- TLB Lookup -->
   <path d="M 450 120 L 450 160" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
-  <polygon points="450,160 550,220 450,280 350,220" fill="#f39c12" stroke="#E65100" stroke-width="2"/>
+  <polygon points="450,160 550,220 450,280 350,220" fill="#f39c12" stroke="#BF616A" stroke-width="2"/>
   <text x="450" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     TLB Hit?
   </text>
@@ -824,12 +824,12 @@
   </text>
   
   <!-- TLB Hit Path -->
-  <path d="M 550 220 L 700 220" stroke="#00796B" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
-  <text x="620" y="210" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#00796B">
+  <path d="M 550 220 L 700 220" stroke="#4A8A99" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="620" y="210" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#4A8A99">
     YES
   </text>
   
-  <rect x="700" y="195" width="180" height="50" rx="5" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="700" y="195" width="180" height="50" rx="5" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="790" y="220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     Access Physical
   </text>
@@ -838,8 +838,8 @@
   </text>
   
   <!-- TLB Miss Path -->
-  <path d="M 450 280 L 450 320" stroke="#E65100" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
-  <text x="460" y="305" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#E65100">
+  <path d="M 450 280 L 450 320" stroke="#BF616A" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="460" y="305" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#BF616A">
     NO (Miss)
   </text>
   
@@ -855,7 +855,7 @@
   <path d="M 450 380 L 450 420" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- PWC Decision -->
-  <polygon points="450,420 550,480 450,540 350,480" fill="#f39c12" stroke="#E65100" stroke-width="2"/>
+  <polygon points="450,420 550,480 450,540 350,480" fill="#f39c12" stroke="#BF616A" stroke-width="2"/>
   <text x="450" y="475" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     PWC Hit?
   </text>
@@ -864,8 +864,8 @@
   </text>
   
   <!-- PWC Hit -->
-  <path d="M 350 480 L 180 480" stroke="#00796B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <text x="270" y="470" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#00796B">
+  <path d="M 350 480 L 180 480" stroke="#4A8A99" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="270" y="470" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#4A8A99">
     YES
   </text>
   
@@ -880,13 +880,13 @@
   <path d="M 100 505 L 100 600 L 450 600" stroke="#16a085" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- PWC Miss -->
-  <path d="M 450 540 L 450 580" stroke="#E65100" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <text x="460" y="565" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#E65100">
+  <path d="M 450 540 L 450 580" stroke="#BF616A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="460" y="565" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#BF616A">
     NO
   </text>
   
   <!-- Full Walk -->
-  <rect x="300" y="580" width="300" height="100" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+  <rect x="300" y="580" width="300" height="100" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
   <text x="450" y="605" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     Full Page Table Walk
   </text>
@@ -925,13 +925,13 @@
   <!-- Install in TLB -->
   <path d="M 760 665 L 760 695" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
-  <rect x="660" y="695" width="200" height="40" rx="5" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="660" y="695" width="200" height="40" rx="5" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="760" y="720" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">
     Install in TLB & PWC
   </text>
   
   <!-- Final Access -->
-  <path d="M 760 735 L 760 765 L 790 765 L 790 245" stroke="#00796B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 760 735 L 760 765 L 790 765 L 790 245" stroke="#4A8A99" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- Performance Notes -->
   <rect x="20" y="70" width="280" height="100" fill="#fff9e6" stroke="#f39c12" stroke-width="2"/>
@@ -961,7 +961,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -971,7 +971,7 @@
   
   <!-- Virtual Address -->
   <g id="virtual-address">
-    <rect x="50" y="70" width="300" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+    <rect x="50" y="70" width="300" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
     <text x="200" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
       Virtual Address
     </text>
@@ -1001,7 +1001,7 @@
   
   <!-- PTBR Register -->
   <g id="ptbr">
-    <rect x="450" y="70" width="300" height="40" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+    <rect x="450" y="70" width="300" height="40" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
     <text x="600" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
       PTBR (CR3 / TTBR0 / satp)
     </text>
@@ -1041,7 +1041,7 @@
   
   <!-- Physical Memory -->
   <g id="physical-memory">
-    <rect x="50" y="270" width="150" height="120" fill="#00796B" stroke="#229954" stroke-width="2"/>
+    <rect x="50" y="270" width="150" height="120" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
     <text x="125" y="290" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
       Physical Memory
     </text>
@@ -1259,7 +1259,7 @@
 <p>The single-level page table, despite its limitations, teaches us the fundamental mechanics of address translation. Every more sophisticated page table structure builds on these basics, adding levels of indirection to solve the memory overhead problem while preserving the elegance of the virtual-to-physical mapping concept.</p>
 
 <h2 id="3.3-two-level-page-tables">3.3 Two-Level Page Tables</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1269,7 +1269,7 @@
   
   <!-- Virtual Address -->
   <g id="virtual-address">
-    <rect x="50" y="70" width="400" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+    <rect x="50" y="70" width="400" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
     <text x="250" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
       Virtual Address (32 bits)
     </text>
@@ -1304,7 +1304,7 @@
   
   <!-- CR3 Register -->
   <g id="cr3">
-    <rect x="550" y="70" width="200" height="40" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+    <rect x="550" y="70" width="200" height="40" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
     <text x="650" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
       CR3 Register
     </text>
@@ -1368,7 +1368,7 @@
   </g>
   
   <!-- Physical Page -->
-  <rect x="550" y="390" width="200" height="80" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="550" y="390" width="200" height="80" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="650" y="415" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     Physical Page
   </text>
@@ -1768,7 +1768,7 @@
 <p>The two-level page table represents a sweet spot for 32-bit systems: it provides dramatic memory savings over single-level tables while adding minimal complexity and only modest (TLB-mitigated) performance overhead. Its success in the x86 architecture influenced the design of virtually all subsequent page table implementations.</p>
 
 <h2 id="3.4-multi-level-page-tables-3-levels">3.4 Multi-Level Page Tables (3+ Levels)</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="950" height="700" viewBox="0 0 950 700" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1789,7 +1789,7 @@
   <rect x="50" y="150" width="850" height="520" fill="#ffffff" stroke="#bdc3c7" stroke-width="2"/>
   
   <!-- Header Row -->
-  <rect x="50" y="150" width="850" height="50" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="50" y="150" width="850" height="50" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="150" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     Scheme
   </text>
@@ -1807,8 +1807,8 @@
   </text>
   
   <!-- Single-Level (32-bit) -->
-  <rect x="50" y="200" width="850" height="80" fill="#fee" stroke="#E65100" stroke-width="1"/>
-  <text x="150" y="235" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#E65100">
+  <rect x="50" y="200" width="850" height="80" fill="#fee" stroke="#BF616A" stroke-width="1"/>
+  <text x="150" y="235" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#BF616A">
     Single-Level
   </text>
   <text x="150" y="252" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1819,7 +1819,7 @@
     1
   </text>
   
-  <text x="500" y="235" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#E65100">
+  <text x="500" y="235" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#BF616A">
     4 MB
   </text>
   <text x="500" y="252" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1829,7 +1829,7 @@
     All 1,048,576 entries allocated
   </text>
   
-  <text x="700" y="245" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#E65100">
+  <text x="700" y="245" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#BF616A">
     256:1
   </text>
   
@@ -1864,13 +1864,13 @@
     1.25:1
   </text>
   
-  <text x="830" y="325" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="830" y="325" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     99.5%
   </text>
   
   <!-- Three-Level (RISC-V Sv39) -->
-  <rect x="50" y="360" width="850" height="80" fill="#d5f4e6" stroke="#00796B" stroke-width="1"/>
-  <text x="150" y="395" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <rect x="50" y="360" width="850" height="80" fill="#d5f4e6" stroke="#4A8A99" stroke-width="1"/>
+  <text x="150" y="395" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     Three-Level
   </text>
   <text x="150" y="412" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1881,7 +1881,7 @@
     3
   </text>
   
-  <text x="500" y="395" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="500" y="395" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     ~24 KB
   </text>
   <text x="500" y="412" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1891,17 +1891,17 @@
     L1 + L0 tables: ~20KB
   </text>
   
-  <text x="700" y="405" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="700" y="405" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     1.5:1
   </text>
   
-  <text x="830" y="405" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="830" y="405" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     99.4%
   </text>
   
   <!-- Four-Level (x86-64) -->
-  <rect x="50" y="440" width="850" height="80" fill="#F5F5F5" stroke="#1565C0" stroke-width="1"/>
-  <text x="150" y="475" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1565C0">
+  <rect x="50" y="440" width="850" height="80" fill="#F5F5F5" stroke="#5E81AC" stroke-width="1"/>
+  <text x="150" y="475" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#5E81AC">
     Four-Level
   </text>
   <text x="150" y="492" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1912,7 +1912,7 @@
     4
   </text>
   
-  <text x="500" y="475" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1565C0">
+  <text x="500" y="475" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#5E81AC">
     ~32 KB
   </text>
   <text x="500" y="492" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="#7f8c8d">
@@ -1922,11 +1922,11 @@
     PD + PT tables: ~24KB
   </text>
   
-  <text x="700" y="485" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1565C0">
+  <text x="700" y="485" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#5E81AC">
     2:1
   </text>
   
-  <text x="830" y="485" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="830" y="485" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     99.2%
   </text>
   
@@ -1957,7 +1957,7 @@
     2.5:1
   </text>
   
-  <text x="830" y="565" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#00796B">
+  <text x="830" y="565" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#4A8A99">
     99.0%
   </text>
   
@@ -2687,7 +2687,7 @@
 <p>The progression shows a clear pattern: each additional level multiplies the address space by 512 (the number of entries per table).</p>
 
 <h2 id="3.6-virtualization-two-stage-address-translation">3.6 Virtualization: Two-Stage Address Translation</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="600" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -2696,7 +2696,7 @@
   </text>
   
   <!-- x86-64 PTE -->
-  <text x="50" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1565C0">
+  <text x="50" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#5E81AC">
     x86-64 PTE (64-bit)
   </text>
   
@@ -2710,20 +2710,20 @@
   <text x="750" y="100" font-family="Arial, sans-serif" font-size="8" fill="#7f8c8d">11</text>
   <text x="930" y="100" font-family="Arial, sans-serif" font-size="8" fill="#7f8c8d">0</text>
   
-  <rect x="50" y="105" width="35" height="40" fill="#E65100" stroke="white"/>
+  <rect x="50" y="105" width="35" height="40" fill="#BF616A" stroke="white"/>
   <text x="67" y="128" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">XD</text>
   
   <rect x="85" y="105" width="380" height="40" fill="#95a5a6" stroke="white"/>
   <text x="275" y="128" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">Available (62-52)</text>
   
-  <rect x="465" y="105" width="270" height="40" fill="#1565C0" stroke="white"/>
+  <rect x="465" y="105" width="270" height="40" fill="#5E81AC" stroke="white"/>
   <text x="600" y="128" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white" font-weight="bold">Physical Page Number (51-12)</text>
   
   <rect x="735" y="105" width="180" height="40" fill="#2ecc71" stroke="white"/>
   <text x="825" y="120" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">G|PS|D|A|PCD|PWT</text>
   <text x="825" y="132" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">U/S|R/W</text>
   
-  <rect x="915" y="105" width="35" height="40" fill="#E65100" stroke="white"/>
+  <rect x="915" y="105" width="35" height="40" fill="#BF616A" stroke="white"/>
   <text x="932" y="128" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">P</text>
   
   <!-- ARM64 Descriptor -->
@@ -2744,26 +2744,26 @@
   <rect x="50" y="225" width="170" height="40" fill="#95a5a6" stroke="white"/>
   <text x="135" y="248" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">Ignored (63-54)</text>
   
-  <rect x="220" y="225" width="80" height="40" fill="#E65100" stroke="white"/>
+  <rect x="220" y="225" width="80" height="40" fill="#BF616A" stroke="white"/>
   <text x="260" y="238" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">XN|PXN</text>
   <text x="260" y="250" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">Contig</text>
   
   <rect x="300" y="225" width="190" height="40" fill="#95a5a6" stroke="white"/>
   <text x="395" y="245" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">Reserved (53-52)</text>
   
-  <rect x="490" y="225" width="250" height="40" fill="#1565C0" stroke="white"/>
+  <rect x="490" y="225" width="250" height="40" fill="#5E81AC" stroke="white"/>
   <text x="615" y="248" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white" font-weight="bold">Output Address (51-12)</text>
   
   <rect x="740" y="225" width="180" height="40" fill="#2ecc71" stroke="white"/>
   <text x="830" y="238" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">nG|AF|SH|AP</text>
   <text x="830" y="250" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">NS|AttrIdx</text>
   
-  <rect x="920" y="225" width="30" height="40" fill="#E65100" stroke="white"/>
+  <rect x="920" y="225" width="30" height="40" fill="#BF616A" stroke="white"/>
   <text x="935" y="240" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">Type</text>
   <text x="935" y="252" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="white">Valid</text>
   
   <!-- RISC-V PTE -->
-  <text x="50" y="310" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#00796B">
+  <text x="50" y="310" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#4A8A99">
     RISC-V PTE (64-bit, Sv39)
   </text>
   
@@ -2781,7 +2781,7 @@
   <rect x="50" y="345" width="80" height="40" fill="#95a5a6" stroke="white"/>
   <text x="90" y="368" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">Reserved</text>
   
-  <rect x="130" y="345" width="560" height="40" fill="#1565C0" stroke="white"/>
+  <rect x="130" y="345" width="560" height="40" fill="#5E81AC" stroke="white"/>
   <text x="410" y="368" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white" font-weight="bold">PPN[2:0] - Physical Page Number (53-10)</text>
   
   <rect x="690" y="345" width="120" height="40" fill="#95a5a6" stroke="white"/>
@@ -2794,7 +2794,7 @@
   <rect x="950" y="345" width="0" height="40" fill="none"/>
   
   <!-- Bit marker at end -->
-  <rect x="920" y="345" width="30" height="40" fill="#E65100" stroke="white"/>
+  <rect x="920" y="345" width="30" height="40" fill="#BF616A" stroke="white"/>
   <text x="935" y="368" font-family="Arial, sans-serif" font-size="9" text-anchor="middle" fill="white">V</text>
   
   <!-- Key Features Comparison -->
@@ -2804,7 +2804,7 @@
   
   <rect x="50" y="440" width="900" height="130" fill="#ffffff" stroke="#bdc3c7" stroke-width="2"/>
   
-  <text x="70" y="465" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#1565C0">x86-64:</text>
+  <text x="70" y="465" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#5E81AC">x86-64:</text>
   <text x="150" y="465" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
     • R/W bit (no separate read). XD for execute disable. Hardware A/D bits
   </text>
@@ -2817,7 +2817,7 @@
     • AttrIndx points to MAIR_ELx for memory type. Shareability bits for multi-core
   </text>
   
-  <text x="70" y="540" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#00796B">RISC-V:</text>
+  <text x="70" y="540" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#4A8A99">RISC-V:</text>
   <text x="150" y="540" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
     • Explicit R/W/X bits (most flexible). Hardware A/D bits. RSW for OS use
   </text>
@@ -2831,7 +2831,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="850" height="500" viewBox="0 0 850 500" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -2840,7 +2840,7 @@
   </text>
   
   <!-- Virtual Address -->
-  <rect x="50" y="70" width="550" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="50" y="70" width="550" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="325" y="92" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Virtual Address (39-bit)
   </text>
@@ -2903,7 +2903,7 @@
   </text>
   
   <!-- satp Register -->
-  <rect x="650" y="70" width="180" height="90" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+  <rect x="650" y="70" width="180" height="90" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
   <text x="740" y="95" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     satp Register
   </text>
@@ -2930,7 +2930,7 @@
   </text>
   
   <!-- Level 1 -->
-  <rect x="450" y="300" width="160" height="70" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="450" y="300" width="160" height="70" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="530" y="325" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Level 1
   </text>
@@ -2954,7 +2954,7 @@
   </text>
   
   <!-- Physical Page -->
-  <rect x="450" y="415" width="120" height="45" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="450" y="415" width="120" height="45" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="510" y="438" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Physical
   </text>
@@ -3016,7 +3016,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="550" viewBox="0 0 900 550" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -3025,7 +3025,7 @@
   </text>
   
   <!-- Virtual Address -->
-  <rect x="50" y="70" width="650" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="50" y="70" width="650" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="375" y="92" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Virtual Address (48-bit)
   </text>
@@ -3109,7 +3109,7 @@
   </text>
   
   <!-- TTBR0_EL1 and TTBR1_EL1 -->
-  <rect x="750" y="60" width="130" height="35" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+  <rect x="750" y="60" width="130" height="35" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
   <text x="815" y="82" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">
     TTBR0_EL1
   </text>
@@ -3132,7 +3132,7 @@
   </text>
   
   <!-- Level 1 Table -->
-  <rect x="520" y="270" width="160" height="70" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="520" y="270" width="160" height="70" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="600" y="295" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Level 1 Table
   </text>
@@ -3144,7 +3144,7 @@
   </text>
   
   <!-- Level 2 Table -->
-  <rect x="340" y="370" width="160" height="70" fill="#00796B" stroke="#16a085" stroke-width="2"/>
+  <rect x="340" y="370" width="160" height="70" fill="#4A8A99" stroke="#16a085" stroke-width="2"/>
   <text x="420" y="395" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Level 2 Table
   </text>
@@ -3168,7 +3168,7 @@
   </text>
   
   <!-- Physical Page -->
-  <rect x="370" y="485" width="120" height="45" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="370" y="485" width="120" height="45" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="430" y="508" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Physical
   </text>
@@ -3219,7 +3219,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-9" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="650" viewBox="0 0 1000 650" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -3228,7 +3228,7 @@
   </text>
   
   <!-- Virtual Address -->
-  <rect x="30" y="70" width="800" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="30" y="70" width="800" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="430" y="92" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Virtual Address (57-bit canonical)
   </text>
@@ -3315,11 +3315,11 @@
   </text>
   
   <!-- CR3 Register with LA57 indicator -->
-  <rect x="880" y="70" width="100" height="40" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+  <rect x="880" y="70" width="100" height="40" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
   <text x="930" y="95" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     CR3
   </text>
-  <text x="930" y="155" font-family="Arial, sans-serif" font-size="9" fill="#E65100" font-weight="bold">
+  <text x="930" y="155" font-family="Arial, sans-serif" font-size="9" fill="#BF616A" font-weight="bold">
     CR4.LA57=1
   </text>
   
@@ -3331,7 +3331,7 @@
   <text x="10" y="565" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#7f8c8d">L1</text>
   
   <!-- PML5 -->
-  <rect x="800" y="170" width="170" height="70" fill="#E65100" stroke="#d35400" stroke-width="2"/>
+  <rect x="800" y="170" width="170" height="70" fill="#BF616A" stroke="#d35400" stroke-width="2"/>
   <text x="885" y="195" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     PML5
   </text>
@@ -3355,7 +3355,7 @@
   </text>
   
   <!-- PDPT -->
-  <rect x="480" y="350" width="160" height="70" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="480" y="350" width="160" height="70" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="560" y="375" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     PDPT
   </text>
@@ -3367,7 +3367,7 @@
   </text>
   
   <!-- PD -->
-  <rect x="320" y="440" width="160" height="70" fill="#00796B" stroke="#16a085" stroke-width="2"/>
+  <rect x="320" y="440" width="160" height="70" fill="#4A8A99" stroke="#16a085" stroke-width="2"/>
   <text x="400" y="465" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     PD
   </text>
@@ -3391,7 +3391,7 @@
   </text>
   
   <!-- Physical Page -->
-  <rect x="370" y="540" width="130" height="50" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="370" y="540" width="130" height="50" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="435" y="565" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">
     Physical
   </text>
@@ -3408,7 +3408,7 @@
   <path d="M 320 565 L 370 565" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- Note -->
-  <text x="50" y="630" font-family="Arial, sans-serif" font-size="11" fill="#E65100" font-weight="bold">
+  <text x="50" y="630" font-family="Arial, sans-serif" font-size="11" fill="#BF616A" font-weight="bold">
     Total Address Space: 128 PB (57-bit)
   </text>
   <text x="600" y="630" font-family="Arial, sans-serif" font-size="9" fill="#7f8c8d" font-style="italic">
@@ -3432,7 +3432,7 @@
   </figcaption>
 </figure>
 
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-10" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="600" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -3442,7 +3442,7 @@
   
   <!-- Virtual Address -->
   <g id="virtual-address">
-    <rect x="50" y="70" width="700" height="60" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+    <rect x="50" y="70" width="700" height="60" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
     <text x="400" y="92" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
       Virtual Address (48-bit canonical)
     </text>
@@ -3518,7 +3518,7 @@
   </g>
   
   <!-- CR3 Register -->
-  <rect x="820" y="70" width="130" height="40" fill="#E65100" stroke="#c0392b" stroke-width="2"/>
+  <rect x="820" y="70" width="130" height="40" fill="#BF616A" stroke="#c0392b" stroke-width="2"/>
   <text x="885" y="95" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">
     CR3
   </text>
@@ -3543,7 +3543,7 @@
   </text>
   
   <!-- PDPT -->
-  <rect x="570" y="280" width="180" height="80" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="570" y="280" width="180" height="80" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="660" y="305" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">
     PDPT
   </text>
@@ -3556,7 +3556,7 @@
   </text>
   
   <!-- PD -->
-  <rect x="360" y="390" width="180" height="80" fill="#00796B" stroke="#16a085" stroke-width="2"/>
+  <rect x="360" y="390" width="180" height="80" fill="#4A8A99" stroke="#16a085" stroke-width="2"/>
   <text x="450" y="415" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">
     PD
   </text>
@@ -3582,7 +3582,7 @@
   </text>
   
   <!-- Physical Page -->
-  <rect x="410" y="510" width="140" height="60" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="410" y="510" width="140" height="60" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="480" y="535" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="white">
     Physical Page
   </text>
@@ -3592,16 +3592,16 @@
   
   <!-- Arrows -->
   <path d="M 885 110 L 885 170" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <path d="M 215 130 L 840 170" stroke="#E65100" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 215 130 L 840 170" stroke="#BF616A" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
   
   <path d="M 780 220 L 700 280" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <path d="M 325 130 L 630 280" stroke="#E65100" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 325 130 L 630 280" stroke="#BF616A" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
   
   <path d="M 570 330 L 490 390" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <path d="M 435 130 L 420 390" stroke="#E65100" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 435 130 L 420 390" stroke="#BF616A" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
   
   <path d="M 360 440 L 310 500" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-  <path d="M 545 130 L 270 500" stroke="#E65100" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 545 130 L 270 500" stroke="#BF616A" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead)"/>
   
   <path d="M 330 540 L 410 540" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
   
@@ -3609,8 +3609,8 @@
   <text x="820" y="500" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
     — Walk path
   </text>
-  <line x1="820" y1="510" x2="870" y2="510" stroke="#E65100" stroke-width="2" stroke-dasharray="5,5"/>
-  <text x="880" y="515" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <line x1="820" y1="510" x2="870" y2="510" stroke="#BF616A" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="880" y="515" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     Index path
   </text>
   
@@ -4120,7 +4120,7 @@
 <p>The complexity of 20+ potential memory accesses is completely hidden from both guest operating systems and applications by sophisticated caching. This is a triumph of hardware/software co-design: software (hypervisors) provides the management interfaces, hardware provides transparent acceleration.</p>
 
 <h2 id="3.7-what-gets-cached-tlb-and-page-walk-caches">3.7 What Gets Cached: TLB and Page Walk Caches</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-11" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="950" height="650" viewBox="0 0 950 650" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -4129,7 +4129,7 @@
   </text>
   
   <!-- Guest VA -->
-  <rect x="50" y="80" width="200" height="50" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="50" y="80" width="200" height="50" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="150" y="105" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Guest Virtual
   </text>
@@ -4156,7 +4156,7 @@
   <path d="M 250 105 L 300 105" stroke="#34495e" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- IPA -->
-  <rect x="600" y="80" width="220" height="50" fill="#E65100" stroke="#d35400" stroke-width="2"/>
+  <rect x="600" y="80" width="220" height="50" fill="#BF616A" stroke="#d35400" stroke-width="2"/>
   <text x="710" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Intermediate Physical
   </text>
@@ -4168,7 +4168,7 @@
   <path d="M 550 105 L 600 105" stroke="#34495e" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
   
   <!-- Stage 2: EPT/NPT -->
-  <rect x="300" y="250" width="250" height="100" fill="#00796B" stroke="#16a085" stroke-width="3"/>
+  <rect x="300" y="250" width="250" height="100" fill="#4A8A99" stroke="#16a085" stroke-width="3"/>
   <text x="425" y="275" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
     Stage 2: EPT/NPT/G-stage
   </text>
@@ -4189,7 +4189,7 @@
   </text>
   
   <!-- Host PA -->
-  <rect x="600" y="275" width="220" height="50" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="600" y="275" width="220" height="50" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="710" y="295" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Host Physical
   </text>
@@ -4207,7 +4207,7 @@
   </text>
   
   <!-- x86-64 with EPT -->
-  <text x="70" y="455" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1565C0">
+  <text x="70" y="455" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#5E81AC">
     x86-64 with EPT (4-level + 4-level):
   </text>
   <text x="90" y="475" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
@@ -4228,30 +4228,30 @@
   <text x="90" y="575" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
     • Final IPA→PA: 4 EPT walks = 4 accesses
   </text>
-  <text x="90" y="600" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#E65100">
+  <text x="90" y="600" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#BF616A">
     TOTAL: 24 memory accesses + 1 data = 25 accesses!
   </text>
   
   <!-- Mitigations -->
-  <rect x="520" y="450" width="370" height="155" fill="#ffffff" stroke="#1565C0" stroke-width="2"/>
+  <rect x="520" y="450" width="370" height="155" fill="#ffffff" stroke="#5E81AC" stroke-width="2"/>
   <text x="705" y="475" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#212121">
     Performance Mitigations
   </text>
-  <text x="540" y="500" font-family="Arial, sans-serif" font-size="10" fill="#00796B" font-weight="bold">
+  <text x="540" y="500" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99" font-weight="bold">
     ✓ Combined TLB
   </text>
   <text x="555" y="518" font-family="Arial, sans-serif" font-size="9" fill="#34495e">
     Cache VA→PA directly (skip both stages)
   </text>
   
-  <text x="540" y="543" font-family="Arial, sans-serif" font-size="10" fill="#00796B" font-weight="bold">
+  <text x="540" y="543" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99" font-weight="bold">
     ✓ VPID/VMID Tagging
   </text>
   <text x="555" y="561" font-family="Arial, sans-serif" font-size="9" fill="#34495e">
     Multiple VMs share TLB without flushing
   </text>
   
-  <text x="540" y="586" font-family="Arial, sans-serif" font-size="10" fill="#00796B" font-weight="bold">
+  <text x="540" y="586" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99" font-weight="bold">
     ✓ Page Walk Caches (Both Stages)
   </text>
   <text x="555" y="604" font-family="Arial, sans-serif" font-size="9" fill="#34495e">
@@ -4260,7 +4260,7 @@
   
   <!-- Reality Note -->
   <rect x="50" y="210" width="850" height="30" fill="#fff9e6" stroke="#f39c12" stroke-width="2"/>
-  <text x="475" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#E65100" font-weight="bold">
+  <text x="475" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#BF616A" font-weight="bold">
     ⚡ With caching: Typical overhead is only 2-7% | TLB hit rate: 95-99% → Most accesses cost 0!
   </text>
   
@@ -4660,7 +4660,7 @@
 <li><strong>Architecture design</strong>: Balancing TLB size vs complexity</li>
 
 <h2 id="3.8-hardware-page-table-walker">3.8 Hardware Page Table Walker</h2>
-<figure style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-3-12" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="700" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -4669,7 +4669,7 @@
   </text>
   
   <!-- Virtual Address -->
-  <rect x="50" y="70" width="200" height="50" fill="#1565C0" stroke="#2980b9" stroke-width="2"/>
+  <rect x="50" y="70" width="200" height="50" fill="#5E81AC" stroke="#2980b9" stroke-width="2"/>
   <text x="150" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Virtual Address
   </text>
@@ -4687,7 +4687,7 @@
   </text>
   
   <!-- Physical Address -->
-  <rect x="750" y="70" width="200" height="50" fill="#00796B" stroke="#229954" stroke-width="2"/>
+  <rect x="750" y="70" width="200" height="50" fill="#4A8A99" stroke="#229954" stroke-width="2"/>
   <text x="850" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="white">
     Physical Address
   </text>
@@ -4698,33 +4698,33 @@
   
   <!-- TLB Section -->
   <rect x="50" y="200" width="400" height="220" fill="#fff9e6" stroke="#f39c12" stroke-width="3"/>
-  <text x="250" y="230" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#E65100">
+  <text x="250" y="230" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#BF616A">
     TLB (Translation Lookaside Buffer)
   </text>
   
   <text x="70" y="260" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#212121">
     What TLB Caches:
   </text>
-  <text x="80" y="285" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="80" y="285" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Complete VA → PA translation (final result)
   </text>
-  <text x="80" y="305" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="80" y="305" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Permission bits (R/W/X, U/S)
   </text>
-  <text x="80" y="325" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="80" y="325" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Page size (4KB / 2MB / 1GB)
   </text>
-  <text x="80" y="345" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="80" y="345" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ ASID/PCID tag (process ID)
   </text>
   
   <text x="70" y="375" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#212121">
     What TLB Does NOT Cache:
   </text>
-  <text x="80" y="395" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <text x="80" y="395" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     ✗ Intermediate PTEs (PML4E, PDPTE, PDE)
   </text>
-  <text x="80" y="413" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <text x="80" y="413" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     ✗ Page table pointers
   </text>
   
@@ -4737,37 +4737,37 @@
   <text x="570" y="260" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#212121">
     What PWC Caches:
   </text>
-  <text x="580" y="285" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="580" y="285" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Intermediate PTEs (PML4E, PDPTE, PDE)
   </text>
-  <text x="580" y="305" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="580" y="305" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Pointers to next-level tables
   </text>
-  <text x="580" y="325" font-family="Arial, sans-serif" font-size="10" fill="#00796B">
+  <text x="580" y="325" font-family="Arial, sans-serif" font-size="10" fill="#4A8A99">
     ✓ Partial translation paths
   </text>
   
   <text x="570" y="355" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#212121">
     What PWC Does NOT Cache:
   </text>
-  <text x="580" y="375" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <text x="580" y="375" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     ✗ Final VA → PA translations (TLB's job)
   </text>
-  <text x="580" y="393" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <text x="580" y="393" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     ✗ Cross-process entries (flushed on switch)
   </text>
-  <text x="580" y="411" font-family="Arial, sans-serif" font-size="10" fill="#E65100">
+  <text x="580" y="411" font-family="Arial, sans-serif" font-size="10" fill="#BF616A">
     ✗ Speculative translations
   </text>
   
   <!-- Real-World Sizes -->
-  <rect x="50" y="450" width="900" height="220" fill="#ffffff" stroke="#1565C0" stroke-width="2"/>
+  <rect x="50" y="450" width="900" height="220" fill="#ffffff" stroke="#5E81AC" stroke-width="2"/>
   <text x="500" y="480" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#212121">
     Real-World Cache Sizes (Modern Processors)
   </text>
   
   <!-- Intel Skylake -->
-  <text x="70" y="510" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1565C0">
+  <text x="70" y="510" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#5E81AC">
     Intel Skylake (2015):
   </text>
   <text x="90" y="530" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
@@ -4795,7 +4795,7 @@
   </text>
   
   <!-- ARM Cortex-A77 -->
-  <text x="70" y="600" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#00796B">
+  <text x="70" y="600" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4A8A99">
     ARM Cortex-A77 (2019):
   </text>
   <text x="90" y="620" font-family="Arial, sans-serif" font-size="10" fill="#34495e">
