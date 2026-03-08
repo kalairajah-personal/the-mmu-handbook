@@ -27,7 +27,7 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 | [05](chapters/chapter-05-WITH-FIGURES.html) | IOMMU and Device Address Translation | 5 | 358 KB |
 | [06](chapters/chapter-06-WITH-FIGURES.html) | Memory Protection and Access Control | 5 | 333 KB |
 | [07](chapters/chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 2 | 715 KB |
-| [08](chapters/chapter-08-WITH-FIGURES.html) | Memory Reclaim and Page Replacement | 2 | 231 KB |
+| [08](chapters/chapter-08-WITH-FIGURES.html) | Advanced MMU Topics: System Integration and Optimization | 7 | 329 KB |
 | [09](chapters/chapter-09-WITH-FIGURES.html) | Advanced Page Table Optimizations | 1 | 302 KB |
 | [10](chapters/chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 1 | 331 KB |
 | [11](chapters/chapter-11-WITH-FIGURES.html) | AI/ML Accelerator Memory Systems | 4 | 359 KB |
@@ -37,7 +37,7 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 | [15](chapters/chapter-15-WITH-FIGURES.html) | Alternative Translation Architectures | 1 | 152 KB |
 | [16](chapters/chapter-16-WITH-FIGURES.html) | Advanced TLB Optimization Techniques | 3 | 156 KB |
 
-**Total: 72 embedded SVG figures across 16 chapters (~4.5 MB)**
+**Total: 76 embedded SVG figures across 16 chapters (~4.5 MB)**
 
 ---
 
@@ -64,8 +64,8 @@ Privilege rings and supervisor/user separation. NX/XD bits, SMEP, SMAP. KPTI and
 **Chapter 7 — Page Faults and Exception Handling**
 x86-64 #PF with CR2, ARM64 Data/Instruction Aborts with FAR_EL1, RISC-V page-fault exceptions with stval. Minor vs major faults. Demand paging, copy-on-write, stack growth, and protection violations.
 
-**Chapter 8 — Memory Reclaim and Page Replacement**
-Bélády's optimal algorithm, LRU, Clock/Second-Chance, Linux two-list active/inactive LRU. kswapd background reclaim, watermark thresholds, direct reclaim, and OOM killer. Page table memory overhead.
+**Chapter 8 — Advanced MMU Topics: System Integration and Optimization**
+The complete memory management story from hardware to OS policy. Sections 8.1–8.4: motivating crisis scenarios (OOM despite "17 GB free"), two-stage nested fault taxonomy (four types, cascading EPT storms, pre-population strategies), ISA comparison of nested fault handling (x86-64 EPT vs ARM64 Stage-2 vs RISC-V H extension), and hardware A/D bit mechanisms with the 5,000× clean-vs-dirty eviction cost differential. Sections 8.5–8.8: Bélády's optimal algorithm, LRU, Clock/Second-Chance, Linux MGLRU. kswapd background reclaim, watermark thresholds, direct reclaim, and OOM killer. Page table memory overhead and huge page optimisations.
 
 **Chapter 9 — Advanced Page Table Optimizations**
 Kernel Samepage Merging (KSM) deduplication. NUMA-aware page placement and Automatic NUMA Balancing. Transparent Huge Pages (THP) vs explicit HugeTLBfs. Page table locking, compaction, and sharing across processes.
