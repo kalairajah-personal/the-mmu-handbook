@@ -1208,6 +1208,154 @@ who manages TLB misses: hardware or software? This choice has profound
 implications for performance, complexity, flexibility, and OS design.
 Modern architectures take different approaches, each with compelling
 rationales.</p>
+
+<figure id="fig-4-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#1565C0"/>
+    </marker>
+    <marker id="arr-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#E65100"/>
+    </marker>
+    <marker id="arr-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#00796B"/>
+    </marker>
+    <marker id="arr-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#9E9E9E"/>
+    </marker>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="560" style="fill:#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;fill:#212121">Hardware-Managed vs Software-Managed TLB</text>
+
+  <!-- Divider -->
+  <line x1="450" y1="55" x2="450" y2="530" style="stroke:#9E9E9E;stroke-width:1.5;stroke-dasharray:6,4"/>
+
+  <!-- ===== LEFT SIDE: Hardware-Managed (x86 / ARM) ===== -->
+  <rect x="20" y="55" width="410" height="28" rx="4" style="fill:#1565C0"/>
+  <text x="225" y="74" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;fill:#FFFFFF">Hardware-Managed TLB (x86-64 / ARM64)</text>
+
+  <!-- Step 1: CPU TLB Miss -->
+  <rect x="140" y="100" width="170" height="44" rx="6" style="fill:#1565C0;filter:url(#shadow)"/>
+  <text x="225" y="118" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">CPU: TLB Miss</text>
+  <text x="225" y="136" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#BBDEFB">Virtual address not cached</text>
+
+  <!-- Arrow down -->
+  <line x1="225" y1="144" x2="225" y2="165" style="stroke:#1565C0;stroke-width:2" marker-end="url(#arr-blue)"/>
+
+  <!-- Step 2: Hardware Page Walker -->
+  <rect x="90" y="166" width="270" height="44" rx="6" style="fill:#1565C0;filter:url(#shadow)"/>
+  <text x="225" y="184" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Hardware Page Walker</text>
+  <text x="225" y="202" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#BBDEFB">Automatically traverses page tables</text>
+
+  <!-- Arrow down -->
+  <line x1="225" y1="210" x2="225" y2="231" style="stroke:#1565C0;stroke-width:2" marker-end="url(#arr-blue)"/>
+
+  <!-- Page table walk levels -->
+  <rect x="30" y="232" width="390" height="110" rx="6" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1"/>
+  <text x="225" y="252" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#212121">x86-64 Page Table Walk (CR3 → PFN)</text>
+
+  <rect x="45" y="260" width="72" height="32" rx="4" style="fill:#1565C0"/>
+  <text x="81" y="281" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#FFFFFF">PML4</text>
+  <line x1="117" y1="276" x2="135" y2="276" style="stroke:#1565C0;stroke-width:2" marker-end="url(#arr-blue)"/>
+
+  <rect x="136" y="260" width="72" height="32" rx="4" style="fill:#1565C0"/>
+  <text x="172" y="281" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#FFFFFF">PDPT</text>
+  <line x1="208" y1="276" x2="226" y2="276" style="stroke:#1565C0;stroke-width:2" marker-end="url(#arr-blue)"/>
+
+  <rect x="227" y="260" width="72" height="32" rx="4" style="fill:#1565C0"/>
+  <text x="263" y="281" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#FFFFFF">PD</text>
+  <line x1="299" y1="276" x2="317" y2="276" style="stroke:#1565C0;stroke-width:2" marker-end="url(#arr-blue)"/>
+
+  <rect x="318" y="260" width="72" height="32" rx="4" style="fill:#00796B"/>
+  <text x="354" y="281" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#FFFFFF">PT → PFN</text>
+
+  <text x="225" y="322" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#616161">4 memory accesses, each potentially a cache miss</text>
+
+  <!-- Arrow down -->
+  <line x1="225" y1="342" x2="225" y2="363" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-teal)"/>
+
+  <!-- Step 4: TLB Filled -->
+  <rect x="110" y="364" width="230" height="44" rx="6" style="fill:#00796B;filter:url(#shadow)"/>
+  <text x="225" y="382" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">TLB Entry Loaded</text>
+  <text x="225" y="400" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#B2DFDB">VPN → PFN stored in TLB</text>
+
+  <!-- Arrow down -->
+  <line x1="225" y1="408" x2="225" y2="429" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-teal)"/>
+
+  <!-- Step 5: Resume -->
+  <rect x="130" y="430" width="190" height="36" rx="6" style="fill:#E65100;filter:url(#shadow)"/>
+  <text x="225" y="453" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Resume Instruction</text>
+
+  <!-- Latency annotation -->
+  <rect x="30" y="478" width="390" height="32" rx="4" style="fill:#E3F2FD;stroke:#1565C0;stroke-width:1"/>
+  <text x="225" y="499" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#1565C0">Latency: 10–50 cycles (all hardware, no OS involved)</text>
+
+  <!-- ===== RIGHT SIDE: Software-Managed (RISC-V / MIPS) ===== -->
+  <rect x="460" y="55" width="420" height="28" rx="4" style="fill:#E65100"/>
+  <text x="670" y="74" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;fill:#FFFFFF">Software-Managed TLB (RISC-V / MIPS)</text>
+
+  <!-- Step 1: CPU TLB Miss -->
+  <rect x="580" y="100" width="180" height="44" rx="6" style="fill:#E65100;filter:url(#shadow)"/>
+  <text x="670" y="118" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">CPU: TLB Miss</text>
+  <text x="670" y="136" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFE0B2">Virtual address not cached</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="144" x2="670" y2="165" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-orange)"/>
+
+  <!-- Step 2: Exception Raised -->
+  <rect x="540" y="166" width="260" height="44" rx="6" style="fill:#E65100;filter:url(#shadow)"/>
+  <text x="670" y="184" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">TLB-Miss Exception Raised</text>
+  <text x="670" y="202" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFE0B2">CPU traps to OS exception handler</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="210" x2="670" y2="231" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-orange)"/>
+
+  <!-- OS Handler box -->
+  <rect x="470" y="232" width="400" height="110" rx="6" style="fill:#FFF3E0;stroke:#E65100;stroke-width:1.5"/>
+  <text x="670" y="252" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#E65100">OS TLB Miss Handler (Software)</text>
+
+  <rect x="485" y="260" width="150" height="32" rx="4" style="fill:#E65100"/>
+  <text x="560" y="273" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Read page table</text>
+  <text x="560" y="286" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">in software</text>
+  <line x1="635" y1="276" x2="655" y2="276" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-orange)"/>
+
+  <rect x="656" y="260" width="200" height="32" rx="4" style="fill:#E65100"/>
+  <text x="756" y="273" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Write TLB via privileged</text>
+  <text x="756" y="286" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">SFENCE.VMA (RISC-V)</text>
+
+  <text x="670" y="322" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#616161">OS controls TLB format — any page table structure possible</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="342" x2="670" y2="363" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-teal)"/>
+
+  <!-- Step 4: TLB Filled -->
+  <rect x="560" y="364" width="220" height="44" rx="6" style="fill:#00796B;filter:url(#shadow)"/>
+  <text x="670" y="382" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">TLB Entry Loaded</text>
+  <text x="670" y="400" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#B2DFDB">VPN → PFN stored in TLB</text>
+
+  <!-- Arrow down -->
+  <line x1="670" y1="408" x2="670" y2="429" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-teal)"/>
+
+  <!-- Step 5: Resume -->
+  <rect x="575" y="430" width="190" height="36" rx="6" style="fill:#1565C0;filter:url(#shadow)"/>
+  <text x="670" y="453" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Resume Instruction</text>
+
+  <!-- Latency annotation -->
+  <rect x="470" y="478" width="400" height="32" rx="4" style="fill:#FFF3E0;stroke:#E65100;stroke-width:1"/>
+  <text x="670" y="499" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#E65100">Latency: 100–1,000 cycles (OS exception overhead)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.75em;font-size:0.9em;color:#555;font-style:italic;text-align:center;">Figure 4.4: Hardware-managed vs software-managed TLB. Left: x86-64/ARM64 hardware page walker automatically traverses PML4→PDPT→PD→PT on a TLB miss (10–50 cycles, no OS involvement). Right: RISC-V/MIPS software-managed TLB raises a TLB-miss exception and invokes the OS handler to walk page tables and write the entry via SFENCE.VMA (100–1,000 cycles).</figcaption>
+</figure>
 <h3 id="hardware-managed-tlbs-the-x86-and-arm-approach">4.3.1
 Hardware-Managed TLBs: The x86 and ARM Approach</h3>
 <p>In hardware-managed TLB systems, the processor automatically walks
@@ -1688,6 +1836,184 @@ exhausted</p>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">// Reserve ASID 2 for systemd</span></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">// etc.</span></span></code></pre></div>
 <p>Ensures critical processes never lose their TLB entries.</p>
+
+<figure id="fig-4-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#1565C0"/>
+    </marker>
+    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#00796B"/>
+    </marker>
+    <marker id="arr-o" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#E65100"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="560" style="fill:#FFFFFF"/>
+  <text x="450" y="34" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;fill:#212121">Address Space Identifiers: ASID, PCID, and VMID</text>
+
+  <!-- Panel 1: ASID (ARM) -->
+  <rect x="16" y="50" width="274" height="460" rx="8" style="fill:#F5F5F5;stroke:#1565C0;stroke-width:2"/>
+  <rect x="16" y="50" width="274" height="34" rx="8" style="fill:#1565C0"/>
+  <text x="153" y="72" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;fill:#FFFFFF">ASID — ARM64</text>
+
+  <!-- TLB Entry structure -->
+  <text x="153" y="105" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#212121">TLB Entry Format</text>
+  <!-- Entry row -->
+  <rect x="30" y="112" width="80" height="28" rx="3" style="fill:#1565C0"/>
+  <text x="70" y="131" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">VPN</text>
+  <rect x="112" y="112" width="80" height="28" rx="3" style="fill:#00796B"/>
+  <text x="152" y="131" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">PFN</text>
+  <rect x="194" y="112" width="82" height="28" rx="3" style="fill:#E65100"/>
+  <text x="235" y="131" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">ASID[8/16]</text>
+
+  <text x="153" y="158" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#616161">8-bit (256) or 16-bit (65536) ASID</text>
+
+  <!-- Process A -->
+  <rect x="30" y="170" width="110" height="52" rx="5" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="85" y="192" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#FFFFFF">Process A</text>
+  <text x="85" y="210" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#BBDEFB">ASID = 0x01</text>
+
+  <!-- Process B -->
+  <rect x="150" y="170" width="110" height="52" rx="5" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="205" y="192" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#FFFFFF">Process B</text>
+  <text x="205" y="210" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#B2DFDB">ASID = 0x02</text>
+
+  <!-- TLB stays loaded box -->
+  <rect x="30" y="237" width="230" height="68" rx="5" style="fill:#E8F5E9;stroke:#00796B;stroke-width:1.5"/>
+  <text x="145" y="255" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#00796B">Context Switch: No TLB Flush!</text>
+  <text x="145" y="272" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">A's entries (ASID=0x01) remain</text>
+  <text x="145" y="287" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">B's entries (ASID=0x02) tagged new</text>
+
+  <!-- ARM instruction -->
+  <rect x="30" y="318" width="230" height="34" rx="4" style="fill:#1565C0"/>
+  <text x="145" y="333" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#FFFFFF">TLBI ASIDE1IS, x0</text>
+  <text x="145" y="347" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#BBDEFB">Invalidate by ASID (selective)</text>
+
+  <text x="153" y="374" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#616161">TTBR0_EL1[63:48] = ASID value</text>
+  <text x="153" y="390" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#616161">Set during context switch via MSR</text>
+
+  <!-- Benefit -->
+  <rect x="30" y="405" width="230" height="40" rx="4" style="fill:#E3F2FD;stroke:#1565C0;stroke-width:1"/>
+  <text x="145" y="421" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#1565C0">Benefit: TLB warm across</text>
+  <text x="145" y="437" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#1565C0">context switches</text>
+
+  <text x="153" y="468" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#9E9E9E">ARMv8.0: 8-bit  |  ARMv8.1+: 16-bit</text>
+  <text x="153" y="486" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#9E9E9E">Shared bit: global entry, ignores ASID</text>
+
+  <!-- Panel 2: PCID (x86-64) -->
+  <rect x="312" y="50" width="276" height="460" rx="8" style="fill:#F5F5F5;stroke:#E65100;stroke-width:2"/>
+  <rect x="312" y="50" width="276" height="34" rx="8" style="fill:#E65100"/>
+  <text x="450" y="72" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;fill:#FFFFFF">PCID — x86-64</text>
+
+  <text x="450" y="105" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#212121">CR3 Register Layout</text>
+
+  <!-- CR3 layout -->
+  <rect x="326" y="112" width="248" height="28" rx="3" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1"/>
+  <rect x="326" y="112" width="50" height="28" rx="3" style="fill:#E65100"/>
+  <text x="351" y="131" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFFFFF">PCID[11:0]</text>
+  <rect x="378" y="112" width="196" height="28" rx="3" style="fill:#1565C0"/>
+  <text x="476" y="131" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Page Table Base Addr [63:12]</text>
+
+  <text x="450" y="157" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#616161">12-bit PCID → 4096 simultaneous contexts</text>
+
+  <!-- Context switch -->
+  <rect x="326" y="168" width="248" height="80" rx="5" style="fill:#FFF3E0;stroke:#E65100;stroke-width:1.5"/>
+  <text x="450" y="186" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#E65100">MOV CR3, addr | (PCID)</text>
+  <text x="450" y="204" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">Bit 63=0: flush TLB for old PCID</text>
+  <text x="450" y="220" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">Bit 63=1: preserve TLB entries</text>
+  <text x="450" y="236" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">(no-flush CR3 write)</text>
+
+  <!-- INVPCID instruction -->
+  <rect x="326" y="260" width="248" height="50" rx="4" style="fill:#E65100"/>
+  <text x="450" y="281" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#FFFFFF">INVPCID type, m128</text>
+  <text x="450" y="298" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFE0B2">Selective invalidation by PCID</text>
+
+  <!-- KPTI use case -->
+  <rect x="326" y="323" width="248" height="68" rx="5" style="fill:#E8F5E9;stroke:#00796B;stroke-width:1.5"/>
+  <text x="450" y="342" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#00796B">KPTI + PCID (Meltdown fix)</text>
+  <text x="450" y="360" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">PCID 0: kernel mappings</text>
+  <text x="450" y="376" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">PCID 1–N: per-process user space</text>
+
+  <text x="450" y="407" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#9E9E9E">Enabled via CR4.PCIDE bit</text>
+  <text x="450" y="423" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#9E9E9E">Requires x86-64 Westmere+ (2010)</text>
+
+  <!-- Benefit -->
+  <rect x="326" y="436" width="248" height="40" rx="4" style="fill:#FFF3E0;stroke:#E65100;stroke-width:1"/>
+  <text x="450" y="452" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#E65100">Reduces context-switch overhead</text>
+  <text x="450" y="468" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#E65100">by 10–30% on workloads</text>
+
+  <!-- Panel 3: VMID (Virtualization) -->
+  <rect x="610" y="50" width="274" height="460" rx="8" style="fill:#F5F5F5;stroke:#00796B;stroke-width:2"/>
+  <rect x="610" y="50" width="274" height="34" rx="8" style="fill:#00796B"/>
+  <text x="747" y="72" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;fill:#FFFFFF">VMID — Virtualization</text>
+
+  <text x="747" y="105" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#212121">Two-Level Context Tagging</text>
+
+  <!-- Two-level hierarchy -->
+  <rect x="624" y="112" width="246" height="34" rx="5" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="747" y="134" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">VMID [8/16-bit] → Hypervisor</text>
+
+  <line x1="700" y1="146" x2="700" y2="162" style="stroke:#00796B;stroke-width:1.5" marker-end="url(#arr-t)"/>
+  <line x1="794" y1="146" x2="794" y2="162" style="stroke:#00796B;stroke-width:1.5" marker-end="url(#arr-t)"/>
+
+  <rect x="624" y="163" width="113" height="34" rx="5" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="680" y="185" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">VM 1 (VMID=1)</text>
+
+  <rect x="747" y="163" width="123" height="34" rx="5" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="808" y="185" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">VM 2 (VMID=2)</text>
+
+  <line x1="660" y1="197" x2="660" y2="213" style="stroke:#1565C0;stroke-width:1.5" marker-end="url(#arr-b)"/>
+  <line x1="700" y1="197" x2="700" y2="213" style="stroke:#1565C0;stroke-width:1.5" marker-end="url(#arr-b)"/>
+
+  <rect x="624" y="214" width="60" height="28" rx="4" style="fill:#E65100"/>
+  <text x="654" y="232" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFFFFF">P1(A1)</text>
+
+  <rect x="690" y="214" width="60" height="28" rx="4" style="fill:#E65100"/>
+  <text x="720" y="232" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFFFFF">P2(A2)</text>
+
+  <!-- TLB entry format -->
+  <rect x="624" y="255" width="246" height="50" rx="5" style="fill:#E8F5E9;stroke:#00796B;stroke-width:1.5"/>
+  <text x="747" y="272" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#00796B">TLB Entry Tags Both Levels</text>
+  <text x="747" y="290" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#212121">IPA entry: VPN | ASID=1 | VMID=1 → IPA</text>
+
+  <!-- Stage 2 -->
+  <rect x="624" y="318" width="246" height="72" rx="5" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1"/>
+  <text x="747" y="336" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#212121">Stage-2 Page Tables</text>
+  <rect x="636" y="344" width="100" height="28" rx="4" style="fill:#00796B"/>
+  <text x="686" y="363" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFFFFF">GPA→IPA (guest)</text>
+  <line x1="738" y1="358" x2="752" y2="358" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-t)"/>
+  <rect x="754" y="344" width="100" height="28" rx="4" style="fill:#1565C0"/>
+  <text x="804" y="363" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFFFFF">IPA→PA (hyp)</text>
+
+  <!-- ARM VTTBR -->
+  <rect x="624" y="403" width="246" height="36" rx="4" style="fill:#00796B"/>
+  <text x="747" y="418" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#FFFFFF">VTTBR_EL2[55:48] = VMID</text>
+  <text x="747" y="434" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#B2DFDB">Set by hypervisor on VM switch</text>
+
+  <!-- Benefit -->
+  <rect x="624" y="450" width="246" height="40" rx="4" style="fill:#E0F2F1;stroke:#00796B;stroke-width:1"/>
+  <text x="747" y="467" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#00796B">No full TLB flush on VM exit</text>
+  <text x="747" y="483" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#00796B">Critical for VM density</text>
+
+  <!-- Bottom legend -->
+  <rect x="16" y="518" width="868" height="30" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1"/>
+  <circle cx="40" cy="533" r="6" style="fill:#1565C0"/>
+  <text x="52" y="537" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">ARM ASID: 8/16-bit, in TTBR0_EL1</text>
+  <circle cx="270" cy="533" r="6" style="fill:#E65100"/>
+  <text x="282" y="537" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">x86 PCID: 12-bit, in CR3[11:0]</text>
+  <circle cx="500" cy="533" r="6" style="fill:#00796B"/>
+  <text x="512" y="537" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">VMID: 8/16-bit, in VTTBR_EL2 (ARM)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.75em;font-size:0.9em;color:#555;font-style:italic;text-align:center;">Figure 4.5: Address space identifiers across architectures. Left: ARM64 ASID (8/16-bit in TTBR0_EL1) tags TLB entries per process, enabling context switches without a full TLB flush. Centre: x86-64 PCID (12-bit in CR3[11:0]) with no-flush CR3 writes and INVPCID selective invalidation, used by KPTI. Right: VMID adds a second tagging level for virtualization — each VM gets a VMID, each process within a VM retains its ASID, enabling nested context switching without TLB flushes.</figcaption>
+</figure>
 <h3 id="pcid-x86-64s-process-context-identifier">4.4.3 PCID: x86-64's
 Process Context Identifier</h3>
 <p>Intel and AMD x86-64 processors introduced <strong>Process Context
@@ -1836,6 +2162,177 @@ Instructions</h2>
 Understanding these operations is essential for OS developers
 implementing memory management and for anyone debugging TLB-related
 issues.</p>
+
+<figure id="fig-4-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#1565C0"/>
+    </marker>
+    <marker id="arr-o" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#E65100"/>
+    </marker>
+    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#00796B"/>
+    </marker>
+    <marker id="arr-g" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" style="fill:#9E9E9E"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="560" style="fill:#FFFFFF"/>
+  <text x="450" y="34" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;fill:#212121">TLB Shootdown Protocol: Multicore Synchronization</text>
+
+  <!-- Timeline header -->
+  <!-- CPU labels -->
+  <rect x="16" y="52" width="90" height="28" rx="4" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="61" y="71" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Core 0</text>
+
+  <rect x="16" y="140" width="90" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="61" y="159" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Core 1</text>
+
+  <rect x="16" y="230" width="90" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="61" y="249" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Core 2</text>
+
+  <rect x="16" y="320" width="90" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="61" y="339" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#FFFFFF">Core 3</text>
+
+  <!-- Horizontal swimlane lines -->
+  <line x1="110" y1="66" x2="884" y2="66" style="stroke:#9E9E9E;stroke-width:1;stroke-dasharray:4,3"/>
+  <line x1="110" y1="154" x2="884" y2="154" style="stroke:#9E9E9E;stroke-width:1;stroke-dasharray:4,3"/>
+  <line x1="110" y1="244" x2="884" y2="244" style="stroke:#9E9E9E;stroke-width:1;stroke-dasharray:4,3"/>
+  <line x1="110" y1="334" x2="884" y2="334" style="stroke:#9E9E9E;stroke-width:1;stroke-dasharray:4,3"/>
+
+  <!-- Time columns: T1=130, T2=270, T3=430, T4=590, T5=750 -->
+  <!-- Column headers -->
+  <text x="165" y="46" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#9E9E9E">① Unmap page</text>
+  <text x="350" y="46" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#9E9E9E">② Send IPI</text>
+  <text x="520" y="46" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#9E9E9E">③ Invalidate TLB</text>
+  <text x="690" y="46" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#9E9E9E">④ Send ACK</text>
+  <text x="840" y="46" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;fill:#9E9E9E">⑤ Complete</text>
+
+  <!-- Vertical column separators -->
+  <line x1="240" y1="50" x2="240" y2="400" style="stroke:#E0E0E0;stroke-width:1"/>
+  <line x1="425" y1="50" x2="425" y2="400" style="stroke:#E0E0E0;stroke-width:1"/>
+  <line x1="600" y1="50" x2="600" y2="400" style="stroke:#E0E0E0;stroke-width:1"/>
+  <line x1="770" y1="50" x2="770" y2="400" style="stroke:#E0E0E0;stroke-width:1"/>
+
+  <!-- Core 0: Unmap page -->
+  <rect x="120" y="52" width="116" height="28" rx="4" style="fill:#E65100;filter:url(#sh)"/>
+  <text x="178" y="71" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">munmap(VA, size)</text>
+
+  <!-- Core 0: IPI broadcast arrows to cores 1,2,3 -->
+  <!-- Arrow to Core 1 -->
+  <line x1="305" y1="66" x2="305" y2="148" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-o)"/>
+  <!-- Arrow to Core 2 -->
+  <line x1="340" y1="66" x2="340" y2="238" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-o)"/>
+  <!-- Arrow to Core 3 -->
+  <line x1="375" y1="66" x2="375" y2="328" style="stroke:#E65100;stroke-width:2" marker-end="url(#arr-o)"/>
+
+  <!-- Core 0: Wait for ACKs box -->
+  <rect x="253" y="52" width="165" height="28" rx="4" style="fill:#E65100;filter:url(#sh)"/>
+  <text x="335" y="67" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Send IPI to Cores 1,2,3</text>
+  <text x="335" y="80" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFCCBC">(Inter-Processor Interrupt)</text>
+
+  <!-- Core 0: Waiting -->
+  <rect x="430" y="52" width="165" height="28" rx="4" style="fill:#9E9E9E"/>
+  <text x="512" y="71" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Waiting for ACKs...</text>
+
+  <!-- Core 0: ACKs received -->
+  <rect x="605" y="52" width="155" height="28" rx="4" style="fill:#9E9E9E"/>
+  <text x="682" y="71" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Waiting for ACKs...</text>
+
+  <!-- Core 0: Complete -->
+  <rect x="775" y="52" width="105" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="827" y="71" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Page freed ✓</text>
+
+  <!-- Core 1: IPI received, invalidate -->
+  <rect x="120" y="140" width="170" height="28" rx="4" style="fill:#00796B"/>
+  <text x="205" y="159" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Normal execution</text>
+
+  <rect x="296" y="140" width="125" height="28" rx="4" style="fill:#E65100;filter:url(#sh)"/>
+  <text x="358" y="155" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">IPI received</text>
+  <text x="358" y="168" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#FFCCBC">interrupt fires</text>
+
+  <rect x="430" y="140" width="165" height="28" rx="4" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="512" y="155" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">INVLPG [VA]</text>
+  <text x="512" y="168" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#BBDEFB">TLB entry flushed</text>
+
+  <!-- ACK arrow back from Core 1 to Core 0 -->
+  <line x1="610" y1="154" x2="610" y2="72" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-t)"/>
+  <rect x="615" y="140" width="145" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="687" y="159" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">ACK → Core 0</text>
+
+  <rect x="775" y="140" width="105" height="28" rx="4" style="fill:#00796B"/>
+  <text x="827" y="159" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Resume ✓</text>
+
+  <!-- Core 2 -->
+  <rect x="120" y="230" width="215" height="28" rx="4" style="fill:#00796B"/>
+  <text x="227" y="249" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Normal execution</text>
+
+  <rect x="340" y="230" width="80" height="28" rx="4" style="fill:#E65100;filter:url(#sh)"/>
+  <text x="380" y="249" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">IPI recv</text>
+
+  <rect x="430" y="230" width="165" height="28" rx="4" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="512" y="245" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">INVLPG [VA]</text>
+  <text x="512" y="258" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#BBDEFB">TLB entry flushed</text>
+
+  <line x1="620" y1="244" x2="620" y2="72" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-t)"/>
+  <rect x="628" y="230" width="132" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="694" y="249" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">ACK → Core 0</text>
+
+  <rect x="775" y="230" width="105" height="28" rx="4" style="fill:#00796B"/>
+  <text x="827" y="249" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Resume ✓</text>
+
+  <!-- Core 3 -->
+  <rect x="120" y="320" width="250" height="28" rx="4" style="fill:#00796B"/>
+  <text x="245" y="339" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Normal execution</text>
+
+  <rect x="374" y="320" width="50" height="28" rx="4" style="fill:#E65100;filter:url(#sh)"/>
+  <text x="399" y="339" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">IPI</text>
+
+  <rect x="430" y="320" width="165" height="28" rx="4" style="fill:#1565C0;filter:url(#sh)"/>
+  <text x="512" y="335" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">INVLPG [VA]</text>
+  <text x="512" y="348" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;fill:#BBDEFB">TLB entry flushed</text>
+
+  <line x1="630" y1="334" x2="630" y2="72" style="stroke:#00796B;stroke-width:2" marker-end="url(#arr-t)"/>
+  <rect x="638" y="320" width="122" height="28" rx="4" style="fill:#00796B;filter:url(#sh)"/>
+  <text x="699" y="339" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">ACK → Core 0</text>
+
+  <rect x="775" y="320" width="105" height="28" rx="4" style="fill:#00796B"/>
+  <text x="827" y="339" text-anchor="middle" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#FFFFFF">Resume ✓</text>
+
+  <!-- Danger zone annotation -->
+  <rect x="16" y="400" width="450" height="70" rx="6" style="fill:#FFEBEE;stroke:#E65100;stroke-width:2"/>
+  <text x="30" y="420" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#E65100">⚠ Stale Translation Danger</text>
+  <text x="30" y="440" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">If Core 0 frees page BEFORE all ACKs arrive:</text>
+  <text x="30" y="458" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">→ Another process reuses physical page</text>
+  <text x="30" y="458" dy="16" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#E65100">→ Core 3 still has stale TLB entry = memory corruption</text>
+
+  <!-- Batching optimization -->
+  <rect x="480" y="400" width="404" height="70" rx="6" style="fill:#E8F5E9;stroke:#00796B;stroke-width:2"/>
+  <text x="494" y="420" style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;fill:#00796B">✓ Batching Optimization</text>
+  <text x="494" y="440" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">Accumulate N invalidations before sending IPIs:</text>
+  <text x="494" y="458" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">1 IPI round-trip covers N pages → N× lower overhead</text>
+  <text x="494" y="476" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#00796B">Linux: defer_tlb_flush() + flush_tlb_range()</text>
+
+  <!-- Bottom legend -->
+  <rect x="16" y="482" width="868" height="54" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1"/>
+  <rect x="30" y="496" width="14" height="14" rx="2" style="fill:#E65100"/>
+  <text x="50" y="507" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">IPI / interrupt event</text>
+  <rect x="200" y="496" width="14" height="14" rx="2" style="fill:#1565C0"/>
+  <text x="220" y="507" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">INVLPG/TLBI invalidation (x86/ARM)</text>
+  <rect x="490" y="496" width="14" height="14" rx="2" style="fill:#00796B"/>
+  <text x="510" y="507" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#212121">ACK signal back to Core 0</text>
+  <text x="30" y="527" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;fill:#616161">Note: Core 0 must NOT free the physical page until ALL ACKs received. This is the invariant the shootdown protocol enforces.</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.75em;font-size:0.9em;color:#555;font-style:italic;text-align:center;">Figure 4.6: TLB shootdown protocol on a 4-core system. Core 0 unmaps a page and broadcasts an IPI to all other cores (①②). Each core receives the interrupt, executes INVLPG (x86) or TLBI (ARM) to invalidate the specific TLB entry (③), then sends an ACK (④). Core 0 waits for all ACKs before freeing the physical page (⑤) — this ordering invariant prevents stale-translation memory corruption. The batching optimization amortizes IPI cost across N invalidations.</figcaption>
+</figure>
 <h3 id="tlb-invalidation-instructions">4.5.1 TLB Invalidation
 Instructions</h3>
 <h4 id="x86-64-invlpg-and-family">x86-64: INVLPG and Family</h4>
