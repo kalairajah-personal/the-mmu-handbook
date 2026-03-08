@@ -1582,6 +1582,116 @@ many-core systems offer tremendous computational power, but they expose
 a fundamental challenge in kernel design: how do you safely modify
 shared data structures when hundreds of threads might be accessing them
 simultaneously?</p>
+
+<figure id="fig-9-4" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><style>text{font-family:Arial,Helvetica,sans-width:sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Linux Page Table Locking Architecture</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">Multi-level locking protects page table modifications from concurrent access; fine-grained locks minimise contention</text>
+
+<!-- Lock hierarchy -->
+<rect x="20" y="68" width="860" height="28" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
+<text x="450" y="86" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Lock Hierarchy (outer → inner)</text>
+
+<!-- mmap_lock -->
+<rect x="300" y="108" width="300" height="56" rx="6" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="130" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">mmap_lock (mm->mmap_lock)</text>
+<text x="450" y="152" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">rwsem — protects VMA tree</text>
+
+<line x1="450" y1="164" x2="450" y2="188" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- PGD lock -->
+<rect x="160" y="188" width="560" height="50" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="210" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">PGD — No explicit lock (per-process, CR3 reload suffices)</text>
+<text x="450" y="228" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">process-private; only one writer via mmap_lock</text>
+
+<line x1="300" y1="238" x2="200" y2="262" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<line x1="600" y1="238" x2="700" y2="262" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<line x1="450" y1="238" x2="450" y2="262" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<!-- PUD / PMD -->
+<rect x="40" y="262" width="240" height="44" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="160" y="280" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">P4D / PUD</text>
+<text x="160" y="298" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">No lock (stable once set)</text>
+<rect x="330" y="262" width="240" height="44" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="280" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PMD</text>
+<text x="450" y="298" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">pmd_lock() for THP operations</text>
+<rect x="620" y="262" width="240" height="44" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="740" y="280" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PTE table</text>
+<text x="740" y="298" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">ptl = pte_lockptr(mm, pmd)</text>
+
+<!-- PTE lock detail -->
+<line x1="740" y1="306" x2="740" y2="326" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<rect x="580" y="326" width="320" height="56" rx="6" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="740" y="348" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">PTE spinlock (pte_lock)</text>
+<text x="740" y="366" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">1 lock per 512-entry PTE page; per-struct-page</text>
+
+<!-- Usage contexts -->
+<rect x="20" y="304" width="540" height="220" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="290" y="324" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Lock Usage by Operation</text>
+
+<!-- Table -->
+<text x="30" y="346" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Operation</text>
+<text x="240" y="346" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Locks held</text>
+<text x="420" y="346" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Write/Read</text>
+<line x1="28" y1="350" x2="552" y2="350" style="stroke:#DDE4EE;stroke-width:1;"/>
+
+<text x="30" y="368" style="font-size:12px;fill:#444;">mmap() / munmap()</text>
+<text x="240" y="368" style="font-size:12px;fill:#444;">mmap_lock(write)</text>
+<text x="420" y="368" style="font-size:12px;fill:#BF616A;">exclusive</text>
+
+<text x="30" y="386" style="font-size:12px;fill:#444;">page fault handling</text>
+<text x="240" y="386" style="font-size:12px;fill:#444;">mmap_lock(read) + pte_lock</text>
+<text x="420" y="386" style="font-size:12px;fill:#4A8A99;">shared+spin</text>
+
+<text x="30" y="404" style="font-size:12px;fill:#444;">TLB shootdown</text>
+<text x="240" y="404" style="font-size:12px;fill:#444;">pte_lock (local)</text>
+<text x="420" y="404" style="font-size:12px;fill:#4A8A99;">spin only</text>
+
+<text x="30" y="422" style="font-size:12px;fill:#444;">page reclaim (kswapd)</text>
+<text x="240" y="422" style="font-size:12px;fill:#444;">pte_lock per page table</text>
+<text x="420" y="422" style="font-size:12px;fill:#4A8A99;">spin only</text>
+
+<text x="30" y="440" style="font-size:12px;fill:#444;">THP collapse (khugepaged)</text>
+<text x="240" y="440" style="font-size:12px;fill:#444;">mmap_lock(write) + pmd_lock</text>
+<text x="420" y="440" style="font-size:12px;fill:#BF616A;">exclusive</text>
+
+<text x="30" y="458" style="font-size:12px;fill:#444;">fork() / COW</text>
+<text x="240" y="458" style="font-size:12px;fill:#444;">mmap_lock(write) + pte_lock</text>
+<text x="420" y="458" style="font-size:12px;fill:#BF616A;">exclusive</text>
+
+<text x="30" y="476" style="font-size:12px;fill:#444;">procfs /proc/PID/maps read</text>
+<text x="240" y="476" style="font-size:12px;fill:#444;">mmap_lock(read)</text>
+<text x="420" y="476" style="font-size:12px;fill:#4A8A99;">shared</text>
+
+<text x="30" y="494" style="font-size:12px;fill:#444;">eBPF / kprobe walks</text>
+<text x="240" y="494" style="font-size:12px;fill:#444;">RCU (safe traversal only)</text>
+<text x="420" y="494" style="font-size:12px;fill:#4A8A99;">RCU read</text>
+
+<!-- RCU note -->
+<rect x="28" y="506" width="524" height="14" rx="2" style="fill:#DDEAF5;"/>
+<text x="290" y="518" style="font-size:11px;fill:#1E3A5A;text-anchor:middle;">Note: MMAP_LOCK_ORDERING avoids priority inversion; pte_lock must be inner lock</text>
+
+<!-- Contention diagram -->
+<rect x="580" y="392" width="300" height="132" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="730" y="412" style="font-size:13px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Common Contention Scenarios</text>
+<text x="590" y="432" style="font-size:12px;fill:#444;">• Many threads faulting in same VMA:</text>
+<text x="600" y="448" style="font-size:12px;fill:#BF616A;">  → mmap_lock read contention</text>
+<text x="590" y="466" style="font-size:12px;fill:#444;">• kswapd vs fault in same PTE page:</text>
+<text x="600" y="482" style="font-size:12px;fill:#BF616A;">  → pte_lock spin contention</text>
+<text x="590" y="500" style="font-size:12px;fill:#444;">• THP collapse blocks all faults:</text>
+<text x="600" y="516" style="font-size:12px;fill:#BF616A;">  → mmap_lock write starvation</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.4:</strong> Linux page table locking hierarchy. mmap_lock (rwsem) is the outermost lock protecting VMA tree modifications. The per-PTE-page spinlock (pte_lock) is the innermost lock used during fault handling and reclaim. THP operations additionally hold pmd_lock. Locks must always be acquired in outer-to-inner order.</figcaption>
+</figure>
+
+
 <p>Page tables exemplify this challenge. They're shared across all
 threads in a process (all threads share the same mm_struct), they're
 accessed on virtually every memory reference (via hardware page table
@@ -2096,6 +2206,126 @@ its own directly-attached memory. This Non-Uniform Memory Access (NUMA)
 architecture provides aggregate memory bandwidth that scales with socket
 count, but it introduces a critical asymmetry: local memory accesses are
 fast, while remote memory accesses are slow.</p>
+
+<figure id="fig-9-3" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="560" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Linux NUMA Balancing: AutoNUMA Migration</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">Kernel periodically unmaps pages to detect cross-NUMA access and migrate pages closer to the accessing CPU</text>
+
+<!-- Two NUMA nodes -->
+<rect x="20" y="68" width="400" height="220" rx="8" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+<text x="220" y="90" style="font-size:15px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">NUMA Node 0 (Socket 0)</text>
+
+<!-- CPUs node 0 -->
+<rect x="36" y="100" width="80" height="50" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="76" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU 0</text>
+<text x="76" y="140" style="font-size:11px;fill:#DDEAF5;text-anchor:middle;">L1/L2</text>
+<rect x="126" y="100" width="80" height="50" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="166" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU 1</text>
+<text x="166" y="140" style="font-size:11px;fill:#DDEAF5;text-anchor:middle;">L1/L2</text>
+<rect x="36" y="162" width="170" height="28" rx="4" style="fill:#4A8A99;"/>
+<text x="121" y="180" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">L3 Cache (shared)</text>
+
+<!-- Local memory node 0 -->
+<rect x="36" y="200" width="360" height="50" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="216" y="222" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Local DRAM — Node 0</text>
+<text x="216" y="240" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">~80 ns access latency</text>
+
+<!-- Process A on node 0 -->
+<rect x="220" y="100" width="160" height="88" rx="5" style="fill:#BF616A;opacity:0.9;" filter="url(#sh)"/>
+<text x="300" y="120" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Process A</text>
+<text x="300" y="138" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Running on CPU 0</text>
+<text x="300" y="156" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Accessing pages</text>
+<text x="300" y="174" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">on Node 1 (remote!)</text>
+
+<!-- Node 1 -->
+<rect x="480" y="68" width="400" height="220" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+<text x="680" y="90" style="font-size:15px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">NUMA Node 1 (Socket 1)</text>
+
+<rect x="496" y="100" width="80" height="50" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="536" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU 2</text>
+<text x="536" y="140" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">L1/L2</text>
+<rect x="586" y="100" width="80" height="50" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="626" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU 3</text>
+<text x="626" y="140" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">L1/L2</text>
+<rect x="496" y="162" width="170" height="28" rx="4" style="fill:#5E81AC;"/>
+<text x="581" y="180" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">L3 Cache (shared)</text>
+<rect x="496" y="200" width="360" height="50" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="676" y="222" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Remote DRAM — Node 1</text>
+<text x="676" y="240" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">~160 ns access latency (2× local)</text>
+
+<!-- Remote pages on node 1 -->
+<rect x="686" y="100" width="170" height="50" rx="5" style="fill:#BF616A;opacity:0.6;" filter="url(#sh)"/>
+<text x="771" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Process A pages</text>
+<text x="771" y="140" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">(allocated here!)</text>
+
+<!-- Cross-node access arrow -->
+<line x1="300" y1="156" x2="680" y2="130" style="stroke:#BF616A;stroke-width:2.5;stroke-dasharray:8,4;" marker-end="url(#arr-r)"/>
+<text x="480" y="136" style="font-size:12px;fill:#BF616A;font-weight:bold;text-anchor:middle;">remote access (2× latency)</text>
+
+<!-- QPI/UPI interconnect -->
+<rect x="418" y="130" width="64" height="26" rx="4" style="fill:#9E9E9E;stroke:#616161;stroke-width:1;"/>
+<text x="450" y="147" style="font-size:12px;font-weight:bold;fill:#fff;text-anchor:middle;">QPI/UPI</text>
+
+<!-- AutoNUMA flow -->
+<rect x="20" y="304" width="860" height="242" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="324" style="font-size:15px;font-weight:bold;fill:#212121;text-anchor:middle;">AutoNUMA Migration Flow</text>
+
+<!-- Step 1 -->
+<rect x="36" y="336" width="170" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="121" y="358" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">① Scan Period</text>
+<text x="121" y="375" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">task_numa_work()</text>
+<text x="121" y="390" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">unmaps pages (PROT_NONE)</text>
+
+<line x1="206" y1="366" x2="226" y2="366" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- Step 2 -->
+<rect x="226" y="336" width="170" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="311" y="358" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">② NUMA Fault</text>
+<text x="311" y="375" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Next access → fault</text>
+<text x="311" y="390" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">records CPU + node</text>
+
+<line x1="396" y1="366" x2="416" y2="366" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- Step 3 -->
+<rect x="416" y="336" width="170" height="60" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="501" y="358" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">③ Score Pages</text>
+<text x="501" y="375" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Count faults per node</text>
+<text x="501" y="390" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Prefer local migration</text>
+
+<line x1="586" y1="366" x2="606" y2="366" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<!-- Step 4 -->
+<rect x="606" y="336" width="170" height="60" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="691" y="358" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">④ Migrate Pages</text>
+<text x="691" y="375" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">migrate_pages() moves</text>
+<text x="691" y="390" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">pages to local node</text>
+
+<!-- Feedback arrow -->
+<path d="M 780 396 C 820 396 820 316 790 316 C 600 316 250 316 62 316 C 30 316 30 336 36 336" style="fill:none;stroke:#BF616A;stroke-width:1.5;stroke-dasharray:5,3;" marker-end="url(#arr-r)"/>
+<text x="450" y="313" style="font-size:12px;fill:#BF616A;text-anchor:middle;">repeat every task_numa_scan_period_min ms</text>
+
+<!-- Policy options -->
+<rect x="36" y="414" width="820" height="118" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="450" y="432" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">NUMA Policy Options (set_mempolicy / numactl)</text>
+<text x="50" y="452" style="font-size:13px;fill:#3A5070;font-weight:bold;">MPOL_LOCAL</text><text x="180" y="452" style="font-size:12px;fill:#444;">Allocate on CPU's local node (default)</text>
+<text x="450" y="452" style="font-size:13px;fill:#3A5070;font-weight:bold;">MPOL_BIND</text><text x="570" y="452" style="font-size:12px;fill:#444;">Force to specific node set</text>
+<text x="50" y="472" style="font-size:13px;fill:#3A5070;font-weight:bold;">MPOL_INTERLEAVE</text><text x="210" y="472" style="font-size:12px;fill:#444;">Round-robin across nodes (bandwidth)</text>
+<text x="450" y="472" style="font-size:13px;fill:#3A5070;font-weight:bold;">MPOL_PREFERRED</text><text x="590" y="472" style="font-size:12px;fill:#444;">Prefer a node, fall back to others</text>
+<text x="50" y="496" style="font-size:13px;fill:#3A5070;">sysctl:</text><text x="110" y="496" style="font-size:12px;fill:#444;">kernel.numa_balancing=1 enables AutoNUMA</text>
+<text x="50" y="514" style="font-size:13px;fill:#3A5070;">numactl:</text><text x="130" y="514" style="font-size:12px;fill:#444;">numactl --cpunodebind=0 --membind=0 ./app — pins process to node 0</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.3:</strong> Linux AutoNUMA balancing flow. The kernel periodically unmaps pages (PROT_NONE) to detect cross-node access patterns, records NUMA fault statistics, and migrates hot pages to the accessing CPU's local NUMA node to reduce remote memory latency.</figcaption>
+</figure>
+
+
 <p>The performance gap isn't subtle. On a 2-socket AMD EPYC system:</p>
 <pre><code>Local DRAM access:  ~100 ns latency, ~80 GB/s bandwidth
 Remote DRAM access: ~150 ns latency, ~40 GB/s bandwidth
@@ -2331,6 +2561,100 @@ demonstrating 21-24% performance gains on STREAM and 172% improvements
 on database workloads. But those benchmarks shared a common
 characteristic: they were freshly started systems with ample free
 memory.</p>
+
+<figure id="fig-9-2" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="560" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">THP vs HugeTLBfs: Two Approaches to Huge Pages</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">THP is transparent and automatic; HugeTLBfs requires explicit reservation but offers predictability</text>
+
+<!-- THP Panel -->
+<rect x="20" y="68" width="420" height="454" rx="8" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+<text x="230" y="90" style="font-size:16px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Transparent Huge Pages (THP)</text>
+<text x="230" y="108" style="font-size:12px;fill:#3A5070;text-anchor:middle;">2 MB pages, automatic, kernel-managed</text>
+
+<!-- THP flow -->
+<rect x="40" y="118" width="380" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="230" y="143" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Application uses malloc() / mmap() normally</text>
+
+<line x1="230" y1="158" x2="230" y2="176" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<rect x="40" y="176" width="380" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="230" y="201" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Kernel detects 2 MB aligned region</text>
+
+<line x1="230" y1="216" x2="230" y2="234" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<rect x="40" y="234" width="380" height="40" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="230" y="259" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">khugepaged collapses 512×4KB → 1×2MB</text>
+
+<!-- THP memory layout -->
+<rect x="40" y="288" width="380" height="80" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="60" y="308" style="font-size:13px;font-weight:bold;fill:#212121;">TLB Impact:</text>
+<text x="60" y="326" style="font-size:12px;fill:#444;">• 512 × 4KB PTEs → 1 × 2MB PTE</text>
+<text x="60" y="344" style="font-size:12px;fill:#444;">• TLB reach: 1 entry covers 2 MB</text>
+<text x="60" y="362" style="font-size:12px;fill:#444;">• Miss rate ÷ 512 for sequential access</text>
+
+<!-- THP pros/cons -->
+<rect x="40" y="380" width="380" height="126" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="230" y="400" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Characteristics</text>
+<text x="50" y="418" style="font-size:12px;fill:#4A8A99;">✓ Zero application changes needed</text>
+<text x="50" y="436" style="font-size:12px;fill:#4A8A99;">✓ Auto-promoted when region grows</text>
+<text x="50" y="454" style="font-size:12px;fill:#4A8A99;">✓ Transparent to user space</text>
+<text x="50" y="472" style="font-size:12px;fill:#BF616A;">✗ khugepaged background overhead</text>
+<text x="50" y="490" style="font-size:12px;fill:#BF616A;">✗ Fragmentation: hard to find 2MB contiguous</text>
+<text x="50" y="508" style="font-size:12px;fill:#BF616A;">✗ Latency spikes during collapse</text>
+
+<!-- HugeTLBfs Panel -->
+<rect x="460" y="68" width="420" height="454" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+<text x="670" y="90" style="font-size:16px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">HugeTLBfs</text>
+<text x="670" y="108" style="font-size:12px;fill:#2E6A5A;text-anchor:middle;">2 MB or 1 GB pages, explicit reservation</text>
+
+<!-- HugeTLBfs flow -->
+<rect x="480" y="118" width="380" height="40" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="670" y="143" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">sysctl vm.nr_hugepages=N (at boot)</text>
+
+<line x1="670" y1="158" x2="670" y2="176" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<rect x="480" y="176" width="380" height="40" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="670" y="201" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Kernel pre-reserves huge page pool</text>
+
+<line x1="670" y1="216" x2="670" y2="234" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<rect x="480" y="234" width="380" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="670" y="254" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">mmap(MAP_HUGETLB) or libhugetlbfs</text>
+<text x="670" y="269" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">explicit opt-in required</text>
+
+<!-- HugeTLBfs memory layout -->
+<rect x="480" y="288" width="380" height="80" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="500" y="308" style="font-size:13px;font-weight:bold;fill:#212121;">Reservation Pool:</text>
+<text x="500" y="326" style="font-size:12px;fill:#444;">• Pre-allocated at boot, never fragmented</text>
+<text x="500" y="344" style="font-size:12px;fill:#444;">• 1 GB pages available on x86-64</text>
+<text x="500" y="362" style="font-size:12px;fill:#444;">• Guaranteed: no compaction needed</text>
+
+<!-- HugeTLBfs pros/cons -->
+<rect x="480" y="380" width="380" height="126" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="670" y="400" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Characteristics</text>
+<text x="490" y="418" style="font-size:12px;fill:#4A8A99;">✓ Guaranteed availability (pre-reserved)</text>
+<text x="490" y="436" style="font-size:12px;fill:#4A8A99;">✓ No background compaction overhead</text>
+<text x="490" y="454" style="font-size:12px;fill:#4A8A99;">✓ 1 GB pages for databases / DPDK</text>
+<text x="490" y="472" style="font-size:12px;fill:#BF616A;">✗ Requires application code changes</text>
+<text x="490" y="490" style="font-size:12px;fill:#BF616A;">✗ Memory locked: unavailable for others</text>
+<text x="490" y="508" style="font-size:12px;fill:#BF616A;">✗ Fragmentation risk if pool too small</text>
+
+<!-- Bottom comparison -->
+<rect x="20" y="532" width="860" height="22" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
+<text x="450" y="547" style="font-size:13px;fill:#1E3A5A;text-anchor:middle;font-weight:bold;">Rule of thumb: Use THP for general workloads; HugeTLBfs for latency-critical (databases, DPDK, JVM heap &gt;8 GB)</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.2:</strong> Transparent Huge Pages versus HugeTLBfs. THP automatically collapses 512 × 4 KB pages into a 2 MB mapping via khugepaged; HugeTLBfs requires explicit reservation at boot and mmap(MAP_HUGETLB) opt-in but guarantees availability and eliminates compaction overhead.</figcaption>
+</figure>
+
+
 <p>Production systems are messier. After days or weeks of uptime,
 physical memory becomes fragmented. Files are created and deleted,
 processes start and stop, and the kernel's memory allocator juggles
@@ -2661,6 +2985,124 @@ Sharing</h2>
 <p>We've optimized the pages themselves with KSM and huge pages, and
 we've optimized page table locking for concurrency. But what about the
 page table structures themselves? Can we reduce their overhead?</p>
+
+<figure id="fig-9-5" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Linux Memory Compaction: Defragmenting Physical Memory</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">Compaction migrates movable pages toward one end of a zone to create contiguous huge page frames</text>
+
+<!-- Before compaction -->
+<rect x="20" y="68" width="420" height="250" rx="8" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:2;"/>
+<text x="230" y="90" style="font-size:15px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Before Compaction</text>
+<text x="230" y="108" style="font-size:12px;fill:#8A4040;text-anchor:middle;">Fragmented zone — no 2MB contiguous block available</text>
+
+<!-- Memory layout before - colored blocks -->
+<!-- Row 1 -->
+<rect x="36" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="50" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<rect x="68" y="118" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/><text x="82" y="136" style="font-size:10px;fill:#9E9E9E;text-anchor:middle;">F</text>
+<rect x="100" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="114" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<rect x="132" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="146" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">M</text>
+<rect x="164" y="118" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/><text x="178" y="136" style="font-size:10px;fill:#9E9E9E;text-anchor:middle;">F</text>
+<rect x="196" y="118" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/><text x="210" y="136" style="font-size:10px;fill:#9E9E9E;text-anchor:middle;">F</text>
+<rect x="228" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="242" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<rect x="260" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="274" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">M</text>
+<rect x="292" y="118" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/><text x="306" y="136" style="font-size:10px;fill:#9E9E9E;text-anchor:middle;">F</text>
+<rect x="324" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="338" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<rect x="356" y="118" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/><text x="370" y="136" style="font-size:10px;fill:#9E9E9E;text-anchor:middle;">F</text>
+<rect x="388" y="118" width="28" height="28" rx="2" style="fill:#BF616A;"/><text x="402" y="136" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<!-- Row 2 -->
+<rect x="36" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="68" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<rect x="100" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="132" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<rect x="164" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="196" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<rect x="228" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="260" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<rect x="292" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="324" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<rect x="356" y="150" width="28" height="28" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<rect x="388" y="150" width="28" height="28" rx="2" style="fill:#BF616A;"/>
+<!-- Legend before -->
+<rect x="36" y="190" width="16" height="16" rx="2" style="fill:#BF616A;"/>
+<text x="58" y="203" style="font-size:12px;fill:#444;">Unmovable (U) — kernel, pinned</text>
+<rect x="36" y="212" width="16" height="16" rx="2" style="fill:#BF616A;opacity:0.6;"/>
+<text x="58" y="225" style="font-size:12px;fill:#444;">Movable (M) — anon pages, pagecache</text>
+<rect x="36" y="234" width="16" height="16" rx="2" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="58" y="247" style="font-size:12px;fill:#444;">Free (F)</text>
+<rect x="36" y="258" width="380" height="46" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="226" y="275" style="font-size:13px;font-weight:bold;fill:#BF616A;text-anchor:middle;">❌ Cannot allocate 2MB contiguous block</text>
+<text x="226" y="295" style="font-size:12px;fill:#8A4040;text-anchor:middle;">Largest free run: 3 pages (~12 KB)</text>
+
+<!-- Arrow -->
+<line x1="450" y1="193" x2="470" y2="193" style="stroke:#4A8A99;stroke-width:2.5;" marker-end="url(#arr-g)"/>
+<text x="460" y="185" style="font-size:13px;font-weight:bold;fill:#4A8A99;text-anchor:middle;">compact</text>
+
+<!-- After compaction -->
+<rect x="480" y="68" width="400" height="250" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+<text x="680" y="90" style="font-size:15px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">After Compaction</text>
+<text x="680" y="108" style="font-size:12px;fill:#2E6A5A;text-anchor:middle;">Movable pages gathered — contiguous block created</text>
+
+<!-- Layout after -->
+<!-- Unmovable pages left side -->
+<rect x="496" y="118" width="28" height="60" rx="2" style="fill:#BF616A;"/>
+<text x="510" y="153" style="font-size:10px;fill:#fff;text-anchor:middle;">U</text>
+<rect x="528" y="118" width="28" height="60" rx="2" style="fill:#BF616A;"/>
+<rect x="560" y="118" width="28" height="60" rx="2" style="fill:#BF616A;"/>
+<rect x="592" y="118" width="28" height="60" rx="2" style="fill:#BF616A;"/>
+<text x="548" y="148" style="font-size:12px;fill:#fff;text-anchor:middle;">Unmovable</text>
+
+<!-- Movable pages gathered right -->
+<rect x="628" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<text x="642" y="153" style="font-size:10px;fill:#fff;text-anchor:middle;">M</text>
+<rect x="660" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<rect x="692" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<rect x="724" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<rect x="756" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<rect x="788" y="118" width="28" height="60" rx="2" style="fill:#5E81AC;"/>
+<text x="726" y="148" style="font-size:12px;fill:#fff;text-anchor:middle;">Movable</text>
+
+<!-- Large free block -->
+<rect x="628" y="186" width="236" height="46" rx="4" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:2;"/>
+<text x="746" y="215" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">2MB Contiguous Free ✓</text>
+
+<rect x="496" y="246" width="360" height="46" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+<text x="676" y="263" style="font-size:13px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">✓ THP / huge page can now be allocated</text>
+<text x="676" y="283" style="font-size:12px;fill:#2E6A5A;text-anchor:middle;">Fragmentation score: 0</text>
+
+<!-- Compaction mechanics -->
+<rect x="20" y="332" width="860" height="194" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="352" style="font-size:15px;font-weight:bold;fill:#212121;text-anchor:middle;">Compaction Mechanics</text>
+
+<!-- Two scanners -->
+<rect x="36" y="364" width="380" height="70" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="226" y="384" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Two-Direction Scanner</text>
+<text x="46" y="402" style="font-size:12px;fill:#3A5070;">• <tspan font-weight="bold">Free scanner</tspan>: scans low addrs → finds free pages</text>
+<text x="46" y="420" style="font-size:12px;fill:#3A5070;">• <tspan font-weight="bold">Migration scanner</tspan>: high addrs → finds movable pages</text>
+<text x="46" y="434" style="font-size:12px;fill:#3A5070;">• Meet in middle: stops when scanners cross</text>
+
+<rect x="436" y="364" width="424" height="70" rx="5" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+<text x="648" y="384" style="font-size:13px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">Triggers and Modes</text>
+<text x="446" y="402" style="font-size:12px;fill:#2E6A5A;">• <tspan font-weight="bold">kcompactd</tspan>: background daemon, woken by kswapd</text>
+<text x="446" y="420" style="font-size:12px;fill:#2E6A5A;">• <tspan font-weight="bold">Direct</tspan>: triggered on huge-page allocation failure</text>
+<text x="446" y="434" style="font-size:12px;fill:#2E6A5A;">• <tspan font-weight="bold">Proactive</tspan>: vm.compaction_proactiveness (0–100)</text>
+
+<!-- Cost warning -->
+<rect x="36" y="446" width="820" height="60" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="450" y="466" style="font-size:14px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Compaction Cost</text>
+<text x="50" y="486" style="font-size:12px;fill:#444;">• Each page migration: unmap source PTE, copy 4KB, map destination PTE, TLB flush</text>
+<text x="50" y="502" style="font-size:12px;fill:#444;">• Latency: 1–100 ms depending on zone size; disruptive for latency-sensitive workloads</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.5:</strong> Linux memory compaction. Before compaction, movable and unmovable pages are interleaved, preventing huge page allocation. Two scanners (free and migration) move toward each other: the migration scanner relocates movable pages toward high addresses, creating a contiguous free block suitable for a 2 MB THP allocation.</figcaption>
+</figure>
+
+
 <p>In a system running 1,000 containers, each with its own address
 space, the page table overhead is substantial:</p>
 <pre><code>Per-container page table overhead:

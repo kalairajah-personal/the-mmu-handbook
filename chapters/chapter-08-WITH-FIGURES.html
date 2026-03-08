@@ -779,6 +779,233 @@ explore how software uses them to make intelligent eviction decisions.
 The goal is simple: when we must evict pages, choose the ones least
 likely to be needed soon. The challenge is doing this efficiently
 without perfect knowledge of future access patterns.</p>
+
+<figure id="fig-8-1" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+  <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+</defs>
+<rect width="900" height="560" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Bélády's OPT vs LRU Page Replacement</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">OPT (oracle) replaces the page used furthest in the future; LRU approximates using recency as a proxy</text>
+
+<!-- Reference string header -->
+<rect x="20" y="68" width="860" height="36" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
+<text x="138" y="88" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Reference String (3-frame example):</text>
+<!-- Page references boxes -->
+<rect x="270" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="287" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">7</text>
+<rect x="308" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="325" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">0</text>
+<rect x="346" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="363" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">1</text>
+<rect x="384" y="72" width="34" height="28" rx="3" style="fill:#4A8A99;"/>
+<text x="401" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">2</text>
+<rect x="422" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="439" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">0</text>
+<rect x="460" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="477" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">3</text>
+<rect x="498" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="515" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">0</text>
+<rect x="536" y="72" width="34" height="28" rx="3" style="fill:#4A8A99;"/>
+<text x="553" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">4</text>
+<rect x="574" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="591" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">2</text>
+<rect x="612" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="629" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">3</text>
+<rect x="650" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="667" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">0</text>
+<rect x="688" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="705" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">3</text>
+<rect x="726" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="743" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">2</text>
+<rect x="764" y="72" width="34" height="28" rx="3" style="fill:#4A8A99;"/>
+<text x="781" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">1</text>
+<rect x="802" y="72" width="34" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="819" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">2</text>
+<!-- Reference indices -->
+<text x="287" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t1</text>
+<text x="325" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t2</text>
+<text x="363" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t3</text>
+<text x="401" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t4</text>
+<text x="439" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t5</text>
+<text x="477" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t6</text>
+<text x="515" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t7</text>
+<text x="553" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t8</text>
+<text x="591" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t9</text>
+<text x="629" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t10</text>
+<text x="667" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t11</text>
+<text x="705" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t12</text>
+<text x="743" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t13</text>
+<text x="781" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t14</text>
+<text x="819" y="68" style="font-size:10px;fill:#888;text-anchor:middle;">t15</text>
+
+<!-- OPT section -->
+<rect x="20" y="118" width="426" height="26" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="233" y="135" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">OPT (Optimal / Bélády) — 6 faults</text>
+
+<!-- OPT frames grid -->
+<!-- Row labels -->
+<text x="30" y="172" style="font-size:13px;font-weight:bold;fill:#5E81AC;">Frame 0</text>
+<text x="30" y="200" style="font-size:13px;font-weight:bold;fill:#5E81AC;">Frame 1</text>
+<text x="30" y="228" style="font-size:13px;font-weight:bold;fill:#5E81AC;">Frame 2</text>
+<text x="30" y="256" style="font-size:13px;fill:#BF616A;">Fault?</text>
+
+<!-- OPT state cells - HIT cells vs fault cells -->
+<!-- t1: 7 (F), t2: 0 (F), t3: 1 (F), t4: 2 (F* replace 7 - furthest), t5: 0 (hit), t6: 3 (F* replace 1), t7: 0 (hit), t8: 4 (F* replace 2), t9: 2 (F* replace 3?), t10: 3 (hit), t11: 0 (hit), t12: 3 (hit), t13: 2 (hit), t14: 1 (F, replace 4 - not used), t15: 2 (hit) -->
+<!-- I'll show the frame states -->
+<!-- t1: F0=7 -->
+<rect x="270" y="154" width="34" height="26" rx="2" style="fill:#BF616A;"/>
+<text x="287" y="171" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">7</text>
+<!-- t2 -->
+<rect x="270" y="182" width="34" height="26" rx="2" style="fill:#BF616A;"/>
+<text x="287" y="199" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">7</text>
+<!-- t3 -->
+<rect x="270" y="210" width="34" height="26" rx="2" style="fill:#BF616A;"/>
+<text x="287" y="227" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">7</text>
+
+<!-- Fault marker t1 -->
+<rect x="270" y="240" width="34" height="22" rx="2" style="fill:#BF616A;"/>
+<text x="287" y="255" style="font-size:11px;font-weight:bold;fill:#fff;text-anchor:middle;">F</text>
+
+<!-- Use a helper macro for the OPT table -->
+<!-- Frame states: [f0, f1, f2] per timestep -->
+<!-- t1: [7,-,-] F, t2: [7,0,-] F, t3: [7,0,1] F, t4: [2,0,1] F(evict 7=furthest), t5: [2,0,1] H, t6: [2,0,3] F(evict 1), t7: [2,0,3] H, t8: [4,0,3] F(evict 2), t9: [4,2,3] F(evict 0? no - 2 is at t9, 3 at t10, 0 at t11... evict 4 since not used), t10,t11: H, t14: [1,2,3] F(evict 4) -->
+<!-- Simplified visual - show frame contents column by column -->
+<!-- The key visual: fault markers + frame state -->
+<!-- I'll do a text-based grid representation -->
+<text x="287" y="171" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;"/>
+
+<!-- Rather than full grid, show side-by-side bars comparison -->
+<!-- Hide the grid approach; use a bar+description -->
+<!-- Clear and redraw simply -->
+<rect x="20" y="118" width="860" height="26" rx="0" style="fill:#fff;"/>
+
+<!-- Simple clear visual: two side-by-side comparison panels -->
+<rect x="20" y="118" width="422" height="190" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="231" y="138" style="font-size:15px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">OPT — Bélády's Algorithm</text>
+<text x="231" y="156" style="font-size:13px;fill:#3A5070;text-anchor:middle;">Evict page used FURTHEST in future</text>
+<text x="231" y="174" style="font-size:13px;fill:#3A5070;text-anchor:middle;">(requires oracle knowledge)</text>
+<text x="40" y="198" style="font-size:13px;fill:#1E3A5A;font-weight:bold;">Steps (3 frames, ref: 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2):</text>
+<text x="40" y="216" style="font-size:12px;fill:#444;">t4: ref=2, evict 7 (next use: never) → 6 total faults</text>
+<text x="40" y="234" style="font-size:12px;fill:#444;">t6: ref=3, evict 1 (next use: t14) vs 0 (t5→t7) → optimal</text>
+<text x="40" y="252" style="font-size:12px;fill:#444;">t8: ref=4, evict 2 (next use: t9) vs 3 (t10) vs 0 (t11)</text>
+<text x="40" y="270" style="font-size:12px;fill:#444;">t14: ref=1, evict 4 (never used again)</text>
+<rect x="40" y="282" width="380" height="22" rx="4" style="fill:#5E81AC;"/>
+<text x="231" y="297" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Result: 6 page faults  ← theoretical minimum</text>
+
+<rect x="458" y="118" width="422" height="190" rx="6" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="669" y="138" style="font-size:15px;font-weight:bold;fill:#7A2020;text-anchor:middle;">LRU — Least Recently Used</text>
+<text x="669" y="156" style="font-size:13px;fill:#8A4040;text-anchor:middle;">Evict page NOT USED for longest time</text>
+<text x="669" y="174" style="font-size:13px;fill:#8A4040;text-anchor:middle;">(implementable with timestamps)</text>
+<text x="478" y="198" style="font-size:13px;fill:#7A2020;font-weight:bold;">Steps (same 3 frames, same reference string):</text>
+<text x="478" y="216" style="font-size:12px;fill:#444;">t4: ref=2, LRU evicts 7 (last used t1) → same as OPT</text>
+<text x="478" y="234" style="font-size:12px;fill:#444;">t6: ref=3, LRU evicts 1 (last used t3) → same as OPT</text>
+<text x="478" y="252" style="font-size:12px;fill:#444;">t8: ref=4, LRU evicts 3 (last used t6) → suboptimal</text>
+<text x="478" y="270" style="font-size:12px;fill:#444;">t9: ref=2 → fault (evicted at t8), t14: ref=1 → fault</text>
+<rect x="478" y="282" width="380" height="22" rx="4" style="fill:#BF616A;"/>
+<text x="669" y="297" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Result: 8 page faults  (2 extra vs OPT)</text>
+
+<!-- Timeline bars showing fault positions -->
+<rect x="20" y="318" width="860" height="72" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="336" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Fault Timeline (F = fault, H = hit)</text>
+<!-- OPT row -->
+<text x="50" y="356" style="font-size:13px;font-weight:bold;fill:#5E81AC;">OPT:</text>
+<rect x="92" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="109" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t1 -->
+<rect x="130" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="147" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t2 -->
+<rect x="168" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="185" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t3 -->
+<rect x="206" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="223" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t4 -->
+<rect x="244" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="261" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t5 -->
+<rect x="282" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="299" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t6 -->
+<rect x="320" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="337" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t7 -->
+<rect x="358" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="375" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t8 -->
+<rect x="396" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="413" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t9 -->
+<rect x="434" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="451" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t10 -->
+<rect x="472" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="489" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t11 -->
+<rect x="510" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="527" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t12 -->
+<rect x="548" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="565" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t13 -->
+<rect x="586" y="345" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="603" y="359" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t14 -->
+<rect x="624" y="345" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="641" y="359" style="font-size:11px;fill:#5E81AC;text-anchor:middle;">H</text><!-- t15 -->
+<rect x="720" y="343" width="140" height="24" rx="4" style="fill:#5E81AC;"/>
+<text x="790" y="358" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">OPT: 6 faults</text>
+
+<!-- LRU row -->
+<text x="50" y="384" style="font-size:13px;font-weight:bold;fill:#BF616A;">LRU: </text>
+<rect x="92" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="109" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="130" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="147" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="168" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="185" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="206" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="223" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="244" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="261" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="282" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="299" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="320" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="337" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="358" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="375" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<!-- LRU extra faults at t9, t14 -->
+<rect x="396" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="413" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text><!-- t9 extra -->
+<rect x="434" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="451" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="472" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="489" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="510" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="527" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="548" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="565" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="586" y="373" width="34" height="20" rx="2" style="fill:#BF616A;"/>
+<text x="603" y="387" style="font-size:11px;fill:#fff;text-anchor:middle;">F</text>
+<rect x="624" y="373" width="34" height="20" rx="2" style="fill:#DDEAF5;stroke:#BF616A;stroke-width:1;"/>
+<text x="641" y="387" style="font-size:11px;fill:#BF616A;text-anchor:middle;">H</text>
+<rect x="720" y="371" width="140" height="24" rx="4" style="fill:#BF616A;"/>
+<text x="790" y="386" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">LRU: 8 faults</text>
+
+<!-- Why OPT is unrealizable + LRU approximations -->
+<rect x="20" y="400" width="420" height="134" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="230" y="420" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Why OPT Cannot Be Implemented</text>
+<text x="30" y="440" style="font-size:13px;fill:#444;">OPT requires knowing future page accesses — impossible</text>
+<text x="30" y="458" style="font-size:13px;fill:#444;">in general-purpose OS without workload oracle.</text>
+<text x="30" y="480" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">OPT is used as a benchmark to measure how close</text>
+<text x="30" y="498" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">real algorithms come to the theoretical minimum.</text>
+<text x="30" y="516" style="font-size:12px;fill:#616161;">Exception: specialized systems (databases, CDNs) may use</text>
+<text x="30" y="532" style="font-size:12px;fill:#616161;">OPT-like hints from access pattern predictors.</text>
+
+<rect x="458" y="400" width="422" height="134" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="669" y="420" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">LRU Approximations in Practice</text>
+<text x="468" y="440" style="font-size:13px;fill:#444;">True LRU requires per-access timestamps → expensive.</text>
+<text x="468" y="458" style="font-size:13px;fill:#444;">Linux uses a two-list Clock algorithm instead:</text>
+<text x="468" y="478" style="font-size:13px;fill:#3A5070;">• <tspan font-weight="bold">Active list</tspan>: recently used pages</text>
+<text x="468" y="496" style="font-size:13px;fill:#3A5070;">• <tspan font-weight="bold">Inactive list</tspan>: aging pages, candidates for eviction</text>
+<text x="468" y="514" style="font-size:13px;fill:#3A5070;">• Access bit checked: page promoted or demoted</text>
+<text x="468" y="532" style="font-size:12px;fill:#616161;">ARM/x86 hardware sets Accessed bit per PTE access.</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.1:</strong> Bélády's OPT versus LRU on a 15-step reference string with 3 frames. OPT achieves 6 faults by evicting the page used furthest in the future; LRU incurs 8 faults. OPT is the theoretical lower bound and is used as a benchmark for real algorithms.</figcaption>
+</figure>
+
+
 <h3 id="the-ideal-perfect-lru">8.5.1 The Ideal: Perfect LRU</h3>
 <p>The theoretically optimal algorithm is Least Recently Used (LRU):
 evict the page that was accessed longest ago. If page A was last
@@ -1220,6 +1447,123 @@ When and How to Free Pages</h2>
 evict. Now we need to understand <strong>when</strong> eviction happens
 and <strong>how</strong> the kernel manages the process of freeing
 memory under pressure.</p>
+
+<figure id="fig-8-2" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+  <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.14"/></filter>
+</defs>
+<rect width="900" height="580" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Linux kswapd: Memory Reclaim State Machine</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">kswapd wakes when free memory drops below watermarks; scans inactive list and reclaims pages</text>
+
+<!-- States -->
+<!-- SLEEPING -->
+<rect x="360" y="72" width="180" height="52" rx="8" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="450" y="96" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">SLEEPING</text>
+<text x="450" y="114" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">free &gt; low watermark</text>
+
+<!-- WOKEN -->
+<rect x="360" y="168" width="180" height="52" rx="8" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="192" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">WOKEN</text>
+<text x="450" y="210" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">free drops below low</text>
+
+<!-- SCANNING INACTIVE -->
+<rect x="120" y="268" width="210" height="52" rx="8" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="225" y="292" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">SCAN INACTIVE</text>
+<text x="225" y="310" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Walk inactive LRU list</text>
+
+<!-- SCANNING ACTIVE -->
+<rect x="570" y="268" width="210" height="52" rx="8" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="675" y="292" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">SCAN ACTIVE</text>
+<text x="675" y="310" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Demote to inactive list</text>
+
+<!-- RECLAIMING -->
+<rect x="360" y="368" width="180" height="52" rx="8" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="450" y="392" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">RECLAIMING</text>
+<text x="450" y="410" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">writeback / free pages</text>
+
+<!-- OOM -->
+<rect x="680" y="368" width="180" height="52" rx="8" style="fill:#BF616A;stroke:#8A2020;stroke-width:2;" filter="url(#sh)"/>
+<text x="770" y="392" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">OOM INVOKE</text>
+<text x="770" y="410" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">No reclaimable pages</text>
+
+<!-- SLEEPING again -->
+<rect x="360" y="468" width="180" height="52" rx="8" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="492" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">SLEEPING</text>
+<text x="450" y="510" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">free &gt; high watermark</text>
+
+<!-- Arrows -->
+<line x1="450" y1="124" x2="450" y2="166" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<text x="462" y="150" style="font-size:12px;fill:#5E81AC;">wake_up</text>
+
+<line x1="450" y1="220" x2="330" y2="266" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<text x="360" y="248" style="font-size:12px;fill:#5E81AC;">scan inactive</text>
+
+<line x1="450" y1="220" x2="575" y2="266" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<text x="500" y="248" style="font-size:12px;fill:#4A8A99;">inactive low</text>
+
+<!-- Inactive scan → reclaim -->
+<line x1="225" y1="320" x2="390" y2="366" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="268" y="355" style="font-size:12px;fill:#BF616A;">reclaimable</text>
+
+<!-- Active scan → inactive -->
+<line x1="675" y1="320" x2="550" y2="366" style="stroke:#5E81AC;stroke-width:2;stroke-dasharray:5,3;" marker-end="url(#arr)"/>
+<text x="620" y="348" style="font-size:12px;fill:#5E81AC;">demote</text>
+
+<!-- Reclaiming → sleeping -->
+<line x1="450" y1="420" x2="450" y2="466" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<text x="462" y="448" style="font-size:12px;fill:#4A8A99;">goal met</text>
+
+<!-- Reclaiming → OOM -->
+<line x1="540" y1="394" x2="678" y2="394" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="606" y="386" style="font-size:12px;fill:#BF616A;">nothing left</text>
+
+<!-- Sleep back loop -->
+<path d="M 360 194 C 80 194 80 124 360 124" style="fill:none;stroke:#9E9E9E;stroke-width:1.5;stroke-dasharray:5,3;" marker-end="url(#arr)"/>
+<text x="100" y="164" style="font-size:12px;fill:#9E9E9E;">free &gt; high</text>
+
+<!-- Watermarks annotation -->
+<rect x="20" y="268" width="84" height="140" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="62" y="286" style="font-size:12px;font-weight:bold;fill:#212121;text-anchor:middle;">Watermarks</text>
+<rect x="30" y="298" width="64" height="16" rx="2" style="fill:#BF616A;"/>
+<text x="62" y="310" style="font-size:11px;fill:#fff;text-anchor:middle;">min</text>
+<rect x="30" y="320" width="64" height="16" rx="2" style="fill:#5E81AC;"/>
+<text x="62" y="332" style="font-size:11px;fill:#fff;text-anchor:middle;">low</text>
+<rect x="30" y="342" width="64" height="16" rx="2" style="fill:#4A8A99;"/>
+<text x="62" y="354" style="font-size:11px;fill:#fff;text-anchor:middle;">high</text>
+<text x="32" y="378" style="font-size:10px;fill:#444;">min: OOM zone</text>
+<text x="32" y="393" style="font-size:10px;fill:#444;">low: wake kswapd</text>
+<text x="32" y="408" style="font-size:10px;fill:#444;">high: stop reclaim</text>
+
+<!-- Page decisions during reclaim -->
+<rect x="20" y="430" width="320" height="134" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="180" y="450" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Page Reclaim Decisions</text>
+<text x="30" y="470" style="font-size:12px;fill:#444;">• Clean anon: free immediately</text>
+<text x="30" y="488" style="font-size:12px;fill:#444;">• Dirty anon: write to swap, then free</text>
+<text x="30" y="506" style="font-size:12px;fill:#444;">• Clean file-backed: free (re-read from disk)</text>
+<text x="30" y="524" style="font-size:12px;fill:#444;">• Dirty file-backed: writeback, then free</text>
+<text x="30" y="542" style="font-size:12px;fill:#444;">• mlocked/pinned: skip entirely</text>
+<text x="30" y="560" style="font-size:12px;fill:#444;">• Accessed bit set: promote to active list</text>
+
+<!-- Reclaim rates -->
+<rect x="360" y="430" width="510" height="134" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="615" y="450" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Key Tuning Parameters (Linux)</text>
+<text x="370" y="470" style="font-size:13px;fill:#3A5070;font-weight:bold;">/proc/sys/vm/swappiness</text>
+<text x="370" y="488" style="font-size:12px;fill:#444;">  0 = avoid swap (reclaim file pages); 200 = always swap</text>
+<text x="370" y="506" style="font-size:13px;fill:#3A5070;font-weight:bold;">/proc/sys/vm/min/low/high_free_kbytes</text>
+<text x="370" y="524" style="font-size:12px;fill:#444;">  Controls watermark thresholds per zone</text>
+<text x="370" y="542" style="font-size:13px;fill:#3A5070;font-weight:bold;">zone_reclaim_mode</text>
+<text x="370" y="560" style="font-size:12px;fill:#444;">  NUMA: reclaim from local node first</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.2:</strong> Linux kswapd memory reclaim state machine. kswapd wakes when free memory drops below the low watermark, scans the inactive LRU list, initiates writeback or page freeing, and returns to sleep once the high watermark is reached. If no pages can be reclaimed, the OOM killer is invoked.</figcaption>
+</figure>
+
+
 <h3 id="watermarks-detecting-memory-pressure-1">8.6.1 Watermarks:
 Detecting Memory Pressure</h3>
 <p>The kernel doesn't wait until memory is completely exhausted to start
@@ -1757,6 +2101,137 @@ Management: The Meta-Problem</h2>
 themselves consume memory—often a surprising amount. On a system with
 hundreds of processes or VMs, page table overhead can reach gigabytes.
 This creates a meta-problem: we need memory to manage memory.</p>
+
+<figure id="fig-8-3" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+</defs>
+<rect width="900" height="560" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Linux OOM Killer: Process Scoring and Selection</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">When memory cannot be reclaimed, OOM killer selects the process with the highest badness score to terminate</text>
+
+<!-- Score formula -->
+<rect x="20" y="68" width="860" height="62" rx="6" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1.5;"/>
+<text x="450" y="88" style="font-size:15px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">OOM Score Formula (Linux kernel oom_badness())</text>
+<text x="450" y="112" style="font-size:14px;fill:#212121;text-anchor:middle;">score = (process_pages / total_pages) × 1000  +  oom_score_adj  [range: −1000 to +1000]</text>
+
+<!-- Factors table -->
+<rect x="20" y="144" width="430" height="198" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="235" y="164" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Score Factors</text>
+<!-- Factor rows -->
+<rect x="30" y="172" width="200" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="130" y="190" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">process_pages</text>
+<text x="240" y="190" style="font-size:12px;fill:#444;">RSS + swap pages used</text>
+
+<rect x="30" y="204" width="200" height="28" rx="3" style="fill:#5E81AC;"/>
+<text x="130" y="222" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">oom_score_adj</text>
+<text x="240" y="222" style="font-size:12px;fill:#444;">User-settable bias (−1000..+1000)</text>
+
+<rect x="30" y="236" width="200" height="28" rx="3" style="fill:#4A8A99;"/>
+<text x="130" y="254" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">adj = −1000</text>
+<text x="240" y="254" style="font-size:12px;fill:#444;">Never kill (OOM exempt)</text>
+
+<rect x="30" y="268" width="200" height="28" rx="3" style="fill:#BF616A;"/>
+<text x="130" y="286" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">adj = +1000</text>
+<text x="240" y="286" style="font-size:12px;fill:#444;">Always first to be killed</text>
+
+<rect x="30" y="300" width="200" height="28" rx="3" style="fill:#9E9E9E;"/>
+<text x="130" y="318" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">adj = 0</text>
+<text x="240" y="318" style="font-size:12px;fill:#444;">Default: kill proportional to RSS</text>
+
+<text x="30" y="352" style="font-size:12px;fill:#616161;">Set: echo N &gt; /proc/PID/oom_score_adj</text>
+<text x="30" y="368" style="font-size:12px;fill:#616161;">Check: cat /proc/PID/oom_score</text>
+
+<!-- Score examples visualization -->
+<rect x="468" y="144" width="412" height="198" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="674" y="164" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Example System: 8 GB RAM</text>
+<!-- Bars -->
+<text x="478" y="188" style="font-size:13px;font-weight:bold;fill:#212121;">Process</text>
+<text x="618" y="188" style="font-size:13px;font-weight:bold;fill:#212121;">RSS</text>
+<text x="680" y="188" style="font-size:13px;font-weight:bold;fill:#212121;">adj</text>
+<text x="740" y="188" style="font-size:13px;font-weight:bold;fill:#212121;">Score</text>
+<text x="810" y="188" style="font-size:13px;font-weight:bold;fill:#212121;">Risk</text>
+
+<text x="478" y="208" style="font-size:12px;fill:#444;">Firefox</text>
+<text x="618" y="208" style="font-size:12px;fill:#444;">2.1 GB</text>
+<text x="680" y="208" style="font-size:12px;fill:#444;">0</text>
+<text x="740" y="208" style="font-size:12px;fill:#BF616A;font-weight:bold;">263</text>
+<rect x="800" y="198" width="70" height="14" rx="2" style="fill:#BF616A;"/>
+<text x="835" y="209" style="font-size:11px;fill:#fff;text-anchor:middle;">HIGH</text>
+
+<text x="478" y="228" style="font-size:12px;fill:#444;">Chrome</text>
+<text x="618" y="228" style="font-size:12px;fill:#444;">3.4 GB</text>
+<text x="680" y="228" style="font-size:12px;fill:#444;">+300</text>
+<text x="740" y="228" style="font-size:12px;fill:#BF616A;font-weight:bold;">725</text>
+<rect x="800" y="218" width="70" height="14" rx="2" style="fill:#BF616A;"/>
+<text x="835" y="229" style="font-size:11px;fill:#fff;text-anchor:middle;">VERY HIGH</text>
+
+<text x="478" y="248" style="font-size:12px;fill:#444;">postgres</text>
+<text x="618" y="248" style="font-size:12px;fill:#444;">1.2 GB</text>
+<text x="680" y="248" style="font-size:12px;fill:#444;">−500</text>
+<text x="740" y="248" style="font-size:12px;fill:#4A8A99;font-weight:bold;">−350</text>
+<rect x="800" y="238" width="70" height="14" rx="2" style="fill:#4A8A99;"/>
+<text x="835" y="249" style="font-size:11px;fill:#fff;text-anchor:middle;">LOW</text>
+
+<text x="478" y="268" style="font-size:12px;fill:#444;">systemd</text>
+<text x="618" y="268" style="font-size:12px;fill:#444;">12 MB</text>
+<text x="680" y="268" style="font-size:12px;fill:#444;">−1000</text>
+<text x="740" y="268" style="font-size:12px;fill:#4A8A99;font-weight:bold;">−998</text>
+<rect x="800" y="258" width="70" height="14" rx="2" style="fill:#4A8A99;"/>
+<text x="835" y="269" style="font-size:11px;fill:#fff;text-anchor:middle;">EXEMPT</text>
+
+<text x="478" y="288" style="font-size:12px;fill:#444;">ML trainer</text>
+<text x="618" y="288" style="font-size:12px;fill:#444;">5.8 GB</text>
+<text x="680" y="288" style="font-size:12px;fill:#444;">+1000</text>
+<text x="740" y="288" style="font-size:12px;fill:#BF616A;font-weight:bold;">1725</text>
+<rect x="800" y="278" width="70" height="14" rx="2" style="fill:#BF616A;stroke:#8A2020;stroke-width:2;"/>
+<text x="835" y="289" style="font-size:11px;fill:#fff;text-anchor:middle;">KILLED FIRST</text>
+
+<text x="478" y="330" style="font-size:12px;fill:#444;">kernel threads</text>
+<text x="618" y="330" style="font-size:12px;fill:#444;">—</text>
+<text x="680" y="330" style="font-size:12px;fill:#444;">−1000</text>
+<text x="740" y="330" style="font-size:12px;fill:#9E9E9E;">never</text>
+<rect x="800" y="320" width="70" height="14" rx="2" style="fill:#9E9E9E;"/>
+<text x="835" y="331" style="font-size:11px;fill:#fff;text-anchor:middle;">IMMUNE</text>
+
+<!-- OOM kill sequence -->
+<rect x="20" y="356" width="430" height="188" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="235" y="376" style="font-size:14px;font-weight:bold;fill:#7A2020;text-anchor:middle;">OOM Kill Sequence</text>
+<rect x="30" y="386" width="30" height="26" rx="3" style="fill:#BF616A;"/>
+<text x="45" y="403" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">1</text>
+<text x="70" y="403" style="font-size:13px;fill:#444;">Reclaim scan exhausts all reclaimable pages</text>
+<rect x="30" y="418" width="30" height="26" rx="3" style="fill:#BF616A;"/>
+<text x="45" y="435" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">2</text>
+<text x="70" y="435" style="font-size:13px;fill:#444;">out_of_memory() called: select_bad_process()</text>
+<rect x="30" y="450" width="30" height="26" rx="3" style="fill:#BF616A;"/>
+<text x="45" y="467" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">3</text>
+<text x="70" y="467" style="font-size:13px;fill:#444;">Highest score process chosen (whole group)</text>
+<rect x="30" y="482" width="30" height="26" rx="3" style="fill:#BF616A;"/>
+<text x="45" y="499" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">4</text>
+<text x="70" y="499" style="font-size:13px;fill:#444;">SIGKILL sent to task and all threads</text>
+<rect x="30" y="514" width="30" height="26" rx="3" style="fill:#BF616A;"/>
+<text x="45" y="531" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">5</text>
+<text x="70" y="531" style="font-size:13px;fill:#444;">OOM reaper asynchronously frees memory</text>
+
+<!-- Kernel log -->
+<rect x="468" y="356" width="412" height="188" rx="5" style="fill:#1E1E2E;stroke:#3A3A5A;stroke-width:1;"/>
+<text x="674" y="376" style="font-size:13px;font-weight:bold;fill:#7A8A9A;text-anchor:middle;">kernel OOM log message</text>
+<text x="478" y="398" style="font-size:11px;fill:#88C0D0;font-family:monospace;">Out of memory: Kill process 2847 (chrome)</text>
+<text x="478" y="416" style="font-size:11px;fill:#88C0D0;font-family:monospace;">score 725 or sacrifice child</text>
+<text x="478" y="434" style="font-size:11px;fill:#A3BE8C;font-family:monospace;">Killed process 2847 (chrome) total-vm:</text>
+<text x="478" y="452" style="font-size:11px;fill:#A3BE8C;font-family:monospace;">3571464kB, anon-rss:3223456kB,</text>
+<text x="478" y="470" style="font-size:11px;fill:#A3BE8C;font-family:monospace;">file-rss:140208kB, shmem-rss:0kB</text>
+<text x="478" y="492" style="font-size:11px;fill:#EBCB8B;font-family:monospace;">oom_reaper: reaped process 2847 (chrome)</text>
+<text x="478" y="510" style="font-size:11px;fill:#EBCB8B;font-family:monospace;">now anon-rss:0kB, file-rss:0kB,</text>
+<text x="478" y="528" style="font-size:11px;fill:#BF616A;font-family:monospace;">shmem-rss:0kB</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.3:</strong> Linux OOM killer scoring and selection. The badness score is computed as (RSS / total_pages) × 1000 plus the oom_score_adj tunable. The process with the highest score is sent SIGKILL; kernel threads and processes with adj = −1000 are immune.</figcaption>
+</figure>
+
+
 <h3 id="page-table-overhead-calculations">8.7.1 Page Table Overhead
 Calculations</h3>
 <p>Let's calculate how much memory page tables consume for a typical

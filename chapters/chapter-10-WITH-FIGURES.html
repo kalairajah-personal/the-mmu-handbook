@@ -1252,6 +1252,132 @@ optimized for the instruction stream of a single core, the IOMMU must
 handle memory accesses from dozens of independent devices
 simultaneously—network cards, GPUs, storage controllers, and more. This
 fundamental difference shapes its architecture.</p>
+
+<figure id="fig-10-2" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.14"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="580" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">IOMMU VT-d DMA Remapping Architecture</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">IOMMU translates device-issued bus addresses to physical addresses, enforcing DMA isolation and enabling IOVA</text>
+
+<!-- CPU complex -->
+<rect x="20" y="68" width="200" height="160" rx="8" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="120" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU Complex</text>
+<rect x="36" y="100" width="78" height="50" rx="5" style="fill:#DDEAF5;"/>
+<text x="75" y="121" style="font-size:12px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">CPU Core</text>
+<text x="75" y="138" style="font-size:11px;fill:#3A5070;text-anchor:middle;">VA→PA TLB</text>
+<rect x="126" y="100" width="78" height="50" rx="5" style="fill:#DDEAF5;"/>
+<text x="165" y="121" style="font-size:12px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">CPU Core</text>
+<text x="165" y="138" style="font-size:11px;fill:#3A5070;text-anchor:middle;">VA→PA TLB</text>
+<rect x="36" y="160" width="168" height="50" rx="5" style="fill:#3A6090;"/>
+<text x="120" y="181" style="font-size:12px;font-weight:bold;fill:#fff;text-anchor:middle;">Memory Controller</text>
+<text x="120" y="197" style="font-size:11px;fill:#DDEAF5;text-anchor:middle;">DRAM access</text>
+
+<!-- IOMMU (VT-d) -->
+<rect x="300" y="68" width="300" height="280" rx="8" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:2;" filter="url(#sh)"/>
+<text x="450" y="90" style="font-size:15px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">IOMMU (Intel VT-d)</text>
+<text x="450" y="108" style="font-size:12px;fill:#3A5070;text-anchor:middle;">Hardware DMA remapping engine</text>
+
+<!-- IOTLB -->
+<rect x="320" y="118" width="260" height="52" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="138" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">IOTLB</text>
+<text x="450" y="156" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">IO virtual addr → physical addr cache</text>
+
+<!-- Root/Context table -->
+<rect x="320" y="180" width="260" height="52" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="200" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Root/Context Table</text>
+<text x="450" y="218" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Bus:Device:Fn → domain mapping</text>
+
+<!-- IO Page Table Walker -->
+<rect x="320" y="242" width="260" height="52" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="262" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">IO Page Table Walker</text>
+<text x="450" y="280" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">4-level IOVA→PA table walk</text>
+
+<!-- DMA remapping unit -->
+<rect x="320" y="304" width="260" height="36" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="450" y="326" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">DMA Remapping Unit — enforces isolation</text>
+
+<!-- PCIe bus -->
+<rect x="20" y="260" width="260" height="40" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="150" y="284" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">PCIe Root Complex</text>
+
+<!-- Physical Memory -->
+<rect x="680" y="68" width="200" height="160" rx="8" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="780" y="90" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Physical Memory</text>
+<rect x="696" y="104" width="168" height="40" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="780" y="120" style="font-size:12px;fill:#1E3A5A;text-anchor:middle;">IO Page Table</text>
+<text x="780" y="136" style="font-size:11px;fill:#3A5070;text-anchor:middle;">(IOVA→PA mappings)</text>
+<rect x="696" y="150" width="168" height="40" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+<text x="780" y="170" style="font-size:12px;fill:#444;text-anchor:middle;">Protected DMA regions</text>
+<text x="780" y="186" style="font-size:11px;fill:#616161;text-anchor:middle;">isolated per device domain</text>
+
+<!-- PCIe devices -->
+<rect x="680" y="260" width="90" height="60" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="725" y="284" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">NIC</text>
+<text x="725" y="300" style="font-size:11px;fill:#F0D9D9;text-anchor:middle;">IOVA space A</text>
+<rect x="790" y="260" width="90" height="60" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="835" y="284" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">GPU</text>
+<text x="835" y="300" style="font-size:11px;fill:#F0D9D9;text-anchor:middle;">IOVA space B</text>
+
+<!-- Arrows -->
+<line x1="220" y1="178" x2="298" y2="280" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<text x="242" y="220" style="font-size:11px;fill:#5E81AC;">CPU programs</text>
+<text x="242" y="234" style="font-size:11px;fill:#5E81AC;">IOMMU via MMIO</text>
+
+<line x1="220" y1="280" x2="298" y2="280" style="stroke:#9E9E9E;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="725" y1="260" x2="620" y2="320" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="680" y="296" style="font-size:11px;fill:#BF616A;">DMA request</text>
+<text x="680" y="310" style="font-size:11px;fill:#BF616A;">(IOVA)</text>
+
+<line x1="600" y1="174" x2="678" y2="140" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<text x="638" y="148" style="font-size:11px;fill:#4A8A99;">PA lookup</text>
+
+<line x1="600" y1="280" x2="678" y2="100" style="stroke:#4A8A99;stroke-width:2;stroke-dasharray:5,3;" marker-end="url(#arr-g)"/>
+<text x="652" y="220" style="font-size:11px;fill:#4A8A99;">translated</text>
+<text x="652" y="234" style="font-size:11px;fill:#4A8A99;">PA → mem</text>
+
+<!-- Domain isolation -->
+<rect x="20" y="330" width="860" height="236" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="350" style="font-size:15px;font-weight:bold;fill:#212121;text-anchor:middle;">IOMMU Domain Isolation</text>
+
+<!-- Domain A -->
+<rect x="36" y="362" width="250" height="80" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="161" y="382" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Domain A — NIC</text>
+<text x="46" y="400" style="font-size:12px;fill:#3A5070;">IOVA 0x0000–0x7FFF: RX buffer</text>
+<text x="46" y="418" style="font-size:12px;fill:#3A5070;">IOVA 0x8000–0xFFFF: TX queue</text>
+<text x="46" y="434" style="font-size:12px;fill:#BF616A;">Cannot access GPU or kernel mem</text>
+
+<!-- Domain B -->
+<rect x="326" y="362" width="250" height="80" rx="5" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1.5;"/>
+<text x="451" y="382" style="font-size:13px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">Domain B — GPU</text>
+<text x="336" y="400" style="font-size:12px;fill:#2E6A5A;">IOVA 0x0000–VRAM size: framebuf</text>
+<text x="336" y="418" style="font-size:12px;fill:#2E6A5A;">IOVA overlaps with Domain A: OK</text>
+<text x="336" y="434" style="font-size:12px;fill:#BF616A;">Separate page table per domain</text>
+
+<!-- Passthrough -->
+<rect x="616" y="362" width="250" height="80" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1.5;"/>
+<text x="741" y="382" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Passthrough (VM use)</text>
+<text x="626" y="400" style="font-size:12px;fill:#444;">IOVA = GPA (guest physical addr)</text>
+<text x="626" y="418" style="font-size:12px;fill:#444;">Enables direct device assignment</text>
+<text x="626" y="434" style="font-size:12px;fill:#444;">Intel VT-d / AMD-Vi required</text>
+
+<!-- Security note -->
+<rect x="36" y="456" width="820" height="100" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="446" y="476" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Security and Virtualisation Benefits</text>
+<text x="50" y="496" style="font-size:12px;fill:#3A5070;">• Prevents rogue DMA: compromised NIC cannot read GPU memory or kernel secrets</text>
+<text x="50" y="514" style="font-size:12px;fill:#3A5070;">• VM isolation: each VM gets its own IOMMU domain; hypervisor maps only allowed GPA ranges</text>
+<text x="50" y="532" style="font-size:12px;fill:#3A5070;">• VFIO framework (Linux): exposes IOMMU domains to userspace for DPDK, QEMU device passthrough</text>
+<text x="50" y="550" style="font-size:12px;fill:#3A5070;">• Performance: zero-copy DMA eliminates memcpy overhead between kernel bounce buffers and device memory</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.2:</strong> IOMMU VT-d DMA remapping architecture. The IOMMU maintains per-device IO page tables, an IOTLB for caching translations, and a root/context table mapping PCIe Bus:Device:Function identifiers to isolated DMA domains. Each device is confined to its own IOVA space, preventing rogue DMA and enabling safe VM device passthrough.</figcaption>
+</figure>
+
+
 <h3 id="the-core-challenge-per-device-isolation">The Core Challenge:
 Per-Device Isolation</h3>
 <p>Consider a server with 20 PCIe devices. Each device might belong to a
@@ -1784,6 +1910,100 @@ Every device access must go through the IOMMU's IOTLB, and with only
 256-512 entries shared across all devices, misses are frequent. Address
 Translation Services (ATS) solve this by moving the translation cache
 from the IOMMU into the device itself.</p>
+
+<figure id="fig-10-3" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">SR-IOV: Single Root I/O Virtualization</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">A physical PCIe device presents multiple virtual functions (VFs), each with isolated MMIO, DMA, and interrupt resources</text>
+
+<!-- Physical Function -->
+<rect x="280" y="68" width="340" height="100" rx="8" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="92" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">Physical Function (PF)</text>
+<text x="450" y="112" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Full PCIe function — host driver manages VFs</text>
+<text x="290" y="136" style="font-size:12px;fill:#DDEAF5;">• Configures SR-IOV capability registers</text>
+<text x="290" y="152" style="font-size:12px;fill:#DDEAF5;">• Creates / destroys VFs via sysfs</text>
+
+<!-- VF instances -->
+<line x1="340" y1="168" x2="180" y2="218" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="400" y1="168" x2="340" y2="218" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="450" y1="168" x2="450" y2="218" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="520" y1="168" x2="560" y2="218" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="570" y1="168" x2="720" y2="218" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- VFs -->
+<rect x="100" y="218" width="130" height="64" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="165" y="242" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">VF 0</text>
+<text x="165" y="258" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MMIO BAR 0</text>
+<text x="165" y="272" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MSI-X vec 0–7</text>
+
+<rect x="250" y="218" width="130" height="64" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="315" y="242" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">VF 1</text>
+<text x="315" y="258" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MMIO BAR 1</text>
+<text x="315" y="272" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MSI-X vec 8–15</text>
+
+<rect x="395" y="218" width="110" height="64" rx="6" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="450" y="250" style="font-size:15px;font-weight:bold;fill:#fff;text-anchor:middle;">…</text>
+<text x="450" y="272" style="font-size:11px;fill:#F5F5F5;text-anchor:middle;">up to 256 VFs</text>
+
+<rect x="521" y="218" width="130" height="64" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="586" y="242" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">VF N-1</text>
+<text x="586" y="258" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MMIO BAR N</text>
+<text x="586" y="272" style="font-size:11px;fill:#CCE8EC;text-anchor:middle;">MSI-X vec …</text>
+
+<rect x="668" y="218" width="130" height="64" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="733" y="242" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">VF N</text>
+<text x="733" y="258" style="font-size:11px;fill:#F0D9D9;text-anchor:middle;">MMIO BAR last</text>
+<text x="733" y="272" style="font-size:11px;fill:#F0D9D9;text-anchor:middle;">Isolated DMA</text>
+
+<!-- VM assignments -->
+<line x1="165" y1="282" x2="165" y2="312" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="315" y1="282" x2="315" y2="312" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="586" y1="282" x2="586" y2="312" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="733" y1="282" x2="733" y2="312" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+
+<!-- VMs -->
+<rect x="80" y="312" width="170" height="50" rx="5" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="165" y="332" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">VM 1 (KVM)</text>
+<text x="165" y="350" style="font-size:12px;fill:#3A5070;text-anchor:middle;">VFIO passthrough</text>
+
+<rect x="230" y="312" width="170" height="50" rx="5" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="315" y="332" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">VM 2 (KVM)</text>
+<text x="315" y="350" style="font-size:12px;fill:#3A5070;text-anchor:middle;">VFIO passthrough</text>
+
+<rect x="502" y="312" width="170" height="50" rx="5" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="587" y="332" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Container / Pod</text>
+<text x="587" y="350" style="font-size:12px;fill:#3A5070;text-anchor:middle;">VFIO / DPDK</text>
+
+<rect x="652" y="312" width="170" height="50" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="737" y="332" style="font-size:13px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Bare Metal App</text>
+<text x="737" y="350" style="font-size:12px;fill:#8A4040;text-anchor:middle;">Direct VF access</text>
+
+<!-- IOMMU protection layer -->
+<rect x="20" y="380" width="860" height="40" rx="6" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:1;"/>
+<text x="450" y="405" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">IOMMU — Each VF gets isolated DMA domain: VF N cannot access VF M's memory</text>
+
+<!-- Resource isolation table -->
+<rect x="20" y="432" width="860" height="94" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="452" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">VF Resource Isolation</text>
+<text x="50" y="472" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">MMIO Registers</text>
+<text x="220" y="472" style="font-size:12px;fill:#444;">Each VF has distinct BAR address range — no sharing</text>
+<text x="50" y="490" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Interrupts</text>
+<text x="220" y="490" style="font-size:12px;fill:#444;">Per-VF MSI-X table — hardware-isolated, no shared vectors</text>
+<text x="50" y="508" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">DMA</text>
+<text x="220" y="508" style="font-size:12px;fill:#444;">IOMMU domain per VF — DMA outside allowed range = fault</text>
+<text x="50" y="526" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Queues</text>
+<text x="220" y="526" style="font-size:12px;fill:#444;">Tx/Rx queue pair(s) partitioned from NIC hardware</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.3:</strong> SR-IOV single-root I/O virtualisation. A physical function (PF) creates up to 256 virtual functions (VFs), each with isolated MMIO BARs, dedicated MSI-X interrupt vectors, and an independent IOMMU DMA domain. VFs are assigned directly to VMs or containers via VFIO passthrough.</figcaption>
+</figure>
+
+
 <h3 id="the-ats-innovation">The ATS Innovation</h3>
 <p>ATS, defined in the PCIe specification, allows a device to request
 translations from the IOMMU and cache them locally in an Address
@@ -2115,6 +2335,107 @@ without kernel involvement. But RDMA's interaction with virtual memory
 creates a fundamental tension: RDMA NICs need stable physical addresses,
 while virtual memory allows pages to move. Memory registration is how we
 resolve this conflict.</p>
+
+<figure id="fig-10-5" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">RDMA On-Demand Paging (ODP)</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">ODP allows RDMA operations on demand-paged memory, eliminating the requirement to pre-pin physical pages</text>
+
+<!-- Without ODP -->
+<rect x="20" y="68" width="400" height="296" rx="8" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:2;"/>
+<text x="220" y="90" style="font-size:15px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Without ODP — ibv_reg_mr (Pin)</text>
+
+<rect x="36" y="100" width="368" height="40" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="220" y="125" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">ibv_reg_mr(pd, buf, len, access)</text>
+
+<rect x="36" y="152" width="368" height="44" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="220" y="170" style="font-size:13px;fill:#212121;text-anchor:middle;">Kernel pins ALL pages in [buf, buf+len)</text>
+<text x="220" y="187" style="font-size:13px;fill:#BF616A;text-anchor:middle;">Pages cannot be swapped or migrated!</text>
+
+<!-- Cost list -->
+<rect x="36" y="206" width="368" height="140" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="220" y="224" style="font-size:13px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Costs of Pre-Pinning</text>
+<text x="46" y="244" style="font-size:12px;fill:#444;">• Registration latency: O(N pages) to pin</text>
+<text x="46" y="262" style="font-size:12px;fill:#444;">• Memory lock: pages locked into RAM</text>
+<text x="46" y="280" style="font-size:12px;fill:#444;">• Cannot overlap with swap / migration</text>
+<text x="46" y="298" style="font-size:12px;fill:#444;">• NIC LKEY/RKEY must be pre-assigned</text>
+<text x="46" y="316" style="font-size:12px;fill:#444;">• Limits memory over-commitment</text>
+<text x="46" y="334" style="font-size:12px;fill:#BF616A;font-weight:bold;">• Poor fit for virtual memory workloads</text>
+
+<!-- With ODP -->
+<rect x="480" y="68" width="400" height="296" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+<text x="680" y="90" style="font-size:15px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">With ODP — Lazy Translation</text>
+
+<rect x="496" y="100" width="368" height="40" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="680" y="125" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">ibv_reg_mr(pd, buf, len, ODP_flag)</text>
+
+<rect x="496" y="152" width="368" height="44" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="680" y="170" style="font-size:13px;fill:#212121;text-anchor:middle;">Registration instant — no page pinning</text>
+<text x="680" y="187" style="font-size:13px;fill:#4A8A99;text-anchor:middle;">Pages translated lazily by RDMA HW</text>
+
+<!-- ODP flow -->
+<rect x="496" y="206" width="368" height="140" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="680" y="224" style="font-size:13px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">ODP Fault Flow</text>
+<text x="506" y="244" style="font-size:12px;fill:#444;">1. NIC issues RDMA Read to missing GVA</text>
+<text x="506" y="262" style="font-size:12px;fill:#444;">2. NIC triggers ODP page fault to kernel</text>
+<text x="506" y="280" style="font-size:12px;fill:#444;">3. Kernel resolves fault → maps physical page</text>
+<text x="506" y="298" style="font-size:12px;fill:#444;">4. Kernel pushes translation to NIC MMU</text>
+<text x="506" y="316" style="font-size:12px;fill:#444;">5. NIC retries RDMA access — succeeds</text>
+<text x="506" y="334" style="font-size:12px;fill:#4A8A99;font-weight:bold;">Works transparently with OS virtual memory</text>
+
+<!-- ODP architecture diagram -->
+<rect x="20" y="376" width="860" height="152" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="396" style="font-size:15px;font-weight:bold;fill:#212121;text-anchor:middle;">ODP Architecture</text>
+
+<!-- Components -->
+<rect x="36" y="408" width="150" height="56" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="111" y="430" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">RDMA App</text>
+<text x="111" y="448" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">GVA addressing</text>
+<text x="111" y="463" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">no pinning</text>
+
+<line x1="186" y1="436" x2="210" y2="436" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<rect x="210" y="408" width="160" height="56" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="290" y="430" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">RDMA HCA</text>
+<text x="290" y="448" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">NIC MMU (IOMMU)</text>
+<text x="290" y="463" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">per-MR page table</text>
+
+<line x1="370" y1="436" x2="394" y2="436" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="382" y="428" style="font-size:11px;fill:#BF616A;">fault</text>
+
+<rect x="394" y="408" width="180" height="56" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="484" y="430" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">ODP Fault Handler</text>
+<text x="484" y="448" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">kernel: pagefault_user</text>
+<text x="484" y="463" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">resolve + push GVA→PA</text>
+
+<line x1="574" y1="436" x2="598" y2="436" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<rect x="598" y="408" width="150" height="56" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="673" y="430" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">DRAM</text>
+<text x="673" y="448" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">physical pages</text>
+<text x="673" y="463" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">(swappable)</text>
+
+<!-- Limitation -->
+<rect x="762" y="408" width="110" height="56" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="817" y="428" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">ODP Latency</text>
+<text x="817" y="445" style="font-size:11px;fill:#8A4040;text-anchor:middle;">+µs per fault</text>
+<text x="817" y="460" style="font-size:11px;fill:#8A4040;text-anchor:middle;">tradeoff</text>
+
+<!-- Support note -->
+<rect x="36" y="480" width="820" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="446" y="502" style="font-size:12px;fill:#1E3A5A;text-anchor:middle;">ODP supported: Mellanox ConnectX-4+, Intel Omni-Path; requires kernel ib_umem_odp module; implicit ODP (iODP) in ConnectX-6+</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.5:</strong> RDMA On-Demand Paging (ODP). Traditional ibv_reg_mr pins all pages upfront, locking them in RAM. ODP registers memory regions without pinning; page translations are resolved lazily when the NIC issues a fault, then pushed to the NIC MMU by the kernel ODP fault handler, enabling RDMA over demand-paged virtual memory.</figcaption>
+</figure>
+
+
 <h3 id="the-rdma-model">The RDMA Model</h3>
 <p>Traditional networking involves the kernel at every step:</p>
 <pre><code>Traditional send():
@@ -2500,6 +2821,113 @@ embedded general-purpose processors—typically ARM cores running Linux.
 Unlike traditional NICs that offload specific functions (TCP checksum,
 RDMA), Smart NICs can run arbitrary software, making them programmable
 infrastructure accelerators.</p>
+
+<figure id="fig-10-4" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+<filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+<marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+<marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">SmartNIC / DPU Memory Architecture</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">DPUs offload networking tasks with their own ARM cores, DRAM, and IOMMU — appearing as a PCIe device to the host</text>
+
+<!-- Host System -->
+<rect x="20" y="68" width="360" height="290" rx="8" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+<text x="200" y="90" style="font-size:15px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Host CPU System</text>
+
+<rect x="36" y="100" width="160" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="116" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">x86 CPU Cores</text>
+<text x="116" y="142" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">host OS / hypervisor</text>
+
+<rect x="210" y="100" width="150" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="285" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Host IOMMU</text>
+<text x="285" y="142" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">VT-d / AMD-Vi</text>
+
+<rect x="36" y="172" width="324" height="40" rx="4" style="fill:#4A8A99;"/>
+<text x="198" y="197" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Host DRAM — 512 GB DDR5</text>
+
+<!-- Host VM workloads -->
+<rect x="36" y="224" width="150" height="50" rx="4" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+<text x="111" y="244" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">VM Workloads</text>
+<text x="111" y="260" style="font-size:12px;fill:#3A5070;text-anchor:middle;">app / KVM guests</text>
+
+<rect x="210" y="224" width="150" height="50" rx="4" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+<text x="285" y="244" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">OVS / DPDK</text>
+<text x="285" y="260" style="font-size:12px;fill:#3A5070;text-anchor:middle;">networking stack</text>
+
+<!-- PCIe bus -->
+<rect x="36" y="286" width="324" height="36" rx="4" style="fill:#9E9E9E;"/>
+<text x="198" y="308" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PCIe Gen5 ×16</text>
+
+<!-- DPU (SmartNIC) -->
+<rect x="420" y="68" width="460" height="380" rx="8" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;" filter="url(#sh)"/>
+<text x="650" y="90" style="font-size:15px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">DPU / SmartNIC (e.g., NVIDIA BlueField-3)</text>
+
+<!-- DPU ARM cores -->
+<rect x="436" y="100" width="180" height="70" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="526" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">ARM Cortex A78 Cores</text>
+<text x="526" y="140" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Linux on DPU</text>
+<text x="526" y="157" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">DPDK / OVS-DOCA</text>
+
+<!-- DPU IOMMU -->
+<rect x="626" y="100" width="144" height="70" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="698" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">DPU IOMMU</text>
+<text x="698" y="142" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Isolates DPU</text>
+<text x="698" y="157" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">DMA from host</text>
+
+<!-- DPU DRAM -->
+<rect x="436" y="182" width="334" height="40" rx="4" style="fill:#4A8A99;"/>
+<text x="603" y="207" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">DPU Local DRAM — 32 GB LPDDR5</text>
+
+<!-- Packet engines -->
+<rect x="436" y="234" width="160" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="516" y="254" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Packet Engine</text>
+<text x="516" y="270" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">100 GbE line rate</text>
+<text x="516" y="285" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">parsing / matching</text>
+
+<!-- Crypto/compress -->
+<rect x="610" y="234" width="160" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="690" y="254" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Offload Engines</text>
+<text x="690" y="270" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Crypto / TLS</text>
+<text x="690" y="285" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">Compress / RegEx</text>
+
+<!-- Network ports -->
+<rect x="436" y="310" width="334" height="40" rx="4" style="fill:#9E9E9E;"/>
+<text x="603" y="335" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">2 × 200 GbE Network Ports</text>
+
+<!-- PCIe interface -->
+<rect x="436" y="362" width="334" height="36" rx="4" style="fill:#9E9E9E;"/>
+<text x="603" y="384" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PCIe Endpoint Interface → Host</text>
+
+<!-- Connection arrow -->
+<line x1="360" y1="304" x2="418" y2="375" style="stroke:#5E81AC;stroke-width:3;" marker-end="url(#arr)"/>
+
+<!-- External network -->
+<rect x="420" y="460" width="460" height="60" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="650" y="484" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">External Network (Datacenter Fabric)</text>
+<text x="650" y="505" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">RoCEv2 / Ethernet / InfiniBand</text>
+
+<line x1="603" y1="450" x2="603" y2="458" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<line x1="603" y1="350" x2="603" y2="360" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+
+<!-- Memory offload benefit -->
+<rect x="20" y="370" width="380" height="166" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="210" y="390" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">DPU Memory Offload Benefits</text>
+<text x="30" y="410" style="font-size:12px;fill:#444;">• Host CPU freed from packet processing</text>
+<text x="30" y="428" style="font-size:12px;fill:#444;">• DPU DRAM: flow tables, ACLs, crypto keys</text>
+<text x="30" y="446" style="font-size:12px;fill:#444;">• RDMA: DPU mediates host↔network addr translation</text>
+<text x="30" y="464" style="font-size:12px;fill:#444;">• Host sees DPU as VirtIO / NVMe device via PCIe</text>
+<text x="30" y="482" style="font-size:12px;fill:#444;">• DPU IOMMU: isolates DPU DMA from host memory</text>
+<text x="30" y="500" style="font-size:12px;fill:#444;">• Storage: NVMe-oF target runs on DPU ARM cores</text>
+<text x="30" y="520" style="font-size:12px;fill:#444;">• Security: encryption/keys never visible to host OS</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.4:</strong> SmartNIC / DPU memory architecture. The DPU (e.g., NVIDIA BlueField-3) integrates ARM cores, local LPDDR5 DRAM, packet processing engines, and crypto/compress offload engines behind a PCIe endpoint interface. The DPU runs its own Linux kernel and maintains its own IOMMU, isolating DPU DMA from host memory.</figcaption>
+</figure>
+
+
 <p>The memory management challenge: how does the DPU's CPU access host
 memory? The DPU is a separate computer connected via PCIe. It has its
 own RAM, its own OS, and its own page tables. Accessing host memory

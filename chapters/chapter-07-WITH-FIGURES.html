@@ -1685,6 +1685,164 @@ handle them).</p>
 mechanisms, refined over decades from the original 80386. Understanding
 x86-64 page faults in detail provides a reference point for comparing
 other architectures.</p>
+
+<figure id="fig-7-3" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+  <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.15"/></filter>
+</defs>
+<rect width="900" height="560" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">x86-64 Page Fault Error Code Decoder</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">CR2 holds the faulting virtual address; error code on stack encodes the fault type</text>
+
+<!-- Error code bit field -->
+<rect x="40" y="72" width="820" height="68" rx="6" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1.5;"/>
+<text x="450" y="92" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">32-bit Error Code (pushed onto kernel stack by CPU)</text>
+<!-- Bit slots -->
+<rect x="56" y="104" width="76" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:1;"/>
+<text x="94" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Bits 31–5</text>
+<rect x="136" y="104" width="46" height="26" rx="3" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:1;"/>
+<text x="159" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PK</text>
+<rect x="186" y="104" width="46" height="26" rx="3" style="fill:#BF616A;stroke:#8A2020;stroke-width:1;"/>
+<text x="209" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">SS</text>
+<rect x="236" y="104" width="46" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:1;"/>
+<text x="259" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">SGX</text>
+<rect x="286" y="104" width="46" height="26" rx="3" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:1;"/>
+<text x="309" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">NX/XD</text>
+<rect x="336" y="104" width="46" height="26" rx="3" style="fill:#BF616A;stroke:#8A2020;stroke-width:1;"/>
+<text x="359" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Rsvd</text>
+<rect x="386" y="104" width="46" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:1;"/>
+<text x="409" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">PK</text>
+<rect x="436" y="104" width="76" height="26" rx="3" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:1;"/>
+<text x="474" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">HLAT</text>
+<rect x="516" y="104" width="46" height="26" rx="3" style="fill:#BF616A;stroke:#8A2020;stroke-width:1;"/>
+<text x="539" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">SGX</text>
+<rect x="566" y="104" width="46" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:1;"/>
+<text x="589" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">MK</text>
+<!-- Key bits -->
+<rect x="616" y="104" width="46" height="26" rx="3" style="fill:#4A8A99;stroke:#2E6A7A;stroke-width:2;"/>
+<text x="639" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">I/D</text>
+<rect x="666" y="104" width="46" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:2;"/>
+<text x="689" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">U/S</text>
+<rect x="716" y="104" width="46" height="26" rx="3" style="fill:#BF616A;stroke:#8A2020;stroke-width:2;"/>
+<text x="739" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">W/R</text>
+<rect x="766" y="104" width="46" height="26" rx="3" style="fill:#5E81AC;stroke:#3A6090;stroke-width:2;"/>
+<text x="789" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">P</text>
+<!-- Bit numbers -->
+<text x="94" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">31–5</text>
+<text x="639" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">bit 4</text>
+<text x="689" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">bit 3</text>
+<text x="739" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">bit 2</text>
+<text x="789" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">bit 1</text>
+<text x="839" y="100" style="font-size:10px;fill:#5A7A9C;text-anchor:middle;">bit 0</text>
+<rect x="816" y="104" width="46" height="26" rx="3" style="fill:#BF616A;stroke:#8A2020;stroke-width:2;"/>
+<text x="839" y="121" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">P</text>
+
+<!-- Decision tree -->
+<!-- P bit (bit 0) -->
+<rect x="370" y="162" width="160" height="44" rx="6" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="180" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Bit 0 — P (Present)</text>
+<text x="450" y="198" style="font-size:13px;fill:#DDEAF5;text-anchor:middle;">Is the PTE present?</text>
+<line x1="450" y1="206" x2="450" y2="236" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- P=0 branch -->
+<line x1="370" y1="184" x2="200" y2="236" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="270" y="222" style="font-size:12px;fill:#BF616A;font-weight:bold;">P=0</text>
+<rect x="100" y="236" width="200" height="44" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="200" y="254" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Not-Present Fault</text>
+<text x="200" y="271" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Page never mapped / swapped</text>
+
+<!-- P=1 branch -->
+<text x="490" y="228" style="font-size:12px;fill:#4A8A99;font-weight:bold;">P=1</text>
+<rect x="370" y="236" width="160" height="44" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="254" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Bit 1 — W/R</text>
+<text x="450" y="271" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Was it a write?</text>
+<line x1="450" y1="280" x2="450" y2="310" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<!-- W/R=1 write fault -->
+<line x1="370" y1="258" x2="200" y2="310" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="268" y="296" style="font-size:12px;fill:#BF616A;font-weight:bold;">W=1</text>
+<rect x="100" y="310" width="200" height="44" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="200" y="328" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Write Protection Fault</text>
+<text x="200" y="345" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">COW / R/O page written</text>
+
+<!-- U/S bit -->
+<text x="490" y="302" style="font-size:12px;fill:#5E81AC;font-weight:bold;">W=0</text>
+<rect x="370" y="310" width="160" height="44" rx="6" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="450" y="328" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Bit 2 — U/S</text>
+<text x="450" y="345" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">User or Supervisor mode?</text>
+<line x1="450" y1="354" x2="450" y2="384" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- U=1 user mode -->
+<line x1="370" y1="332" x2="200" y2="384" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="268" y="370" style="font-size:12px;fill:#BF616A;font-weight:bold;">U=1</text>
+<rect x="100" y="384" width="200" height="44" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="200" y="402" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">User Privilege Fault</text>
+<text x="200" y="419" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Access to kernel mapping</text>
+
+<!-- I/D + NX -->
+<text x="490" y="376" style="font-size:12px;fill:#4A8A99;font-weight:bold;">S=1</text>
+<rect x="370" y="384" width="160" height="44" rx="6" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="450" y="402" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">Bits 3–4 — I/D, NX</text>
+<text x="450" y="419" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Instruction fetch on NX page?</text>
+
+<!-- NX=1 -->
+<line x1="530" y1="406" x2="630" y2="406" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="578" y="398" style="font-size:12px;fill:#BF616A;font-weight:bold;">I/D=1 + NX</text>
+<rect x="630" y="384" width="220" height="44" rx="6" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="740" y="402" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">NX / XD Violation</text>
+<text x="740" y="419" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Execute-disable bit set on page</text>
+
+<!-- Protection Key -->
+<line x1="450" y1="428" x2="450" y2="458" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<rect x="360" y="458" width="180" height="44" rx="6" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="450" y="476" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">PK / RSVD / SGX</text>
+<text x="450" y="493" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">Protection-key / reserved / SGX faults</text>
+
+<!-- Right column: error code examples -->
+<rect x="630" y="162" width="230" height="200" rx="6" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+<text x="745" y="182" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Common Error Codes</text>
+<text x="640" y="202" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0000</text>
+<text x="700" y="202" style="font-size:12px;fill:#444;">Read, kernel, not-present</text>
+<text x="640" y="220" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0002</text>
+<text x="700" y="220" style="font-size:12px;fill:#444;">Write, kernel, not-present</text>
+<text x="640" y="238" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0004</text>
+<text x="700" y="238" style="font-size:12px;fill:#444;">Read, user, not-present</text>
+<text x="640" y="256" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0005</text>
+<text x="700" y="256" style="font-size:12px;fill:#444;">Read, user, present (SIGSEGV)</text>
+<text x="640" y="274" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0007</text>
+<text x="700" y="274" style="font-size:12px;fill:#444;">Write, user, present (COW)</text>
+<text x="640" y="292" style="font-size:13px;font-weight:bold;fill:#5E81AC;">0x0011</text>
+<text x="700" y="292" style="font-size:12px;fill:#444;">Instr fetch, user, present</text>
+<text x="640" y="310" style="font-size:13px;font-weight:bold;fill:#BF616A;">0x0015</text>
+<text x="700" y="310" style="font-size:12px;fill:#444;">Instr fetch, NX violation</text>
+<text x="640" y="328" style="font-size:13px;font-weight:bold;fill:#BF616A;">0x0021</text>
+<text x="700" y="328" style="font-size:12px;fill:#444;">Protection key violation</text>
+<text x="640" y="346" style="font-size:13px;font-weight:bold;fill:#BF616A;">0x0008</text>
+<text x="700" y="346" style="font-size:12px;fill:#444;">Reserved bit set in PTE</text>
+
+<!-- CR2 note -->
+<rect x="630" y="372" width="230" height="50" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="745" y="390" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">CR2 Register</text>
+<text x="745" y="408" style="font-size:12px;fill:#3A5070;text-anchor:middle;">Always holds the faulting virtual</text>
+<text x="745" y="422" style="font-size:12px;fill:#3A5070;text-anchor:middle;">address at fault time</text>
+
+<!-- Not-present → actions -->
+<line x1="200" y1="280" x2="200" y2="320" style="stroke:#BF616A;stroke-width:1.5;stroke-dasharray:4,3;"/>
+<rect x="56" y="460" width="280" height="68" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+<text x="196" y="478" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Not-Present Handler Actions</text>
+<text x="66" y="496" style="font-size:12px;fill:#444;">• Demand page: allocate + zero + map</text>
+<text x="66" y="512" style="font-size:12px;fill:#444;">• Swap: read from swap device, map</text>
+<text x="66" y="527" style="font-size:12px;fill:#444;">• File-backed: read from VFS, map</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.3:</strong> The x86-64 page fault error code bit field and decision tree. Bit 0 (P) distinguishes not-present faults from protection violations; bits 1–4 encode write/read, user/supervisor, reserved-bit, and instruction-fetch faults.</figcaption>
+</figure>
+
+
 <h3 id="page-fault-exception-pf-vector-14">7.3.1 Page Fault Exception
 (#PF, Vector 14)</h3>
 <p>On x86-64, page faults are exception 14 in the Interrupt Descriptor
@@ -4382,6 +4540,154 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb115-1"><a href="#cb1
 let's examine how operating systems actually handle page faults from
 start to finish. Understanding this flow ties together all the concepts
 from previous sections.</p>
+
+<figure id="fig-7-4" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+  <marker id="arr-r" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#BF616A;"/></marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#4A8A99;"/></marker>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.15"/></filter>
+</defs>
+<rect width="900" height="580" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Copy-on-Write (COW) Fork Sequence</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">fork() maps parent pages read-only in child — first write triggers COW page fault and private copy</text>
+
+<!-- Phase labels -->
+<rect x="20" y="68" width="260" height="24" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
+<text x="150" y="84" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Phase 1: fork() — O(1) page sharing</text>
+<rect x="310" y="68" width="260" height="24" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="440" y="84" style="font-size:13px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Phase 2: Write → COW Fault</text>
+<rect x="600" y="68" width="280" height="24" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+<text x="740" y="84" style="font-size:13px;font-weight:bold;fill:#1E4A3A;text-anchor:middle;">Phase 3: Private Copy Created</text>
+
+<!-- Phase 1: parent/child page tables -->
+<!-- Parent PTE -->
+<rect x="30" y="106" width="110" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="85" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Parent PTE</text>
+<text x="85" y="139" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">R/W → R/O</text>
+<!-- Child PTE -->
+<rect x="160" y="106" width="110" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="215" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Child PTE</text>
+<text x="215" y="139" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">copy, R/O</text>
+
+<!-- Physical page -->
+<rect x="80" y="192" width="150" height="50" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="155" y="212" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Physical Page</text>
+<text x="155" y="228" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">refcount = 2, R/O</text>
+
+<!-- Arrows from PTEs to page -->
+<line x1="85" y1="146" x2="120" y2="190" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="215" y1="146" x2="185" y2="190" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- Phase 1 annotation -->
+<rect x="20" y="258" width="260" height="56" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="150" y="275" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">fork() shares all pages</text>
+<text x="30" y="293" style="font-size:12px;fill:#444;">• Parent PTEs set read-only</text>
+<text x="30" y="309" style="font-size:12px;fill:#444;">• Child inherits R/O references</text>
+
+<!-- Separator -->
+<line x1="292" y1="68" x2="292" y2="560" style="stroke:#DDE4EE;stroke-width:1.5;stroke-dasharray:5,4;"/>
+
+<!-- Phase 2: write triggers fault -->
+<!-- Child attempts write -->
+<rect x="310" y="106" width="140" height="40" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="380" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Child Writes to</text>
+<text x="380" y="139" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">VA → R/O PTE → #PF</text>
+
+<!-- Error code -->
+<rect x="460" y="106" width="100" height="40" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="510" y="122" style="font-size:12px;font-weight:bold;fill:#BF616A;text-anchor:middle;">Error Code</text>
+<text x="510" y="139" style="font-size:13px;font-weight:bold;fill:#BF616A;text-anchor:middle;">0x0007</text>
+
+<line x1="400" y1="146" x2="400" y2="176" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+
+<!-- Kernel COW handler -->
+<rect x="310" y="176" width="250" height="60" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="435" y="196" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">do_wp_page() handler</text>
+<text x="435" y="213" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">1. Fault confirmed as COW write</text>
+<text x="435" y="229" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">2. Check refcount of physical page</text>
+
+<line x1="435" y1="236" x2="435" y2="266" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+
+<!-- Refcount check -->
+<rect x="310" y="266" width="250" height="54" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="435" y="284" style="font-size:14px;font-weight:bold;fill:#fff;text-anchor:middle;">refcount == 1?</text>
+<text x="435" y="301" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Only one mapper — reuse in-place</text>
+<text x="435" y="317" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">refcount &gt; 1 — must copy</text>
+
+<!-- Yes branch - reuse -->
+<line x1="310" y1="293" x2="200" y2="345" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+<text x="235" y="325" style="font-size:12px;fill:#4A8A99;font-weight:bold;">ref=1</text>
+<rect x="100" y="345" width="190" height="50" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="195" y="365" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Reuse in-place</text>
+<text x="195" y="382" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">Mark PTE writable, no copy</text>
+
+<!-- No branch - must copy -->
+<line x1="560" y1="293" x2="435" y2="345" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<text x="516" y="325" style="font-size:12px;fill:#BF616A;font-weight:bold;">ref&gt;1</text>
+<rect x="310" y="345" width="250" height="50" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="435" y="365" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Allocate new page</text>
+<text x="435" y="382" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">alloc_page() + copy_page()</text>
+
+<line x1="435" y1="395" x2="435" y2="425" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-r)"/>
+<rect x="310" y="425" width="250" height="50" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="435" y="445" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Copy content</text>
+<text x="435" y="462" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">memcpy(new_page, old_page)</text>
+
+<!-- Separator -->
+<line x1="577" y1="68" x2="577" y2="560" style="stroke:#DDE4EE;stroke-width:1.5;stroke-dasharray:5,4;"/>
+
+<!-- Phase 3: After COW -->
+<!-- Parent PTE -->
+<rect x="600" y="106" width="120" height="40" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="660" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Parent PTE</text>
+<text x="660" y="139" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">still R/O → orig page</text>
+
+<!-- Child PTE now writable -->
+<rect x="750" y="106" width="130" height="40" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="815" y="122" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Child PTE</text>
+<text x="815" y="139" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">R/W → new page</text>
+
+<!-- Original physical page -->
+<rect x="590" y="210" width="140" height="50" rx="5" style="fill:#9E9E9E;" filter="url(#sh)"/>
+<text x="660" y="230" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">Original Page</text>
+<text x="660" y="247" style="font-size:12px;fill:#F5F5F5;text-anchor:middle;">refcount = 1</text>
+
+<!-- New private page -->
+<rect x="750" y="210" width="130" height="50" rx="5" style="fill:#4A8A99;" filter="url(#sh)"/>
+<text x="815" y="230" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">New Private Page</text>
+<text x="815" y="247" style="font-size:12px;fill:#CCE8EC;text-anchor:middle;">refcount = 1, R/W</text>
+
+<!-- Arrows phase 3 -->
+<line x1="660" y1="146" x2="660" y2="208" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<line x1="815" y1="146" x2="815" y2="208" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-g)"/>
+
+<!-- TLB flush note -->
+<rect x="590" y="278" width="290" height="80" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="735" y="296" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">After COW Resolution</text>
+<text x="600" y="314" style="font-size:12px;fill:#444;">• Child PTE updated: new PFN + R/W</text>
+<text x="600" y="330" style="font-size:12px;fill:#444;">• TLB entry for child VA flushed (INVLPG)</text>
+<text x="600" y="346" style="font-size:12px;fill:#444;">• Child resumes: write succeeds</text>
+
+<!-- Performance note -->
+<rect x="590" y="370" width="290" height="80" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="735" y="388" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Performance Characteristics</text>
+<text x="600" y="406" style="font-size:12px;fill:#3A5070;">• fork() cost: O(1) — only copy PTEs</text>
+<text x="600" y="422" style="font-size:12px;fill:#3A5070;">• COW fault: ~1–2 µs per page copied</text>
+<text x="600" y="438" style="font-size:12px;fill:#3A5070;">• Write-heavy child: deferred copying</text>
+
+<!-- Bottom annotation -->
+<rect x="20" y="480" width="555" height="58" rx="4" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="297" y="498" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Key Insight: COW makes fork() near-instantaneous</text>
+<text x="30" y="516" style="font-size:12px;fill:#444;">Pages are shared read-only at fork time; private copies are created lazily only when a process actually writes.</text>
+<text x="30" y="532" style="font-size:12px;fill:#444;">exec() immediately discards the mapping, so COW work is skipped entirely in the common fork+exec pattern.</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.4:</strong> Copy-on-Write fork sequence. Phase 1: fork() marks all pages read-only in both parent and child. Phase 2: a write triggers error code 0x0007 and enters do_wp_page(). Phase 3: a private copy is allocated and the child PTE is upgraded to read-write.</figcaption>
+</figure>
+
+
 <h3 id="hardware-steps">7.10.1 Hardware Steps</h3>
 <p>When the MMU detects a fault condition, the hardware performs these
 steps automatically:</p>
@@ -5367,6 +5673,143 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb142-1"><a href="#cb1
 <p>Page faults are expensive. Understanding their performance impact is
 crucial for writing efficient systems software and diagnosing
 performance problems.</p>
+
+<figure id="fig-7-5" style="text-align:center;margin:2em auto;">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
+  <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.12"/></filter>
+</defs>
+<rect width="900" height="540" style="fill:#fff;"/>
+<text x="450" y="34" style="font-size:20px;font-weight:bold;fill:#212121;text-anchor:middle;">Minor vs Major Page Fault Cost Comparison</text>
+<text x="450" y="55" style="font-size:13px;fill:#616161;text-anchor:middle;">Minor faults resolve in microseconds; major faults require I/O and can take milliseconds</text>
+
+<!-- Section headers -->
+<rect x="20" y="68" width="415" height="26" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
+<text x="227" y="85" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Minor Fault — No I/O Required</text>
+<rect x="465" y="68" width="415" height="26" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="672" y="85" style="font-size:14px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Major Fault — I/O Required (Page Swap/Read)</text>
+
+<!-- Minor fault flow -->
+<!-- Step boxes -->
+<rect x="30" y="106" width="180" height="44" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="120" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU faults (TLB miss)</text>
+<text x="120" y="141" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">PTE present=0 or perm</text>
+<line x1="210" y1="128" x2="240" y2="128" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr)"/>
+<rect x="240" y="106" width="180" height="44" rx="5" style="fill:#5E81AC;" filter="url(#sh)"/>
+<text x="330" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">OS fault handler</text>
+<text x="330" y="141" style="font-size:12px;fill:#DDEAF5;text-anchor:middle;">page in memory / COW</text>
+
+<!-- Minor sub-cases -->
+<rect x="20" y="168" width="420" height="148" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="230" y="186" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Minor Fault Sub-Cases</text>
+
+<rect x="30" y="194" width="180" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="120" y="210" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Anonymous zero page</text>
+<text x="120" y="225" style="font-size:12px;fill:#3A5070;text-anchor:middle;">alloc + zero + map</text>
+
+<rect x="228" y="194" width="200" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="328" y="210" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">COW write-protect</text>
+<text x="328" y="225" style="font-size:12px;fill:#3A5070;text-anchor:middle;">memcpy + remap PTE</text>
+
+<rect x="30" y="240" width="180" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="120" y="256" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Shared mapping remap</text>
+<text x="120" y="271" style="font-size:12px;fill:#3A5070;text-anchor:middle;">PTE insert, page_add_rmap</text>
+
+<rect x="228" y="240" width="200" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+<text x="328" y="256" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">mmap file (already cached)</text>
+<text x="328" y="271" style="font-size:12px;fill:#3A5070;text-anchor:middle;">page in page cache, map only</text>
+
+<!-- Minor timing bar -->
+<rect x="20" y="326" width="420" height="72" rx="5" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1.5;"/>
+<text x="230" y="346" style="font-size:14px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Minor Fault Latency</text>
+<!-- Bar chart -->
+<rect x="30" y="358" width="30" height="16" rx="2" style="fill:#5E81AC;"/>
+<text x="68" y="371" style="font-size:12px;fill:#212121;">Zero page: ~0.5 µs</text>
+<rect x="30" y="378" width="80" height="16" rx="2" style="fill:#5E81AC;"/>
+<text x="118" y="391" style="font-size:12px;fill:#212121;">COW copy: ~1–2 µs</text>
+
+<!-- Major fault flow -->
+<rect x="475" y="106" width="180" height="44" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<text x="565" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">CPU faults (TLB miss)</text>
+<text x="565" y="141" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">Page evicted to swap</text>
+<line x1="655" y1="128" x2="685" y2="128" style="stroke:#BF616A;stroke-width:2;marker-end:none;"/>
+<rect x="685" y="106" width="190" height="44" rx="5" style="fill:#BF616A;" filter="url(#sh)"/>
+<line x1="655" y1="128" x2="683" y2="128" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr)"/>
+<text x="780" y="124" style="font-size:13px;font-weight:bold;fill:#fff;text-anchor:middle;">OS fault handler</text>
+<text x="780" y="141" style="font-size:12px;fill:#F0D9D9;text-anchor:middle;">swap_in or file read</text>
+
+<!-- Major I/O steps -->
+<rect x="465" y="168" width="415" height="148" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="672" y="186" style="font-size:13px;font-weight:bold;fill:#212121;text-anchor:middle;">Major Fault I/O Sequence</text>
+<!-- Steps -->
+<rect x="475" y="194" width="120" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="535" y="210" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">1. Task blocked</text>
+<text x="535" y="225" style="font-size:12px;fill:#8A4040;text-anchor:middle;">TASK_UNINTERRUPTIBLE</text>
+<line x1="597" y1="212" x2="610" y2="212" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr)"/>
+<rect x="610" y="194" width="120" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="670" y="210" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">2. I/O submitted</text>
+<text x="670" y="225" style="font-size:12px;fill:#8A4040;text-anchor:middle;">bio / async read</text>
+<line x1="732" y1="212" x2="746" y2="212" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr)"/>
+<rect x="746" y="194" width="122" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="807" y="210" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">3. Disk read</text>
+<text x="807" y="225" style="font-size:12px;fill:#8A4040;text-anchor:middle;">SSD: 0.1ms / HDD: 5ms</text>
+<rect x="475" y="240" width="120" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="535" y="256" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">4. PTE updated</text>
+<text x="535" y="271" style="font-size:12px;fill:#8A4040;text-anchor:middle;">new PFN, clear swap</text>
+<line x1="597" y1="258" x2="610" y2="258" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr)"/>
+<rect x="610" y="240" width="120" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="670" y="256" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">5. Task woken</text>
+<text x="670" y="271" style="font-size:12px;fill:#8A4040;text-anchor:middle;">schedule() resumes</text>
+<line x1="732" y1="258" x2="746" y2="258" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr)"/>
+<rect x="746" y="240" width="122" height="36" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+<text x="807" y="256" style="font-size:12px;font-weight:bold;fill:#7A2020;text-anchor:middle;">6. Retry access</text>
+<text x="807" y="271" style="font-size:12px;fill:#8A4040;text-anchor:middle;">TLB loaded, continues</text>
+
+<!-- Major timing bar -->
+<rect x="465" y="326" width="415" height="72" rx="5" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+<text x="672" y="346" style="font-size:14px;font-weight:bold;fill:#7A2020;text-anchor:middle;">Major Fault Latency (vs Minor)</text>
+<rect x="475" y="358" width="30" height="14" rx="2" style="fill:#4A8A99;"/>
+<text x="513" y="370" style="font-size:12px;fill:#212121;">Minor: ~0.5–2 µs</text>
+<rect x="475" y="378" width="240" height="14" rx="2" style="fill:#BF616A;"/>
+<text x="723" y="390" style="font-size:12px;fill:#212121;">Major (SSD): 100–500 µs</text>
+
+<!-- Comparison table -->
+<rect x="20" y="416" width="860" height="106" rx="5" style="fill:#F5F5F5;stroke:#DDE4EE;"/>
+<text x="450" y="434" style="font-size:14px;font-weight:bold;fill:#212121;text-anchor:middle;">Key Metrics Comparison</text>
+<!-- Headers -->
+<text x="100" y="454" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Fault Type</text>
+<text x="280" y="454" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Typical Latency</text>
+<text x="460" y="454" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">I/O Required</text>
+<text x="630" y="454" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Context Switch</text>
+<text x="800" y="454" style="font-size:13px;font-weight:bold;fill:#1E3A5A;text-anchor:middle;">Common Cause</text>
+<line x1="30" y1="458" x2="870" y2="458" style="stroke:#DDE4EE;stroke-width:1;"/>
+<text x="100" y="474" style="font-size:12px;fill:#212121;text-anchor:middle;">Minor (anon)</text>
+<text x="280" y="474" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">0.5 – 2 µs</text>
+<text x="460" y="474" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">No</text>
+<text x="630" y="474" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">No</text>
+<text x="800" y="474" style="font-size:12px;fill:#212121;text-anchor:middle;">first write, COW</text>
+<text x="100" y="492" style="font-size:12px;fill:#212121;text-anchor:middle;">Minor (file-cached)</text>
+<text x="280" y="492" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">2 – 10 µs</text>
+<text x="460" y="492" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">No</text>
+<text x="630" y="492" style="font-size:12px;fill:#4A8A99;text-anchor:middle;">No</text>
+<text x="800" y="492" style="font-size:12px;fill:#212121;text-anchor:middle;">mmap, page cache hit</text>
+<text x="100" y="510" style="font-size:12px;fill:#212121;text-anchor:middle;">Major (SSD swap)</text>
+<text x="280" y="510" style="font-size:12px;fill:#BF616A;text-anchor:middle;">100 – 500 µs</text>
+<text x="460" y="510" style="font-size:12px;fill:#BF616A;text-anchor:middle;">Yes (SSD)</text>
+<text x="630" y="510" style="font-size:12px;fill:#BF616A;text-anchor:middle;">Yes</text>
+<text x="800" y="510" style="font-size:12px;fill:#212121;text-anchor:middle;">swap read, evicted page</text>
+<text x="100" y="528" style="font-size:12px;fill:#212121;text-anchor:middle;">Major (HDD swap)</text>
+<text x="280" y="528" style="font-size:12px;fill:#BF616A;text-anchor:middle;">5 – 15 ms</text>
+<text x="460" y="528" style="font-size:12px;fill:#BF616A;text-anchor:middle;">Yes (HDD)</text>
+<text x="630" y="528" style="font-size:12px;fill:#BF616A;text-anchor:middle;">Yes</text>
+<text x="800" y="528" style="font-size:12px;fill:#212121;text-anchor:middle;">rotational media read</text>
+</svg>
+<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.5:</strong> Minor versus major page fault cost comparison. Minor faults resolve in 0.5–10 µs without I/O; major faults require a blocking device read and take 100 µs (SSD) to 15 ms (HDD), during which the faulting task is descheduled.</figcaption>
+</figure>
+
+
 <h3 id="page-fault-cost-breakdown">7.11.1 Page Fault Cost Breakdown</h3>
 <p>Let's quantify the cost of different page fault types on a modern
 x86-64 system (Intel Core i9, 3.0 GHz):</p>
