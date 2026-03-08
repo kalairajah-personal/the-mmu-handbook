@@ -772,7 +772,56 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 and Optimization</h1>
 </header>
 
-<h2 id="page-replacement-algorithms-from-theory-to-practice">8.5 Page
+<nav id="TOC" role="doc-toc">
+<ul>
+  <li><a href="#page-replacement-algorithms" id="toc-page-replacement-algorithms">8.1 Page Replacement Algorithms: From Theory to Practice</a>
+  <ul>
+    <li><a href="#the-ideal-perfect-lru" id="toc-the-ideal-perfect-lru">8.1.1 The Ideal: Perfect LRU</a></li>
+    <li><a href="#clock-algorithm-practical-lru-approximation-1" id="toc-clock-algorithm-practical-lru-approximation-1">8.1.2 Clock Algorithm: Practical LRU Approximation</a></li>
+    <li><a href="#two-handed-clock-considering-cleanliness" id="toc-two-handed-clock-considering-cleanliness">8.1.3 Two-Handed Clock: Considering Cleanliness</a></li>
+    <li><a href="#multi-generational-lru-mglru-modern-sophistication" id="toc-multi-generational-lru-mglru-modern-sophistication">8.1.4 Multi-Generational LRU (MGLRU): Modern Sophistication</a></li>
+  </ul>
+  </li>
+  <li><a href="#memory-reclaim" id="toc-memory-reclaim">8.2 Memory Reclaim: When and How to Free Pages</a>
+  <ul>
+    <li><a href="#watermarks-detecting-memory-pressure-1" id="toc-watermarks-detecting-memory-pressure-1">8.2.1 Watermarks: Detecting Memory Pressure</a></li>
+    <li><a href="#kswapd-background-reclaim-daemon-1" id="toc-kswapd-background-reclaim-daemon-1">8.2.2 kswapd: Background Reclaim Daemon</a></li>
+    <li><a href="#direct-reclaim-the-emergency-path-1" id="toc-direct-reclaim-the-emergency-path-1">8.2.3 Direct Reclaim: The Emergency Path</a></li>
+    <li><a href="#swappiness-tuning-reclaim-behavior" id="toc-swappiness-tuning-reclaim-behavior">8.2.4 Swappiness: Tuning Reclaim Behavior</a></li>
+    <li><a href="#oom-killer-the-last-resort-1" id="toc-oom-killer-the-last-resort-1">8.2.5 OOM Killer: The Last Resort</a></li>
+  </ul>
+  </li>
+  <li><a href="#page-table-management" id="toc-page-table-management">8.3 Page Table Management: The Meta-Problem</a>
+  <ul>
+    <li><a href="#page-table-overhead-calculations" id="toc-page-table-overhead-calculations">8.3.1 Page Table Overhead Calculations</a></li>
+    <li><a href="#lazy-allocation-avoiding-waste" id="toc-lazy-allocation-avoiding-waste">8.3.2 Lazy Allocation: Avoiding Waste</a></li>
+    <li><a href="#page-table-reclamation" id="toc-page-table-reclamation">8.3.3 Page Table Reclamation</a></li>
+    <li><a href="#compact-vs-sparse-layouts" id="toc-compact-vs-sparse-layouts">8.3.4 Compact vs Sparse Layouts</a></li>
+    <li><a href="#huge-pages-the-ultimate-optimization" id="toc-huge-pages-the-ultimate-optimization">8.3.5 Huge Pages: The Ultimate Optimization</a></li>
+  </ul>
+  </li>
+  <li><a href="#performance-analysis-and-tuning" id="toc-performance-analysis-and-tuning">8.4 Performance Analysis and Tuning</a>
+  <ul>
+    <li><a href="#essential-profiling-tools" id="toc-essential-profiling-tools">8.4.1 Essential Profiling Tools</a></li>
+    <li><a href="#common-performance-issues" id="toc-common-performance-issues">8.4.2 Common Performance Issues</a></li>
+    <li><a href="#tuning-parameters" id="toc-tuning-parameters">8.4.3 Tuning Parameters</a></li>
+  </ul>
+  </li>
+  <li><a href="#chapter-summary" id="toc-chapter-summary">8.5 Chapter Summary</a>
+  <ul>
+    <li><a href="#integration-with-previous-chapters" id="toc-integration-with-previous-chapters">Integration with Previous Chapters</a></li>
+    <li><a href="#practical-takeaways-1" id="toc-practical-takeaways-1">Practical Takeaways</a></li>
+    <li><a href="#the-big-picture-1" id="toc-the-big-picture-1">The Big Picture</a></li>
+    <li><a href="#references-2" id="toc-references-2">References</a></li>
+  </ul>
+  </li>
+  <li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</nav>
+
+
+
+<h2 id="page-replacement-algorithms">8.1 Page
 Replacement Algorithms: From Theory to Practice</h2>
 <p>Now that we understand how the hardware provides A and D bits, we can
 explore how software uses them to make intelligent eviction decisions.
@@ -1006,7 +1055,7 @@ without perfect knowledge of future access patterns.</p>
 </figure>
 
 
-<h3 id="the-ideal-perfect-lru">8.5.1 The Ideal: Perfect LRU</h3>
+<h3 id="the-ideal-perfect-lru">8.1.1 The Ideal: Perfect LRU</h3>
 <p>The theoretically optimal algorithm is Least Recently Used (LRU):
 evict the page that was accessed longest ago. If page A was last
 accessed 10 seconds ago and page B was last accessed 5 seconds ago,
@@ -1073,7 +1122,7 @@ overhead (only on first access to set the bit).</p>
 <p>Perfect LRU is a beautiful theoretical concept but completely
 impractical. Real systems must approximate LRU using the limited
 information available from hardware—primarily the A bit.</p>
-<h3 id="clock-algorithm-practical-lru-approximation-1">8.5.2 Clock
+<h3 id="clock-algorithm-practical-lru-approximation-1">8.1.2 Clock
 Algorithm: Practical LRU Approximation</h3>
 <p>The Clock algorithm, invented by Fernando Corbató in 1968, provides a
 brilliant approximation of LRU using only the A bit. Pages are arranged
@@ -1179,7 +1228,7 @@ Average case:
 <p>The Clock algorithm has a crucial property: it doesn't suffer from
 Bélády's anomaly (where adding more memory makes performance worse).
 It's also simple to implement and has good average-case performance.</p>
-<h3 id="two-handed-clock-considering-cleanliness">8.5.3 Two-Handed
+<h3 id="two-handed-clock-considering-cleanliness">8.1.3 Two-Handed
 Clock: Considering Cleanliness</h3>
 <p>Basic Clock doesn't distinguish between clean and dirty pages. But we
 know dirty pages are 50-1000× more expensive to evict (must write to
@@ -1290,7 +1339,7 @@ after their A bit is cleared, providing better LRU approximation. The
 hand distance controls the tradeoff between accuracy (large distance)
 and responsiveness to memory pressure (small distance).</p>
 </blockquote>
-<h3 id="multi-generational-lru-mglru-modern-sophistication">8.5.4
+<h3 id="multi-generational-lru-mglru-modern-sophistication">8.1.4
 Multi-Generational LRU (MGLRU): Modern Sophistication</h3>
 <p>Linux kernel 5.18 (released May 2022) introduced a new approach
 called Multi-Generational LRU. Instead of binary A bit state
@@ -1441,7 +1490,7 @@ pages (accessed once, then aged out quickly).</p>
 <p>MGLRU represents the state-of-the-art in page replacement. It
 provides better LRU approximation than Clock or two-list approaches
 while maintaining similar O(1) amortized cost.</p>
-<h2 id="memory-reclaim-when-and-how-to-free-pages">8.6 Memory Reclaim:
+<h2 id="memory-reclaim">8.2 Memory Reclaim:
 When and How to Free Pages</h2>
 <p>Page replacement algorithms tell us <strong>which</strong> pages to
 evict. Now we need to understand <strong>when</strong> eviction happens
@@ -1564,7 +1613,7 @@ memory under pressure.</p>
 </figure>
 
 
-<h3 id="watermarks-detecting-memory-pressure-1">8.6.1 Watermarks:
+<h3 id="watermarks-detecting-memory-pressure-1">8.2.1 Watermarks:
 Detecting Memory Pressure</h3>
 <p>The kernel doesn't wait until memory is completely exhausted to start
 reclaiming pages. Instead, it maintains three watermark levels that
@@ -1637,7 +1686,7 @@ back to sleep</p>
 Application blocks! → malloc() won't return until memory freed → User
 sees application freeze</p>
 </blockquote>
-<h3 id="kswapd-background-reclaim-daemon-1">8.6.2 kswapd: Background
+<h3 id="kswapd-background-reclaim-daemon-1">8.2.2 kswapd: Background
 Reclaim Daemon</h3>
 <p>The <code>kswapd</code> kernel thread is responsible for background
 memory reclaim. There's one kswapd per NUMA node, and it spends most of
@@ -1728,7 +1777,7 @@ kswapd allows allocations to succeed without blocking. This is the
 difference between a responsive system and one that stutters under
 memory pressure.</p>
 </blockquote>
-<h3 id="direct-reclaim-the-emergency-path-1">8.6.3 Direct Reclaim: The
+<h3 id="direct-reclaim-the-emergency-path-1">8.2.3 Direct Reclaim: The
 Emergency Path</h3>
 <p>When memory drops below WMARK_MIN, kswapd can't keep up. The kernel
 takes drastic action: the allocating process must free memory itself
@@ -1849,7 +1898,7 @@ stutters noticeably.</p>
 <p>The only way to avoid direct reclaim is ensuring kswapd keeps free
 memory above WMARK_MIN. This requires proper tuning and avoiding
 memory-intensive workloads on undersized systems.</p>
-<h3 id="swappiness-tuning-reclaim-behavior">8.6.4 Swappiness: Tuning
+<h3 id="swappiness-tuning-reclaim-behavior">8.2.4 Swappiness: Tuning
 Reclaim Behavior</h3>
 <p>When under memory pressure, the kernel must decide: evict file-backed
 pages (easy to re-read) or anonymous pages (must write to swap)? The
@@ -1959,7 +2008,7 @@ swapping processes)</p>
 <p>The default of 60 works reasonably for general-purpose systems but
 can be far from optimal for specialized workloads.</p>
 </blockquote>
-<h3 id="oom-killer-the-last-resort-1">8.6.5 OOM Killer: The Last
+<h3 id="oom-killer-the-last-resort-1">8.2.5 OOM Killer: The Last
 Resort</h3>
 <p>When reclaim fails—the kernel can't free enough memory even with
 direct reclaim—the Out-Of-Memory (OOM) killer is invoked. Its job: kill
@@ -2095,7 +2144,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb119-1"><a href
 deadlock. Proper memory management (sizing, tuning swappiness,
 monitoring) should prevent OOM from ever happening in production.</p>
 <hr />
-<h2 id="page-table-management-the-meta-problem">8.7 Page Table
+<h2 id="page-table-management">8.3 Page Table
 Management: The Meta-Problem</h2>
 <p>We've discussed evicting data pages to free memory. But page tables
 themselves consume memory—often a surprising amount. On a system with
@@ -2232,7 +2281,7 @@ This creates a meta-problem: we need memory to manage memory.</p>
 </figure>
 
 
-<h3 id="page-table-overhead-calculations">8.7.1 Page Table Overhead
+<h3 id="page-table-overhead-calculations">8.3.1 Page Table Overhead
 Calculations</h3>
 <p>Let's calculate how much memory page tables consume for a typical
 process:</p>
@@ -2297,7 +2346,7 @@ MB</strong></p>
 <p>That's 288 MB of RAM (0.45% of total) just for page tables! With huge
 pages: 288 MB → 576 KB (500× reduction)</p>
 </blockquote>
-<h3 id="lazy-allocation-avoiding-waste">8.7.2 Lazy Allocation: Avoiding
+<h3 id="lazy-allocation-avoiding-waste">8.3.2 Lazy Allocation: Avoiding
 Waste</h3>
 <p>Allocating all page tables upfront would be wasteful. Most processes
 don't use their entire address space. The kernel uses lazy allocation:
@@ -2373,7 +2422,7 @@ Savings: 128 MB → 20 MB = 6.4× reduction!</code></pre>
 <p>Lazy allocation is why you can run hundreds of processes on limited
 RAM—most of their address space exists only virtually, without consuming
 physical memory for page tables.</p>
-<h3 id="page-table-reclamation">8.7.3 Page Table Reclamation</h3>
+<h3 id="page-table-reclamation">8.3.3 Page Table Reclamation</h3>
 <p>Just as data pages can be reclaimed under pressure, empty page tables
 can be freed. When a region of memory is unmapped, the kernel checks if
 entire page tables are now empty:</p>
@@ -2471,7 +2520,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb125-1"><a href="#cb1
 <p>This lazy approach trades memory for performance: empty page tables
 consume memory but avoiding re-allocation reduces fault latency if the
 region is accessed again.</p>
-<h3 id="compact-vs-sparse-layouts">8.7.4 Compact vs Sparse Layouts</h3>
+<h3 id="compact-vs-sparse-layouts">8.3.4 Compact vs Sparse Layouts</h3>
 <p>Page tables don't have to be physically contiguous, but placing them
 close together in physical memory improves cache performance. The Page
 Walk Cache (PWC) benefits from spatial locality:</p>
@@ -2551,7 +2600,7 @@ rate: 88% - TLB miss penalty: Lower and predictable</p>
 upfront, which may not be available under fragmentation. Most systems
 use hybrid approaches: try compact allocation, fall back to sparse if
 needed.</p>
-<h3 id="huge-pages-the-ultimate-optimization">8.7.5 Huge Pages: The
+<h3 id="huge-pages-the-ultimate-optimization">8.3.5 Huge Pages: The
 Ultimate Optimization</h3>
 <p>We've mentioned huge pages throughout this book. Their impact on page
 table overhead deserves special attention:</p>
@@ -2627,12 +2676,12 @@ walks</strong> (one fewer level to traverse)</p>
 <p>The challenge is allocation: 2MB huge pages require 2MB contiguous
 physical memory, which may not be available due to fragmentation.</p>
 <hr />
-<h2 id="performance-analysis-and-tuning-1">8.8 Performance Analysis and
+<h2 id="performance-analysis-and-tuning">8.4 Performance Analysis and
 Tuning</h2>
 <p>We've explored the mechanisms—now let's see how to diagnose problems
 and optimize real systems. This section covers the tools for identifying
 memory management issues and the parameters for tuning them.</p>
-<h3 id="essential-profiling-tools">8.8.1 Essential Profiling Tools</h3>
+<h3 id="essential-profiling-tools">8.4.1 Essential Profiling Tools</h3>
 <p><strong>Tool 1: /proc/meminfo - System-Wide Memory
 Status</strong></p>
 <div class="sourceCode" id="cb130"><pre
@@ -2760,7 +2809,7 @@ Issue 3: Memory leaks
   $ watch -n 1 &#39;cat /proc/1234/smaps | grep -A 15 heap&#39;
   [Watch Rss growing continuously]
   → Memory leak in heap</code></pre>
-<h3 id="common-performance-issues">8.8.2 Common Performance Issues</h3>
+<h3 id="common-performance-issues">8.4.2 Common Performance Issues</h3>
 <p><strong>Issue 1: TLB Thrashing</strong></p>
 <pre><code>Symptoms:
   - High CPU usage
@@ -2868,7 +2917,7 @@ Solutions:
      huge_pages = on
      → Shared buffers use huge pages
      → 8 GB overhead → 16 MB</code></pre>
-<h3 id="tuning-parameters">8.8.3 Tuning Parameters</h3>
+<h3 id="tuning-parameters">8.4.3 Tuning Parameters</h3>
 <div class="sourceCode" id="cb141"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Key sysctl parameters for memory management</span></span>
 <span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -2929,7 +2978,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb142-1"><a href
 <span id="cb142-18"><a href="#cb142-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Query</span> p99: 180 ms <span class="er">(</span><span class="ex">14×</span> faster!<span class="kw">)</span></span>
 <span id="cb142-19"><a href="#cb142-19" aria-hidden="true" tabindex="-1"></a><span class="ex">TLB</span> miss rate: 8% → 0.3% <span class="er">(</span><span class="ex">27×</span> improvement<span class="kw">)</span></span></code></pre></div>
 <hr />
-<h2 id="conclusion-the-complete-picture">8.9 Chapter Summary</h2>
+<h2 id="chapter-summary">8.5 Chapter Summary</h2>
 <p>We began this chapter with a mystery: a PostgreSQL instance killed by
 the OOM killer despite 17 GB of "available" memory. Now we can explain
 exactly what happened:</p>
@@ -3554,24 +3603,24 @@ Performance: Enterprise and the Cloud," 2nd Edition. Addison-Wesley,
     "short": "Advanced MMU Topics - System Integration and Optimization",
     "sections": [
       {
-        "text": "8.5 Page Replacement Algorithms: From Theory to Practice",
-        "id": "page-replacement-algorithms-from-theory-to-practice"
+        "text": "8.1 Page Replacement Algorithms: From Theory to Practice",
+        "id": "page-replacement-algorithms"
       },
       {
-        "text": "8.6 Memory Reclaim: When and How to Free Pages",
-        "id": "memory-reclaim-when-and-how-to-free-pages"
+        "text": "8.2 Memory Reclaim: When and How to Free Pages",
+        "id": "memory-reclaim"
       },
       {
-        "text": "8.7 Page Table Management: The Meta-Problem",
-        "id": "page-table-management-the-meta-problem"
+        "text": "8.3 Page Table Management: The Meta-Problem",
+        "id": "page-table-management"
       },
       {
-        "text": "8.8 Performance Analysis and Tuning",
-        "id": "performance-analysis-and-tuning-1"
+        "text": "8.4 Performance Analysis and Tuning",
+        "id": "performance-analysis-and-tuning"
       },
       {
-        "text": "8.9 Chapter Summary",
-        "id": "conclusion-the-complete-picture"
+        "text": "8.5 Chapter Summary",
+        "id": "chapter-summary"
       },
       {
         "text": "References",
