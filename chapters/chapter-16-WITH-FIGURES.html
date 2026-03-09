@@ -892,6 +892,146 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h2 id="section-16.2">16.2 Entry-Level Coalescing: COLT and Production Implementations</h2>
 
 <p>Coalescing Large-Reach TLBs (COLT), proposed by Pham and Bhattacharjee at MICRO 2012, represents the most successful TLB reach optimization technique measured by deployment scale. The core innovation is deceptively simple: when inserting a new TLB entry, examine whether adjacent entries map contiguous physical addresses. If so, merge them into a single entry covering a larger effective page size.</p>
+<figure id="fig-16-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr-16-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#212121;"/>
+    </marker>
+    <marker id="arr-blue-16-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#5E81AC;"/>
+    </marker>
+    <marker id="arr-teal-16-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#4A8A99;"/>
+    </marker>
+    <filter id="shadow-16-4">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="900" height="580" style="fill:#FFFFFF;"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" style="fill:#212121;">COLT Entry-Level Coalescing: Merging Adjacent TLB Entries</text>
+
+  <!-- Left: Standard TLB (before coalescing) -->
+  <rect x="20" y="52" width="370" height="490" rx="8" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="205" y="76" text-anchor="middle" font-size="15" font-weight="bold" style="fill:#BF616A;">Traditional TLB — 8 Separate Entries</text>
+  <text x="205" y="94" text-anchor="middle" font-size="12" style="fill:#616161;">8 × 4KB pages = 32KB covered</text>
+
+  <!-- TLB entry table header -->
+  <rect x="35" y="106" width="340" height="28" rx="4" style="fill:#212121;"/>
+  <text x="115" y="125" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Virtual Page #</text>
+  <text x="255" y="125" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Physical Frame</text>
+  <text x="348" y="125" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Flags</text>
+
+  <!-- 8 individual entries - contiguous VPN → PFN mapping -->
+  <!-- Entry row helper: alternating light/white -->
+  <rect x="35" y="134" width="340" height="26" rx="0" style="fill:#F0D9D9;"/>
+  <text x="115" y="151" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_1000</text>
+  <text x="255" y="151" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0001</text>
+  <text x="348" y="151" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="160" width="340" height="26" rx="0" style="fill:#FFFFFF;"/>
+  <text x="115" y="177" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_2000</text>
+  <text x="255" y="177" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0002</text>
+  <text x="348" y="177" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="186" width="340" height="26" rx="0" style="fill:#F0D9D9;"/>
+  <text x="115" y="203" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_3000</text>
+  <text x="255" y="203" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0003</text>
+  <text x="348" y="203" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="212" width="340" height="26" rx="0" style="fill:#FFFFFF;"/>
+  <text x="115" y="229" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_4000</text>
+  <text x="255" y="229" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0004</text>
+  <text x="348" y="229" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="238" width="340" height="26" rx="0" style="fill:#F0D9D9;"/>
+  <text x="115" y="255" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_5000</text>
+  <text x="255" y="255" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0005</text>
+  <text x="348" y="255" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="264" width="340" height="26" rx="0" style="fill:#FFFFFF;"/>
+  <text x="115" y="281" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_6000</text>
+  <text x="255" y="281" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0006</text>
+  <text x="348" y="281" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="290" width="340" height="26" rx="0" style="fill:#F0D9D9;"/>
+  <text x="115" y="307" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_7000</text>
+  <text x="255" y="307" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0007</text>
+  <text x="348" y="307" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+
+  <rect x="35" y="316" width="340" height="26" rx="0" style="fill:#FFFFFF;"/>
+  <text x="115" y="333" text-anchor="middle" font-size="13" style="fill:#212121;">0x7F00_8000</text>
+  <text x="255" y="333" text-anchor="middle" font-size="13" style="fill:#212121;">0x3A0008</text>
+  <text x="348" y="333" text-anchor="middle" font-size="12" style="fill:#616161;">RW</text>
+  <rect x="35" y="134" width="340" height="208" rx="0" style="fill:none;stroke:#BF616A;stroke-width:1;"/>
+
+  <!-- Problem annotation -->
+  <rect x="35" y="360" width="340" height="60" rx="6" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+  <text x="205" y="380" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#BF616A;">8 TLB entries consumed</text>
+  <text x="205" y="397" text-anchor="middle" font-size="12" style="fill:#212121;">Each 4KB page needs its own slot</text>
+  <text x="205" y="414" text-anchor="middle" font-size="12" style="fill:#BF616A;">TLB pressure: evicts other entries</text>
+
+  <!-- Coverage bar -->
+  <rect x="35" y="440" width="340" height="30" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <rect x="35" y="440" width="85" height="30" rx="4 0 0 4" style="fill:#BF616A;"/>
+  <text x="205" y="460" text-anchor="middle" font-size="13" style="fill:#212121;">Coverage: 32 KB  (8 × 4 KB)</text>
+
+  <rect x="35" y="488" width="340" height="38" rx="4" style="fill:#FFF0F0;stroke:#BF616A;stroke-width:1;"/>
+  <text x="205" y="504" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#BF616A;">Problem: 512-entry TLB covers only 2MB</text>
+  <text x="205" y="520" text-anchor="middle" font-size="12" style="fill:#212121;">Modern workloads need GB → massive miss rate</text>
+
+  <!-- Right: COLT TLB (after coalescing) -->
+  <rect x="510" y="52" width="370" height="490" rx="8" style="fill:#EDF5FF;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="695" y="76" text-anchor="middle" font-size="15" font-weight="bold" style="fill:#5E81AC;">COLT TLB — 1 Coalesced Entry</text>
+  <text x="695" y="94" text-anchor="middle" font-size="12" style="fill:#616161;">same 8 × 4KB pages = 32KB covered</text>
+
+  <!-- COLT entry header -->
+  <rect x="525" y="106" width="340" height="28" rx="4" style="fill:#5E81AC;"/>
+  <text x="695" y="125" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">COLT Extended TLB Entry Format</text>
+
+  <!-- Extended entry box -->
+  <rect x="525" y="134" width="340" height="120" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="600" y="158" font-size="13" font-weight="bold" style="fill:#5E81AC;">VA Base:</text>
+  <text x="700" y="158" font-size="13" style="fill:#212121;">0x7F00_1000</text>
+  <text x="600" y="178" font-size="13" font-weight="bold" style="fill:#5E81AC;">PA Base:</text>
+  <text x="700" y="178" font-size="13" style="fill:#212121;">0x3A0001</text>
+  <text x="600" y="198" font-size="13" font-weight="bold" style="fill:#5E81AC;">Count:</text>
+  <text x="700" y="198" font-size="13" style="fill:#212121;">8 pages (32KB range)</text>
+  <text x="600" y="218" font-size="13" font-weight="bold" style="fill:#5E81AC;">Flags:</text>
+  <text x="700" y="218" font-size="13" style="fill:#212121;">RW, contiguous bit</text>
+  <text x="600" y="238" font-size="13" font-weight="bold" style="fill:#5E81AC;">Cond:</text>
+  <text x="700" y="238" font-size="13" style="fill:#212121;">VA &amp; PA must be stride-1</text>
+
+  <!-- Merge logic -->
+  <rect x="525" y="272" width="340" height="80" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="695" y="293" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">COLT Merge Condition</text>
+  <text x="695" y="312" text-anchor="middle" font-size="13" style="fill:#212121;">On TLB insert: check if new entry's VA = prev VA + 4KB</text>
+  <text x="695" y="329" text-anchor="middle" font-size="13" style="fill:#212121;">AND new PA = prev PA + 4KB (both contiguous)</text>
+  <text x="695" y="347" text-anchor="middle" font-size="12" style="fill:#4A8A99;">→ Merge: increment Count, don't add new slot</text>
+
+  <!-- Hardware cost box -->
+  <rect x="525" y="368" width="340" height="50" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="695" y="388" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">Hardware Cost: 0.5% area overhead</text>
+  <text x="695" y="405" text-anchor="middle" font-size="12" style="fill:#212121;">Comparator per entry to check stride-1 adjacency</text>
+
+  <!-- Coverage bar (improved) -->
+  <rect x="525" y="440" width="340" height="30" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <rect x="525" y="440" width="340" height="30" rx="4" style="fill:#5E81AC;"/>
+  <text x="695" y="460" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Coverage: 32 KB using 1 TLB entry</text>
+
+  <rect x="525" y="488" width="340" height="38" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="695" y="504" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#5E81AC;">Result: 2–4× TLB reach increase</text>
+  <text x="695" y="520" text-anchor="middle" font-size="12" style="fill:#212121;">512-entry COLT TLB covers 4–8 MB — production in AMD/ARM</text>
+
+  <!-- Arrow between panels -->
+  <text x="450" y="310" text-anchor="middle" font-size="28" style="fill:#5E81AC;">→</text>
+  <text x="450" y="330" text-anchor="middle" font-size="12" style="fill:#5E81AC;">coalesce</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.1:</strong> COLT entry-level coalescing: on each TLB insertion, COLT checks whether the new entry's virtual page number and physical frame number are both stride-1-adjacent to an existing entry. If so, the two entries merge into a single extended entry with a page count field, covering 8–16 KB (or more) with one slot. The same 512-entry TLB covers 2–4× more address space with no OS changes. COLT is deployed in production AMD and ARM processors at a 0.5% area overhead.</figcaption>
+</figure>
+
 
 <h3 id="section-16.2.1">16.2.1 COLT Architecture and Operation</h3>
 
@@ -1226,7 +1366,7 @@ Result: 6 × 200ns = 1200ns total translation time</code></pre>
 
 <p>The core innovation: add a <strong>coalescing buffer</strong> between the TLB and page walk unit that aggregates multiple outstanding walk requests:</p>
 
-<figure id="fig-16-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="850" height="400" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1329,7 +1469,7 @@ Result: 6 × 200ns = 1200ns total translation time</code></pre>
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 16.1:</strong> Request-level coalescing intercepts TLB misses before page table walks. The coalescing buffer aggregates requests for the same page, issuing only one walk per unique page. This differs from COLT which coalesces after walks complete.
+    <strong>Figure 16.2:</strong> Request-level coalescing intercepts TLB misses before page table walks. The coalescing buffer aggregates requests for the same page, issuing only one walk per unique page. This differs from COLT which coalesces after walks complete.
   </figcaption>
 </figure>
 
@@ -1431,6 +1571,133 @@ Result: 256 requests → 12 TLB entries (21× compression)
 <h2 id="section-16.4">16.4 Speculative Translation: SpecTLB and Avatar</h2>
 
 <p>Coalescing techniques (Sections 16.2-16.3) exploit spatial locality—nearby addresses translate to nearby physical frames. Speculative translation exploits temporal and stride predictability—predicting future translations before they're requested, overlapping translation with computation.</p>
+<figure id="fig-16-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr-16-5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#212121;"/>
+    </marker>
+    <marker id="arr-blue-16-5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#5E81AC;"/>
+    </marker>
+    <marker id="arr-teal-16-5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#4A8A99;"/>
+    </marker>
+    <marker id="arr-red-16-5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#BF616A;"/>
+    </marker>
+    <filter id="shadow-16-5">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="900" height="580" style="fill:#FFFFFF;"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" style="fill:#212121;">SpecTLB and Avatar: Speculative Translation — Hiding Page Walk Latency</text>
+
+  <!-- Left: SpecTLB -->
+  <g id="spectlb">
+    <rect x="20" y="52" width="415" height="500" rx="8" style="fill:#EDF5FF;stroke:#5E81AC;stroke-width:1.5;"/>
+    <text x="227" y="76" text-anchor="middle" font-size="15" font-weight="bold" style="fill:#5E81AC;">SpecTLB (Barr et al., ISCA 2011)</text>
+    <text x="227" y="94" text-anchor="middle" font-size="12" style="fill:#616161;">Reservation-based speculation</text>
+
+    <!-- Main TLB -->
+    <rect x="40" y="108" width="175" height="55" rx="6" style="fill:#5E81AC;filter:url(#shadow-16-5);"/>
+    <text x="127" y="130" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Main TLB</text>
+    <text x="127" y="148" text-anchor="middle" font-size="12" style="fill:#DDEAF5;">512 entries, verified</text>
+
+    <!-- Speculative TLB -->
+    <rect x="230" y="108" width="185" height="55" rx="6" style="fill:#4A8A99;filter:url(#shadow-16-5);"/>
+    <text x="322" y="130" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Speculative TLB</text>
+    <text x="322" y="148" text-anchor="middle" font-size="12" style="fill:#CCE8EC;">128 unverified entries</text>
+
+    <!-- Process flow -->
+    <rect x="40" y="184" width="375" height="55" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+    <text x="227" y="206" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">① Page Walk Triggered (normal miss)</text>
+    <text x="227" y="222" text-anchor="middle" font-size="12" style="fill:#212121;">CPU begins 3–7 level walk for VA₀. Meanwhile, execution continues speculatively.</text>
+
+    <line x1="227" y1="239" x2="227" y2="258" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-5)"/>
+
+    <rect x="40" y="260" width="375" height="55" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+    <text x="227" y="282" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">② Stride Prediction → Insert Speculative Entries</text>
+    <text x="227" y="298" text-anchor="middle" font-size="12" style="fill:#212121;">Detect VA stride S. Prefill SpecTLB: VA₀+S, VA₀+2S, ... (predicted PAs).</text>
+
+    <line x1="227" y1="315" x2="227" y2="334" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-5)"/>
+
+    <rect x="40" y="336" width="375" height="55" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+    <text x="227" y="358" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">③ Use SpecTLB Hit (unverified)</text>
+    <text x="227" y="374" text-anchor="middle" font-size="12" style="fill:#212121;">Access proceeds with predicted PA. Walk continues in background to verify.</text>
+
+    <line x1="227" y1="391" x2="227" y2="410" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-5)"/>
+
+    <!-- Branch: correct vs squash -->
+    <polygon points="227,415 295,440 227,465 160,440" style="fill:#5E81AC;stroke:#212121;stroke-width:1;"/>
+    <text x="227" y="435" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Prediction</text>
+    <text x="227" y="451" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">correct?</text>
+
+    <!-- YES -->
+    <line x1="295" y1="440" x2="355" y2="440" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-5)"/>
+    <rect x="355" y="422" width="55" height="36" rx="4" style="fill:#4A8A99;"/>
+    <text x="382" y="437" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">YES</text>
+    <text x="382" y="452" text-anchor="middle" font-size="10" style="fill:#CCE8EC;">promote</text>
+
+    <!-- NO -->
+    <line x1="160" y1="440" x2="95" y2="440" style="stroke:#BF616A;stroke-width:2;" marker-end="url(#arr-red-16-5)"/>
+    <rect x="40" y="422" width="55" height="36" rx="4" style="fill:#BF616A;"/>
+    <text x="67" y="437" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">NO</text>
+    <text x="67" y="452" text-anchor="middle" font-size="10" style="fill:#F0D9D9;">squash</text>
+
+    <rect x="40" y="482" width="375" height="50" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+    <text x="227" y="502" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Result: 17% miss penalty reduction</text>
+    <text x="227" y="519" text-anchor="middle" font-size="12" style="fill:#212121;">Walk overlapped with execution; hits before walk completes save full latency</text>
+  </g>
+
+  <!-- Right: Avatar -->
+  <g id="avatar">
+    <rect x="465" y="52" width="415" height="500" rx="8" style="fill:#F5F8FF;stroke:#4A8A99;stroke-width:1.5;"/>
+    <text x="672" y="76" text-anchor="middle" font-size="15" font-weight="bold" style="fill:#4A8A99;">Avatar (Gandhi et al., ISCA 2016)</text>
+    <text x="672" y="94" text-anchor="middle" font-size="12" style="fill:#616161;">GPU-optimised speculative TLB with warp batching</text>
+
+    <!-- GPU warp diagram -->
+    <rect x="480" y="108" width="385" height="55" rx="6" style="fill:#4A8A99;filter:url(#shadow-16-5);"/>
+    <text x="672" y="130" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">GPU Warp (32 threads)</text>
+    <text x="672" y="148" text-anchor="middle" font-size="12" style="fill:#CCE8EC;">All 32 threads issue VA simultaneously (SIMT)</text>
+
+    <!-- Avatar processes batch -->
+    <rect x="480" y="184" width="385" height="60" rx="6" style="fill:#EAF2F8;stroke:#4A8A99;stroke-width:1;"/>
+    <text x="672" y="206" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">① Batch Collection</text>
+    <text x="672" y="222" text-anchor="middle" font-size="12" style="fill:#212121;">Avatar gathers all 32 VA requests from warp into batch.</text>
+    <text x="672" y="238" text-anchor="middle" font-size="12" style="fill:#212121;">Detects shared base: VA₀, VA₀+4K, VA₀+8K... (coalesced access)</text>
+
+    <line x1="672" y1="244" x2="672" y2="263" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-5)"/>
+
+    <rect x="480" y="265" width="385" height="55" rx="6" style="fill:#EAF2F8;stroke:#4A8A99;stroke-width:1;"/>
+    <text x="672" y="287" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">② Single Walk + Speculate Neighbours</text>
+    <text x="672" y="303" text-anchor="middle" font-size="12" style="fill:#212121;">Walk VA₀ once. Predict VA₀+4K ... VA₀+124K via stride.</text>
+    <text x="672" y="319" text-anchor="middle" font-size="11" style="fill:#616161;">1 walk serves up to 32 threads speculatively</text>
+
+    <line x1="672" y1="320" x2="672" y2="339" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-5)"/>
+
+    <rect x="480" y="341" width="385" height="55" rx="6" style="fill:#EAF2F8;stroke:#4A8A99;stroke-width:1;"/>
+    <text x="672" y="363" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">③ Parallel Verification</text>
+    <text x="672" y="379" text-anchor="middle" font-size="12" style="fill:#212121;">32 speculative entries verified against page table in parallel.</text>
+    <text x="672" y="395" text-anchor="middle" font-size="11" style="fill:#616161;">Mispredicted entries squashed; threads re-execute (rare)</text>
+
+    <line x1="672" y1="396" x2="672" y2="415" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-5)"/>
+
+    <rect x="480" y="417" width="385" height="55" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+    <text x="672" y="439" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">④ Warp Proceeds</text>
+    <text x="672" y="455" text-anchor="middle" font-size="12" style="fill:#212121;">All 32 threads have translations. Memory access proceeds.</text>
+    <text x="672" y="471" text-anchor="middle" font-size="11" style="fill:#616161;">32× more efficient than 32 sequential walks</text>
+
+    <rect x="480" y="482" width="385" height="50" rx="6" style="fill:#DDEAF5;stroke:#4A8A99;stroke-width:1;"/>
+    <text x="672" y="502" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">Result: 23% TLB miss reduction on GPUs</text>
+    <text x="672" y="519" text-anchor="middle" font-size="12" style="fill:#212121;">Batch speculation amortises walk latency across 32-thread warps</text>
+  </g>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.3:</strong> SpecTLB and Avatar speculative translation: SpecTLB (ISCA 2011, left) detects stride patterns during a page walk, pre-fills a speculative TLB with predicted translations, and lets execution proceed; correct predictions are promoted to the main TLB while mispredictions cause a squash (17% miss-penalty reduction). Avatar (ISCA 2016, right) extends speculation to GPU warps: one page walk serves 32 threads via batch collection and parallel verification, reducing GPU TLB misses by 23%.</figcaption>
+</figure>
+
 
 <h3 id="section-16.4.1">16.4.1 SpecTLB: Reservation-Based Speculation (ISCA 2011)</h3>
 
@@ -1707,7 +1974,7 @@ Avoid prefetching 0x510, 0x7FF (low probability, waste bandwidth)
 
 <p>SnakeByte maintains a <strong>Miss Sequence Table (MST)</strong> that records recent miss history and learns transition probabilities:</p>
 
-<figure id="fig-16-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="850" height="500" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
@@ -1831,7 +2098,7 @@ Avoid prefetching 0x510, 0x7FF (low probability, waste bandwidth)
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 16.2:</strong> SnakeByte Markov model prefetcher learns transition probabilities between TLB misses. When page 0x500 misses, the model predicts pages 0x502 and 0x509 are likely next misses and prefetches their translations.
+    <strong>Figure 16.4:</strong> SnakeByte Markov model prefetcher learns transition probabilities between TLB misses. When page 0x500 misses, the model predicts pages 0x502 and 0x509 are likely next misses and prefetches their translations.
   </figcaption>
 </figure>
 
@@ -1962,6 +2229,152 @@ Power: Negligible (accessed only on TLB miss)
 <h2 id="section-16.6">16.6 Hashing-Based Compression: Mosaic Pages</h2>
 
 <p>Every technique examined so far (Sections 16.2-16.5) requires some form of regularity—spatial contiguity for coalescing, stride patterns for speculation, temporal correlation for Markov prefetching. Mosaic Pages, awarded ASPLOS 2023 Distinguished Paper and selected for IEEE Micro Top Picks 2024, eliminates the contiguity requirement entirely through iceberg hashing compression.</p>
+<figure id="fig-16-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr-16-6" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#212121;"/>
+    </marker>
+    <marker id="arr-blue-16-6" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#5E81AC;"/>
+    </marker>
+    <marker id="arr-teal-16-6" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#4A8A99;"/>
+    </marker>
+    <filter id="shadow-16-6">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="900" height="600" style="fill:#FFFFFF;"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" style="fill:#212121;">Mosaic Pages: Iceberg Hashing for Huge-Page TLB Reach Without Contiguity</text>
+
+  <!-- Problem statement -->
+  <rect x="20" y="52" width="860" height="68" rx="6" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="450" y="74" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#BF616A;">The Contiguity Problem</text>
+  <text x="450" y="92" text-anchor="middle" font-size="13" style="fill:#212121;">Traditional huge pages (2MB, 1GB) require physically contiguous DRAM frames. After allocation, memory becomes fragmented — huge pages impossible.</text>
+  <text x="450" y="110" text-anchor="middle" font-size="13" style="fill:#212121;">Mosaic (ASPLOS 2023 Best Paper, IEEE Micro Top Picks 2024) achieves huge-page TLB reach with <strong>non-contiguous</strong> 4KB frames using iceberg hashing.</text>
+
+  <!-- Memory layout comparison -->
+  <!-- Left: fragmented physical memory (cannot use huge page) -->
+  <rect x="20" y="138" width="400" height="230" rx="8" style="fill:#FFF0F0;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="220" y="160" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#BF616A;">Traditional: Fragmented Physical Memory</text>
+  <text x="220" y="178" text-anchor="middle" font-size="12" style="fill:#616161;">512 × 4KB = 2MB needed but not contiguous</text>
+
+  <!-- Fragmented frames grid -->
+  <g id="frag-grid">
+    <!-- Frame grid 16×8 = 128 cells -->
+    <!-- Row 1 - mixed used/free -->
+    <rect x="40" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="66" y="188" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="92" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="118" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="144" y="188" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="170" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="196" y="188" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="222" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="248" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="274" y="188" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="300" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="326" y="188" width="24" height="18" style="fill:#5E81AC;"/>
+    <!-- Rows 2-7 pattern -->
+    <rect x="40" y="208" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="66" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="92" y="208" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="118" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="144" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="170" y="208" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="196" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="222" y="208" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="248" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="274" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <rect x="300" y="208" width="24" height="18" style="fill:#9E9E9E;"/>
+    <rect x="326" y="208" width="24" height="18" style="fill:#5E81AC;"/>
+    <!-- more rows abbreviated -->
+    <rect x="40" y="228" width="310" height="60" rx="2" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:0.5;"/>
+    <text x="195" y="262" text-anchor="middle" font-size="12" style="fill:#9E9E9E;">... scattered frames ...</text>
+    <rect x="40" y="188" width="310" height="100" rx="0" style="fill:none;stroke:#BF616A;stroke-width:0.5;"/>
+  </g>
+
+  <rect x="40" y="304" width="340" height="48" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+  <text x="210" y="323" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#BF616A;">Cannot form 2MB huge page</text>
+  <text x="210" y="341" text-anchor="middle" font-size="12" style="fill:#212121;">All frames occupied by other data; no 512-frame contiguous run</text>
+
+  <rect x="40" y="362" width="340" height="32" rx="4" style="fill:#FFF0F0;stroke:#BF616A;stroke-width:1;"/>
+  <text x="210" y="383" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#BF616A;">→ 512 TLB entries needed, or endless misses</text>
+
+  <!-- Right: Mosaic solution -->
+  <rect x="480" y="138" width="400" height="230" rx="8" style="fill:#EDF5FF;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="680" y="160" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#5E81AC;">Mosaic: Iceberg Hash Compression</text>
+  <text x="680" y="178" text-anchor="middle" font-size="12" style="fill:#616161;">Same 512 non-contiguous frames — 1 TLB entry</text>
+
+  <!-- Mosaic TLB entry -->
+  <rect x="500" y="188" width="360" height="80" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="680" y="208" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Mosaic TLB Entry (1 slot)</text>
+  <text x="500" y="228" font-size="12" style="fill:#212121;">  VA Base:  0x7F80_0000 (2MB-aligned)</text>
+  <text x="500" y="248" font-size="12" style="fill:#212121;">  HashSeed: 0x3A7F29C1  (compact, 32 bits)</text>
+  <text x="500" y="264" font-size="12" style="fill:#212121;">  Flags:    RW, mosaic-bit=1</text>
+
+  <!-- Hash function visual -->
+  <rect x="500" y="278" width="360" height="52" rx="4" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="680" y="298" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Lookup: h(VA, HashSeed) → PFN</text>
+  <text x="680" y="316" text-anchor="middle" font-size="12" style="fill:#212121;">Iceberg hash maps each 4KB offset to a unique physical frame</text>
+  <text x="680" y="332" text-anchor="middle" font-size="11" style="fill:#616161;">O(1) computation: no page table walk needed after TLB hit</text>
+
+  <rect x="500" y="348" width="360" height="32" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="680" y="369" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#5E81AC;">→ 2MB coverage from 1 TLB entry — any frames, any layout</text>
+
+  <!-- Bottom: how it works detail -->
+  <rect x="20" y="386" width="860" height="190" rx="8" style="fill:#F5F7FA;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="450" y="408" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#212121;">Mosaic Implementation: Iceberg Hashing Mechanism</text>
+
+  <!-- 4 step boxes -->
+  <rect x="35" y="420" width="185" height="140" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="127" y="440" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">① OS Allocation</text>
+  <text x="127" y="458" text-anchor="middle" font-size="12" style="fill:#212121;">OS collects 512 free</text>
+  <text x="127" y="474" text-anchor="middle" font-size="12" style="fill:#212121;">4KB frames (any PA).</text>
+  <text x="127" y="494" text-anchor="middle" font-size="12" style="fill:#212121;">Finds a HashSeed such</text>
+  <text x="127" y="510" text-anchor="middle" font-size="12" style="fill:#212121;">that h(VA_offset, seed)</text>
+  <text x="127" y="526" text-anchor="middle" font-size="12" style="fill:#212121;">is a bijection onto the</text>
+  <text x="127" y="542" text-anchor="middle" font-size="12" style="fill:#212121;">512 frame set.</text>
+
+  <line x1="220" y1="490" x2="240" y2="490" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-6)"/>
+
+  <rect x="242" y="420" width="185" height="140" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="334" y="440" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">② TLB Fill</text>
+  <text x="334" y="458" text-anchor="middle" font-size="12" style="fill:#212121;">Single TLB entry stored:</text>
+  <text x="334" y="476" text-anchor="middle" font-size="12" style="fill:#212121;">(VA_base, HashSeed).</text>
+  <text x="334" y="496" text-anchor="middle" font-size="12" style="fill:#212121;">No 512 separate entries</text>
+  <text x="334" y="512" text-anchor="middle" font-size="12" style="fill:#212121;">needed. Page table has</text>
+  <text x="334" y="528" text-anchor="middle" font-size="12" style="fill:#212121;">1 huge-page entry with</text>
+  <text x="334" y="544" text-anchor="middle" font-size="12" style="fill:#212121;">HashSeed stored.</text>
+
+  <line x1="427" y1="490" x2="447" y2="490" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-6)"/>
+
+  <rect x="449" y="420" width="185" height="140" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="541" y="440" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">③ Address Lookup</text>
+  <text x="541" y="458" text-anchor="middle" font-size="12" style="fill:#212121;">VA hits TLB → TLB</text>
+  <text x="541" y="474" text-anchor="middle" font-size="12" style="fill:#212121;">returns (HashSeed).</text>
+  <text x="541" y="494" text-anchor="middle" font-size="12" style="fill:#212121;">MMU computes:</text>
+  <text x="541" y="512" text-anchor="middle" font-size="12" style="fill:#4A8A99;">PFN = h(VA[20:12], seed)</text>
+  <text x="541" y="528" text-anchor="middle" font-size="12" style="fill:#212121;">in a single cycle using</text>
+  <text x="541" y="544" text-anchor="middle" font-size="12" style="fill:#212121;">hardware hash unit.</text>
+
+  <line x1="634" y1="490" x2="654" y2="490" style="stroke:#5E81AC;stroke-width:2;" marker-end="url(#arr-blue-16-6)"/>
+
+  <rect x="656" y="420" width="196" height="140" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="754" y="440" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">④ Result</text>
+  <text x="754" y="458" text-anchor="middle" font-size="12" style="fill:#212121;">PA = (PFN &lt;&lt; 12) | VA[11:0]</text>
+  <text x="754" y="478" text-anchor="middle" font-size="12" style="fill:#212121;">Full 2MB coverage,</text>
+  <text x="754" y="494" text-anchor="middle" font-size="12" style="fill:#212121;">1 TLB entry, no walk.</text>
+  <text x="754" y="514" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#4A8A99;">4× fewer TLB misses</text>
+  <text x="754" y="530" text-anchor="middle" font-size="12" style="fill:#212121;">HW cost: ~0.3% area</text>
+  <text x="754" y="546" text-anchor="middle" font-size="11" style="fill:#616161;">(hash unit in MMU)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.5:</strong> Mosaic Pages iceberg hashing (ASPLOS 2023 Distinguished Paper): the OS allocates 512 arbitrary 4KB frames and finds a 32-bit HashSeed such that h(VA_offset, seed) is a bijection onto those frames. A single TLB entry stores (VA_base, HashSeed); the MMU resolves any address in the 2MB region in one cycle using a small hardware hash unit, with no physical contiguity requirement. Mosaic achieves 4× fewer TLB misses and requires ~0.3% additional MMU area.</figcaption>
+</figure>
+
 
 <h3 id="section-16.6.1">16.6.1 The Fundamental Problem: Huge Pages Without Contiguity</h3>
 
@@ -2266,7 +2679,7 @@ Single TLB entry covers ENTIRE 2.1 GB tensor!
 
 <h3 id="section-16.7.3">16.7.3 FlexPointer TLB Entry Format</h3>
 
-<figure id="fig-16-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<figure id="fig-16-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="440" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -2349,7 +2762,7 @@ Single TLB entry covers ENTIRE 2.1 GB tensor!
 </svg>
   </div>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;">
-    <strong>Figure 16.3:</strong> FlexPointer TLB entry format (128 bytes): stores a VA base, VA limit, and PA base, enabling a single entry to cover an arbitrary-size contiguous range. Translation checks VA ∈ [VBase, VLimit) and computes PA = PBase + (VA − VBase) in hardware, reducing 256K classic entries for a 1 GB tensor to a single range entry.
+    <strong>Figure 16.6:</strong> FlexPointer TLB entry format (128 bytes): stores a VA base, VA limit, and PA base, enabling a single entry to cover an arbitrary-size contiguous range. Translation checks VA ∈ [VBase, VLimit) and computes PA = PBase + (VA − VBase) in hardware, reducing 256K classic entries for a 1 GB tensor to a single range entry.
   </figcaption>
 </figure>
 
@@ -2516,6 +2929,138 @@ Hardware reads bits to decide range TLB insertion.
 <h2 id="section-16.8">16.8 Hierarchical Translation: Intermediate Address Space (IAS)</h2>
 
 <p>The final alternative architecture we examine is Intermediate Address Space (IAS), published in ACM TACO 2024. IAS solves a different problem than previous techniques: <strong>translation overhead in heterogeneous systems</strong> where CPUs, GPUs, NPUs, and accelerators share memory but have different page table formats.</p>
+<figure id="fig-16-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr-16-7" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#212121;"/>
+    </marker>
+    <marker id="arr-blue-16-7" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#5E81AC;"/>
+    </marker>
+    <marker id="arr-teal-16-7" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" style="fill:#4A8A99;"/>
+    </marker>
+    <filter id="shadow-16-7">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="900" height="600" style="fill:#FFFFFF;"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" style="fill:#212121;">IAS: Intermediate Address Space — Heterogeneous Translation Indirection</text>
+
+  <!-- Problem: heterogeneous SoC -->
+  <rect x="20" y="52" width="860" height="70" rx="6" style="fill:#F5F7FA;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="450" y="74" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#212121;">The Heterogeneous Translation Problem (ACM TACO 2024)</text>
+  <text x="450" y="93" text-anchor="middle" font-size="13" style="fill:#212121;">Modern SoCs integrate CPU (ARM64), GPU, NPU, and DSP — each with different page table formats, address widths, and TLB organisations. Sharing memory requires per-device translation stacks with no unified mechanism.</text>
+
+  <!-- Left: traditional heterogeneous (problem) -->
+  <rect x="20" y="138" width="380" height="310" rx="8" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="210" y="160" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#BF616A;">Traditional: Separate Translation Stacks</text>
+
+  <!-- CPU translation -->
+  <rect x="35" y="172" width="160" height="55" rx="4" style="fill:#5E81AC;filter:url(#shadow-16-7);"/>
+  <text x="115" y="193" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">CPU (ARM64)</text>
+  <text x="115" y="209" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">4-level radix PT</text>
+  <text x="115" y="224" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">4KB pages, ASID</text>
+
+  <!-- GPU translation -->
+  <rect x="215" y="172" width="160" height="55" rx="4" style="fill:#4A8A99;filter:url(#shadow-16-7);"/>
+  <text x="295" y="193" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">GPU (CUDA)</text>
+  <text x="295" y="209" text-anchor="middle" font-size="11" style="fill:#CCE8EC;">2-level PT, PASID</text>
+  <text x="295" y="224" text-anchor="middle" font-size="11" style="fill:#CCE8EC;">64KB pages</text>
+
+  <!-- NPU/DSP -->
+  <rect x="35" y="250" width="160" height="55" rx="4" style="fill:#5E81AC;filter:url(#shadow-16-7);"/>
+  <text x="115" y="271" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">NPU</text>
+  <text x="115" y="287" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">flat addressing</text>
+  <text x="115" y="303" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">no virtual mem</text>
+
+  <rect x="215" y="250" width="160" height="55" rx="4" style="fill:#4A8A99;filter:url(#shadow-16-7);"/>
+  <text x="295" y="271" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">DSP</text>
+  <text x="295" y="287" text-anchor="middle" font-size="11" style="fill:#CCE8EC;">segmented addr</text>
+  <text x="295" y="303" text-anchor="middle" font-size="11" style="fill:#CCE8EC;">16-bit segments</text>
+
+  <!-- All point to shared memory separately -->
+  <line x1="115" y1="305" x2="115" y2="335" style="stroke:#BF616A;stroke-width:1.5;stroke-dasharray:4,2;" marker-end="url(#arr-16-7)"/>
+  <line x1="295" y1="305" x2="295" y2="335" style="stroke:#BF616A;stroke-width:1.5;stroke-dasharray:4,2;" marker-end="url(#arr-16-7)"/>
+  <text x="210" y="330" text-anchor="middle" font-size="12" style="fill:#BF616A;">4 separate translation paths</text>
+  <rect x="35" y="338" width="340" height="40" rx="4" style="fill:#9E9E9E;"/>
+  <text x="205" y="362" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Shared Physical Memory</text>
+  <rect x="35" y="396" width="340" height="38" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+  <text x="205" y="415" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#BF616A;">Problem: No unified address view</text>
+  <text x="205" y="432" text-anchor="middle" font-size="12" style="fill:#212121;">Sharing requires explicit copies or complex driver shims</text>
+
+  <!-- Right: IAS solution -->
+  <rect x="480" y="138" width="400" height="310" rx="8" style="fill:#EDF5FF;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="680" y="160" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#5E81AC;">IAS: Intermediate Address Space Layer</text>
+
+  <!-- Devices -->
+  <rect x="495" y="172" width="100" height="45" rx="4" style="fill:#5E81AC;"/>
+  <text x="545" y="190" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">CPU</text>
+  <text x="545" y="206" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">ARM64</text>
+
+  <rect x="605" y="172" width="100" height="45" rx="4" style="fill:#4A8A99;"/>
+  <text x="655" y="190" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">GPU</text>
+  <text x="655" y="206" text-anchor="middle" font-size="11" style="fill:#CCE8EC;">CUDA</text>
+
+  <rect x="715" y="172" width="100" height="45" rx="4" style="fill:#5E81AC;"/>
+  <text x="765" y="190" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">NPU/DSP</text>
+  <text x="765" y="206" text-anchor="middle" font-size="11" style="fill:#DDEAF5;">any ISA</text>
+
+  <!-- Lines to IAS layer -->
+  <line x1="545" y1="217" x2="545" y2="247" style="stroke:#5E81AC;stroke-width:1.5;" marker-end="url(#arr-blue-16-7)"/>
+  <line x1="655" y1="217" x2="655" y2="247" style="stroke:#5E81AC;stroke-width:1.5;" marker-end="url(#arr-blue-16-7)"/>
+  <line x1="765" y1="217" x2="765" y2="247" style="stroke:#5E81AC;stroke-width:1.5;" marker-end="url(#arr-blue-16-7)"/>
+
+  <!-- IAS box (the key innovation) -->
+  <rect x="495" y="250" width="375" height="75" rx="6" style="fill:#5E81AC;filter:url(#shadow-16-7);"/>
+  <text x="682" y="273" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#FFFFFF;">Intermediate Address Space (IAS)</text>
+  <text x="682" y="291" text-anchor="middle" font-size="13" style="fill:#DDEAF5;">Shared 64-bit VA space — all devices use same IAS addresses</text>
+  <text x="682" y="308" text-anchor="middle" font-size="12" style="fill:#DDEAF5;">IAS→PA table: one unified page table (4-level radix)</text>
+
+  <line x1="682" y1="325" x2="682" y2="350" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-7)"/>
+
+  <!-- IAS→PA translation -->
+  <rect x="495" y="352" width="375" height="48" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="682" y="372" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">IAS Page Table Walker (shared MMU extension)</text>
+  <text x="682" y="390" text-anchor="middle" font-size="12" style="fill:#212121;">CPU VA → IAS → PA (two-hop). GPU IAS → PA (direct). Hardware TLB caches IAS→PA.</text>
+
+  <line x1="682" y1="400" x2="682" y2="418" style="stroke:#4A8A99;stroke-width:2;" marker-end="url(#arr-teal-16-7)"/>
+
+  <rect x="495" y="420" width="375" height="38" rx="4" style="fill:#9E9E9E;"/>
+  <text x="682" y="443" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Shared Physical Memory</text>
+
+  <!-- Performance box -->
+  <rect x="495" y="375" width="0" height="0" rx="0"/>
+
+  <!-- Bottom comparison -->
+  <rect x="20" y="462" width="860" height="120" rx="6" style="fill:#F5F7FA;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="450" y="484" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#212121;">IAS Performance Characteristics and Deployment Context</text>
+
+  <!-- 3 metrics -->
+  <rect x="35" y="496" width="250" height="72" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="160" y="514" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Translation Overhead</text>
+  <text x="160" y="532" text-anchor="middle" font-size="13" style="fill:#212121;">CPU: 2-hop adds ~1 cycle</text>
+  <text x="160" y="548" text-anchor="middle" font-size="13" style="fill:#212121;">(IAS TLB hit eliminates)</text>
+  <text x="160" y="564" text-anchor="middle" font-size="12" style="fill:#4A8A99;">Net: &lt;5% overhead vs native</text>
+
+  <rect x="325" y="496" width="250" height="72" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="450" y="514" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">Memory Sharing</text>
+  <text x="450" y="532" text-anchor="middle" font-size="13" style="fill:#212121;">Zero-copy between CPU/GPU</text>
+  <text x="450" y="548" text-anchor="middle" font-size="13" style="fill:#212121;">Same IAS address works</text>
+  <text x="450" y="564" text-anchor="middle" font-size="12" style="fill:#4A8A99;">for all heterogeneous cores</text>
+
+  <rect x="615" y="496" width="250" height="72" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="740" y="514" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Target: Apple M-series / AMD MI300</text>
+  <text x="740" y="532" text-anchor="middle" font-size="12" style="fill:#212121;">CPU+GPU unified address space</text>
+  <text x="740" y="548" text-anchor="middle" font-size="12" style="fill:#212121;">NPUs accessing model weights</text>
+  <text x="740" y="564" text-anchor="middle" font-size="12" style="fill:#4A8A99;">directly via IAS</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.7:</strong> IAS Intermediate Address Space (ACM TACO 2024): heterogeneous SoCs integrate CPUs, GPUs, and NPUs with incompatible page table formats. IAS adds a shared 64-bit address space layer between device virtual addresses and physical memory. All devices map to the same IAS addresses; a single unified IAS→PA page table eliminates per-device translation stacks and enables zero-copy sharing. CPU translation incurs a two-hop overhead of less than 5% when the IAS TLB is warm.</figcaption>
+</figure>
+
 
 <h3 id="section-16.8.1">16.8.1 The Heterogeneous Translation Problem</h3>
 
@@ -2704,6 +3249,188 @@ Critical finding: APUs benefit most because VA→IA can be device-local
 <h2 id="section-16.9">16.9 Comparative Analysis: When to Use Each Technique</h2>
 
 <p>We've examined eight distinct approaches to increasing TLB reach. This section synthesizes the findings into actionable guidance for architects, OS developers, and researchers.</p>
+<figure id="fig-16-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <filter id="shadow-16-8">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="900" height="600" style="fill:#FFFFFF;"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" style="fill:#212121;">TLB Reach Optimisation — Complete Comparison and Selection Guide</text>
+
+  <!-- Full comparison table -->
+  <!-- Header row -->
+  <rect x="20" y="50" width="860" height="34" rx="4" style="fill:#212121;"/>
+  <text x="100" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Technique</text>
+  <text x="225" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Year</text>
+  <text x="305" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">TLB Reach</text>
+  <text x="400" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">HW Cost</text>
+  <text x="500" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">OS Support</text>
+  <text x="610" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Best Workload</text>
+  <text x="760" y="72" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">Status</text>
+
+  <!-- Column lines -->
+  <line x1="165" y1="50" x2="165" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+  <line x1="262" y1="50" x2="262" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+  <line x1="345" y1="50" x2="345" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+  <line x1="452" y1="50" x2="452" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+  <line x1="550" y1="50" x2="550" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+  <line x1="665" y1="50" x2="665" y2="332" style="stroke:#E0E0E0;stroke-width:0.5;"/>
+
+  <!-- Row: COLT -->
+  <rect x="20" y="84" width="860" height="38" rx="0" style="fill:#EDF5FF;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="99" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">COLT</text>
+  <text x="100" y="115" text-anchor="middle" font-size="11" style="fill:#616161;">entry-level coalescing</text>
+  <text x="225" y="107" text-anchor="middle" font-size="13" style="fill:#212121;">2012</text>
+  <text x="305" y="99" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">2–4×</text>
+  <text x="305" y="115" text-anchor="middle" font-size="11" style="fill:#616161;">seq. access</text>
+  <text x="400" y="107" text-anchor="middle" font-size="12" style="fill:#212121;">Low (0.5% area)</text>
+  <text x="500" y="107" text-anchor="middle" font-size="12" style="fill:#212121;">None (AMD) / Min (ARM)</text>
+  <text x="610" y="99" text-anchor="middle" font-size="12" style="fill:#212121;">Sequential access,</text>
+  <text x="610" y="115" text-anchor="middle" font-size="12" style="fill:#212121;">memory-intensive</text>
+  <rect x="675" y="88" width="90" height="22" rx="4" style="fill:#4A8A99;"/>
+  <text x="720" y="104" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Production</text>
+  <text x="760" y="116" text-anchor="middle" font-size="11" style="fill:#616161;">billions of chips</text>
+
+  <!-- Row: Pichai -->
+  <rect x="20" y="122" width="860" height="38" rx="0" style="fill:#F5F5F5;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="137" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Pichai</text>
+  <text x="100" y="153" text-anchor="middle" font-size="11" style="fill:#616161;">request-level coalesce</text>
+  <text x="225" y="145" text-anchor="middle" font-size="13" style="fill:#212121;">2014</text>
+  <text x="305" y="137" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">2–4×</text>
+  <text x="305" y="153" text-anchor="middle" font-size="11" style="fill:#616161;">GPU workloads</text>
+  <text x="400" y="145" text-anchor="middle" font-size="12" style="fill:#212121;">Moderate (0.3%)</text>
+  <text x="500" y="145" text-anchor="middle" font-size="12" style="fill:#212121;">None required</text>
+  <text x="610" y="137" text-anchor="middle" font-size="12" style="fill:#212121;">GPU memory access,</text>
+  <text x="610" y="153" text-anchor="middle" font-size="12" style="fill:#212121;">coalesced warps</text>
+  <rect x="675" y="126" width="90" height="22" rx="4" style="fill:#4A8A99;"/>
+  <text x="720" y="142" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Production</text>
+  <text x="760" y="154" text-anchor="middle" font-size="11" style="fill:#616161;">GPU TLBs</text>
+
+  <!-- Row: SpecTLB/Avatar -->
+  <rect x="20" y="160" width="860" height="38" rx="0" style="fill:#EDF5FF;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="175" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">SpecTLB/Avatar</text>
+  <text x="100" y="191" text-anchor="middle" font-size="11" style="fill:#616161;">speculative prefetch</text>
+  <text x="225" y="183" text-anchor="middle" font-size="13" style="fill:#212121;">2011/16</text>
+  <text x="305" y="175" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">17–23%</text>
+  <text x="305" y="191" text-anchor="middle" font-size="11" style="fill:#616161;">miss reduction</text>
+  <text x="400" y="183" text-anchor="middle" font-size="12" style="fill:#212121;">Low (predictor)</text>
+  <text x="500" y="183" text-anchor="middle" font-size="12" style="fill:#212121;">None required</text>
+  <text x="610" y="175" text-anchor="middle" font-size="12" style="fill:#212121;">Stride-predictable</text>
+  <text x="610" y="191" text-anchor="middle" font-size="12" style="fill:#212121;">access patterns</text>
+  <rect x="675" y="164" width="90" height="22" rx="4" style="fill:#BF616A;"/>
+  <text x="720" y="180" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Research</text>
+
+  <!-- Row: SnakeByte -->
+  <rect x="20" y="198" width="860" height="38" rx="0" style="fill:#F5F5F5;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="213" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">SnakeByte</text>
+  <text x="100" y="229" text-anchor="middle" font-size="11" style="fill:#616161;">Markov prefetcher</text>
+  <text x="225" y="221" text-anchor="middle" font-size="13" style="fill:#212121;">2019</text>
+  <text x="305" y="213" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">2–3×</text>
+  <text x="305" y="229" text-anchor="middle" font-size="11" style="fill:#616161;">miss reduction</text>
+  <text x="400" y="221" text-anchor="middle" font-size="12" style="fill:#212121;">Low (Markov table)</text>
+  <text x="500" y="221" text-anchor="middle" font-size="12" style="fill:#212121;">None required</text>
+  <text x="610" y="213" text-anchor="middle" font-size="12" style="fill:#212121;">Irregular but learnable</text>
+  <text x="610" y="229" text-anchor="middle" font-size="12" style="fill:#212121;">pointer chasing</text>
+  <rect x="675" y="202" width="90" height="22" rx="4" style="fill:#BF616A;"/>
+  <text x="720" y="218" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Research</text>
+
+  <!-- Row: Mosaic -->
+  <rect x="20" y="236" width="860" height="38" rx="0" style="fill:#EDF5FF;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="251" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">Mosaic Pages</text>
+  <text x="100" y="267" text-anchor="middle" font-size="11" style="fill:#616161;">iceberg hash</text>
+  <text x="225" y="259" text-anchor="middle" font-size="13" style="fill:#212121;">2023</text>
+  <text x="305" y="251" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">4×</text>
+  <text x="305" y="267" text-anchor="middle" font-size="11" style="fill:#616161;">no contiguity needed</text>
+  <text x="400" y="259" text-anchor="middle" font-size="12" style="fill:#212121;">Moderate (hash unit)</text>
+  <text x="500" y="259" text-anchor="middle" font-size="12" style="fill:#212121;">Minor (OS allocator)</text>
+  <text x="610" y="251" text-anchor="middle" font-size="12" style="fill:#212121;">Fragmented memory,</text>
+  <text x="610" y="267" text-anchor="middle" font-size="12" style="fill:#212121;">post-allocation allocs</text>
+  <rect x="675" y="240" width="90" height="22" rx="4" style="fill:#BF616A;"/>
+  <text x="720" y="256" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Research</text>
+
+  <!-- Row: FlexPointer -->
+  <rect x="20" y="274" width="860" height="38" rx="0" style="fill:#F5F5F5;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="289" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">FlexPointer</text>
+  <text x="100" y="305" text-anchor="middle" font-size="11" style="fill:#616161;">range-based TLB</text>
+  <text x="225" y="297" text-anchor="middle" font-size="13" style="fill:#212121;">2022</text>
+  <text x="305" y="289" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#4A8A99;">8–16×</text>
+  <text x="305" y="305" text-anchor="middle" font-size="11" style="fill:#616161;">large allocs</text>
+  <text x="400" y="297" text-anchor="middle" font-size="12" style="fill:#212121;">Moderate (entry fmt)</text>
+  <text x="500" y="297" text-anchor="middle" font-size="12" style="fill:#212121;">Moderate (OS range)</text>
+  <text x="610" y="289" text-anchor="middle" font-size="12" style="fill:#212121;">Large contiguous allocs,</text>
+  <text x="610" y="305" text-anchor="middle" font-size="12" style="fill:#212121;">ML model weights</text>
+  <rect x="675" y="278" width="90" height="22" rx="4" style="fill:#BF616A;"/>
+  <text x="720" y="294" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">Research</text>
+
+  <!-- IAS row -->
+  <rect x="20" y="312" width="860" height="20" rx="0 0 4 4" style="fill:#EDF5FF;stroke:#E0E0E0;stroke-width:0.5;"/>
+  <text x="100" y="326" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#5E81AC;">IAS</text>
+  <text x="225" y="326" text-anchor="middle" font-size="13" style="fill:#212121;">2024</text>
+  <text x="305" y="326" text-anchor="middle" font-size="12" style="fill:#4A8A99;">unified hetero.</text>
+  <text x="400" y="326" text-anchor="middle" font-size="12" style="fill:#212121;">Moderate (IAS MMU)</text>
+  <text x="500" y="326" text-anchor="middle" font-size="12" style="fill:#212121;">Significant (OS IAS mgr)</text>
+  <text x="610" y="326" text-anchor="middle" font-size="12" style="fill:#212121;">Heterogeneous SoC (CPU+GPU+NPU)</text>
+  <rect x="675" y="314" width="90" height="16" rx="4" style="fill:#BF616A;"/>
+  <text x="720" y="327" text-anchor="middle" font-size="11" font-weight="bold" style="fill:#FFFFFF;">Research</text>
+
+  <!-- Decision tree -->
+  <rect x="20" y="344" width="860" height="240" rx="6" style="fill:#F5F7FA;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="450" y="366" text-anchor="middle" font-size="14" font-weight="bold" style="fill:#212121;">Technique Selection Guide</text>
+
+  <!-- Root question -->
+  <rect x="340" y="378" width="220" height="36" rx="6" style="fill:#5E81AC;"/>
+  <text x="450" y="393" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">What is your primary</text>
+  <text x="450" y="409" text-anchor="middle" font-size="13" font-weight="bold" style="fill:#FFFFFF;">bottleneck?</text>
+
+  <!-- Branch 1: TLB capacity -->
+  <line x1="340" y1="396" x2="175" y2="436" style="stroke:#5E81AC;stroke-width:1.5;"/>
+  <rect x="50" y="436" width="250" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="175" y="451" text-anchor="middle" font-size="12" style="fill:#5E81AC;">TLB capacity / reach</text>
+  <text x="175" y="466" text-anchor="middle" font-size="11" style="fill:#616161;">(many unique mappings)</text>
+
+  <line x1="175" y1="472" x2="80" y2="502" style="stroke:#5E81AC;stroke-width:1.5;"/>
+  <rect x="30" y="502" width="110" height="30" rx="4" style="fill:#5E81AC;"/>
+  <text x="85" y="522" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">COLT / Mosaic</text>
+
+  <line x1="175" y1="472" x2="270" y2="502" style="stroke:#5E81AC;stroke-width:1.5;"/>
+  <rect x="160" y="502" width="120" height="30" rx="4" style="fill:#5E81AC;"/>
+  <text x="220" y="522" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">FlexPointer</text>
+
+  <!-- Branch 2: miss latency -->
+  <line x1="560" y1="396" x2="450" y2="436" style="stroke:#4A8A99;stroke-width:1.5;"/>
+  <rect x="340" y="436" width="220" height="36" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="450" y="451" text-anchor="middle" font-size="12" style="fill:#4A8A99;">Miss penalty latency</text>
+  <text x="450" y="466" text-anchor="middle" font-size="11" style="fill:#616161;">(walk stalls execution)</text>
+
+  <line x1="450" y1="472" x2="390" y2="502" style="stroke:#4A8A99;stroke-width:1.5;"/>
+  <rect x="335" y="502" width="115" height="30" rx="4" style="fill:#4A8A99;"/>
+  <text x="392" y="522" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">SpecTLB</text>
+
+  <line x1="450" y1="472" x2="515" y2="502" style="stroke:#4A8A99;stroke-width:1.5;"/>
+  <rect x="455" y="502" width="120" height="30" rx="4" style="fill:#4A8A99;"/>
+  <text x="515" y="522" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">SnakeByte</text>
+
+  <!-- Branch 3: heterogeneous -->
+  <line x1="560" y1="396" x2="725" y2="436" style="stroke:#5E81AC;stroke-width:1.5;"/>
+  <rect x="610" y="436" width="230" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="725" y="451" text-anchor="middle" font-size="12" style="fill:#5E81AC;">Heterogeneous devices</text>
+  <text x="725" y="466" text-anchor="middle" font-size="11" style="fill:#616161;">(CPU+GPU+NPU sharing)</text>
+
+  <line x1="725" y1="472" x2="725" y2="502" style="stroke:#5E81AC;stroke-width:1.5;"/>
+  <rect x="650" y="502" width="150" height="30" rx="4" style="fill:#5E81AC;"/>
+  <text x="725" y="522" text-anchor="middle" font-size="12" font-weight="bold" style="fill:#FFFFFF;">IAS (TACO 2024)</text>
+
+  <!-- Note -->
+  <text x="450" y="558" text-anchor="middle" font-size="12" style="fill:#9E9E9E;">COLT and Pichai are production-deployed; all other techniques are research prototypes requiring new silicon. Combine techniques for best results: e.g., COLT + SnakeByte.</text>
+  <text x="450" y="576" text-anchor="middle" font-size="12" style="fill:#9E9E9E;">Contiguity available → COLT or FlexPointer first. No contiguity → Mosaic. GPU warp access → Pichai/Avatar. Unknown pattern → SnakeByte learned predictor.</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.8:</strong> Complete TLB reach optimisation comparison: COLT and Pichai are the only production-deployed techniques (billions of chips); all others are research prototypes requiring new silicon. The decision tree (bottom) guides technique selection by primary bottleneck: TLB capacity problems favour COLT/Mosaic/FlexPointer; walk latency problems favour SpecTLB/SnakeByte; heterogeneous device sharing requires IAS. Techniques can be combined — for example, COLT entry coalescing with SnakeByte prefetching addresses both capacity and latency simultaneously.</figcaption>
+</figure>
+
 
 <h3 id="section-16.9.1">16.9.1 Complete Comparison Matrix</h3>
 
