@@ -2795,6 +2795,108 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <p>Cloud providers want to subdivide GPUs among multiple customers to maximize revenue. A single GPU serving 7 customers generates 7× revenue compared to dedicating the entire GPU to one customer. But multi-tenancy requires perfect isolation: Customer A must not be able to observe, infer, or influence Customer B's computation.</p>
 
+<figure id="fig-12-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-12-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+    <marker id="arr-red-12-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#BF616A;"/></marker>
+    <marker id="arr-teal-12-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#4A8A99;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Multi-Tenancy: PASID Isolation vs TunneLs Timing Attack</text>
+
+  <!-- LEFT: Vulnerable shared TLB -->
+  <rect x="30" y="50" width="390" height="470" rx="8" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:2;"/>
+  <text x="225" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#BF616A">Shared TLB — Vulnerable</text>
+
+  <rect x="55" y="85" width="155" height="65" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="132" y="107" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Tenant A</text>
+  <text x="132" y="125" text-anchor="middle" font-size="13" fill="#616161">VA: 0x1000–0x9000</text>
+  <text x="132" y="141" text-anchor="middle" font-size="12" fill="#5E81AC">PASID = 0x01</text>
+
+  <rect x="225" y="85" width="170" height="65" rx="6" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:2;"/>
+  <text x="310" y="107" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Tenant B (Attacker)</text>
+  <text x="310" y="125" text-anchor="middle" font-size="13" fill="#616161">VA: 0xA000–0xF000</text>
+  <text x="310" y="141" text-anchor="middle" font-size="12" fill="#BF616A">PASID = 0x02</text>
+
+  <!-- Arrows to shared TLB -->
+  <line x1="132" y1="150" x2="155" y2="185" style="stroke:#5E81AC;stroke-width:1.5;" marker-end="url(#arr-12-2)"/>
+  <line x1="310" y1="150" x2="283" y2="185" style="stroke:#BF616A;stroke-width:1.5;" marker-end="url(#arr-red-12-2)"/>
+
+  <rect x="80" y="190" width="260" height="120" rx="6" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1.5;"/>
+  <text x="210" y="212" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Shared TLB (1,536 entries)</text>
+  <rect x="93" y="220" width="235" height="20" rx="3" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="210" y="234" text-anchor="middle" font-size="11" fill="#212121">VA:0x1000→PA:0x81000 [PASID=01]</text>
+  <rect x="93" y="243" width="235" height="20" rx="3" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1;"/>
+  <text x="210" y="257" text-anchor="middle" font-size="11" fill="#212121">VA:0xA000→PA:0xCA000 [PASID=02]</text>
+  <rect x="93" y="266" width="235" height="20" rx="3" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="210" y="280" text-anchor="middle" font-size="11" fill="#212121">VA:0x3000→PA:0x91000 [PASID=01]</text>
+  <text x="210" y="300" text-anchor="middle" font-size="12" fill="#9E9E9E">← both tenants mixed in same TLB →</text>
+
+  <rect x="55" y="335" width="335" height="70" rx="6" style="fill:#FDECEA;stroke:#BF616A;stroke-width:1.5;stroke-dasharray:5,3;"/>
+  <text x="222" y="356" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">TunneLs Attack (MICRO 2023)</text>
+  <text x="222" y="374" text-anchor="middle" font-size="12" fill="#212121">B probes timing: hit (4 ns) vs miss (240 ns)</text>
+  <text x="222" y="392" text-anchor="middle" font-size="12" fill="#212121">→ infers A access patterns → leaks AES key</text>
+
+  <line x1="210" y1="310" x2="210" y2="332" style="stroke:#BF616A;stroke-width:2;stroke-dasharray:4,2;" marker-end="url(#arr-red-12-2)"/>
+
+  <rect x="80" y="425" width="260" height="45" rx="5" style="fill:#FFF0F0;stroke:#BF616A;stroke-width:1;"/>
+  <text x="210" y="444" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">~17,000 probes → 512-bit key</text>
+  <text x="210" y="462" text-anchor="middle" font-size="12" fill="#212121">Successful simulated key recovery</text>
+
+  <!-- RIGHT: Isolated PASID TLB -->
+  <rect x="480" y="50" width="390" height="470" rx="8" style="fill:#F8FFF8;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="675" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#4A8A99">PASID-Partitioned TLB — Secure</text>
+
+  <rect x="505" y="85" width="165" height="155" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="587" y="106" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Tenant A Partition</text>
+  <text x="587" y="124" text-anchor="middle" font-size="12" fill="#5E81AC">PASID=0x01 (HW tag)</text>
+  <rect x="516" y="133" width="143" height="18" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="587" y="146" text-anchor="middle" font-size="11" fill="#212121">0x1000→0x81000</text>
+  <rect x="516" y="154" width="143" height="18" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="587" y="167" text-anchor="middle" font-size="11" fill="#212121">0x3000→0x91000</text>
+  <rect x="516" y="175" width="143" height="18" rx="2" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="587" y="188" text-anchor="middle" font-size="11" fill="#212121">0x5000→0xA1000</text>
+  <text x="587" y="228" text-anchor="middle" font-size="12" font-style="italic" fill="#BF616A">B: NO ACCESS</text>
+
+  <rect x="685" y="85" width="165" height="155" rx="6" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="767" y="106" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">Tenant B Partition</text>
+  <text x="767" y="124" text-anchor="middle" font-size="12" fill="#4A8A99">PASID=0x02 (HW tag)</text>
+  <rect x="696" y="133" width="143" height="18" rx="2" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="767" y="146" text-anchor="middle" font-size="11" fill="#212121">0xA000→0xCA000</text>
+  <rect x="696" y="154" width="143" height="18" rx="2" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="767" y="167" text-anchor="middle" font-size="11" fill="#212121">0xB000→0xCB000</text>
+  <rect x="696" y="175" width="143" height="18" rx="2" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="767" y="188" text-anchor="middle" font-size="11" fill="#212121">0xC000→0xCC000</text>
+  <text x="767" y="228" text-anchor="middle" font-size="12" font-style="italic" fill="#BF616A">A: NO ACCESS</text>
+
+  <rect x="505" y="260" width="345" height="55" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="677" y="282" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">Hardware PASID check on every lookup</text>
+  <text x="677" y="300" text-anchor="middle" font-size="12" fill="#212121">Mismatch → TLB miss, no timing info leaked</text>
+
+  <rect x="505" y="335" width="345" height="80" rx="6" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:1.5;"/>
+  <text x="677" y="356" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">CryptoMMU Extension</text>
+  <text x="677" y="374" text-anchor="middle" font-size="12" fill="#212121">Encrypts physical addresses per PASID (AES-128)</text>
+  <text x="677" y="392" text-anchor="middle" font-size="12" fill="#212121">Even with cache hit: PA unreadable without key</text>
+  <text x="677" y="408" text-anchor="middle" font-size="12" fill="#212121">Overhead: ~3% (hardware AES path)</text>
+
+  <rect x="505" y="435" width="345" height="40" rx="5" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="677" y="453" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">TunneLs attack: eliminated</text>
+  <text x="677" y="471" text-anchor="middle" font-size="12" fill="#212121">Isolation overhead: ~8% (PASID) or ~3% (CryptoMMU)</text>
+
+  <!-- legend -->
+  <rect x="30" y="532" width="840" height="24" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <rect x="45" y="539" width="12" height="12" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:1;"/>
+  <text x="62" y="550" font-size="12" fill="#212121">Shared (vulnerable)</text>
+  <rect x="200" y="539" width="12" height="12" style="fill:#F8FFF8;stroke:#4A8A99;stroke-width:1;"/>
+  <text x="217" y="550" font-size="12" fill="#212121">PASID-partitioned (secure)</text>
+  <text x="530" y="550" font-size="12" fill="#616161">Sources: TunneLs (MICRO 2023), CryptoMMU (HPCA 2023)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.2:</strong> Multi-tenancy security: shared TLBs expose a timing side-channel (TunneLs attack) where Tenant B measures hit/miss latency to infer Tenant A's access patterns and recover cryptographic keys. PASID-partitioned TLBs enforce per-tenant hardware isolation, eliminating the covert channel; CryptoMMU additionally encrypts physical addresses per PASID for defence-in-depth at ~3% overhead.</figcaption>
+</figure>
+
+
 <p>This section examines the fundamental conflict between performance optimization (sharing TLB entries) and security (preventing timing side-channels). We analyze a production attack (TunneLs), compare three architectural isolation approaches, and explore cryptographic solutions.</p>
 
 <hr />
@@ -3628,6 +3730,100 @@ Result: ~18% throughput reduction (measured)</code></pre>
 <h2 id="section-12.4">12.4 Virtualization - The Page Fault Challenge</h2>
 
 <p>GPU virtualization—running multiple virtual machines sharing a physical GPU—enables flexible resource allocation for cloud providers. Traditional CPU virtualization is mature (5-15% overhead) and widely deployed. GPU virtualization, however, faces a fundamental challenge: the page fault storm.</p>
+
+<figure id="fig-12-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-12-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+    <marker id="arr-red-12-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#BF616A;"/></marker>
+    <marker id="arr-teal-12-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#4A8A99;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">GPU Virtualization: Page Fault Storm vs DMT Prefetch Mitigation</text>
+
+  <!-- LEFT: Fault storm -->
+  <rect x="30" y="50" width="395" height="460" rx="8" style="fill:#FFF8F8;stroke:#BF616A;stroke-width:2;"/>
+  <text x="227" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#BF616A">Naïve Virtualization: Fault Storm</text>
+
+  <rect x="55" y="88" width="345" height="90" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="227" y="107" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">GPU — 1,024 Threads Launch</text>
+  <text x="227" y="127" text-anchor="middle" font-size="12" fill="#212121">All threads simultaneously access</text>
+  <text x="227" y="145" text-anchor="middle" font-size="12" fill="#BF616A">UNMAPPED virtual address → 1,024 faults</text>
+  <text x="227" y="163" text-anchor="middle" font-size="12" fill="#212121">GPU hardware queues all fault interrupts</text>
+
+  <line x1="227" y1="178" x2="227" y2="210" style="stroke:#BF616A;stroke-width:3;" marker-end="url(#arr-red-12-3)"/>
+  <text x="245" y="200" font-size="12" fill="#BF616A">storm ↓</text>
+
+  <rect x="80" y="215" width="294" height="90" rx="6" style="fill:#FDECEA;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="227" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="#BF616A">Host OS Fault Handler</text>
+  <text x="227" y="255" text-anchor="middle" font-size="12" fill="#212121">Handles faults one by one, serialized</text>
+  <text x="227" y="273" text-anchor="middle" font-size="12" fill="#212121">Each: TLB shootdown + page walk + map</text>
+  <text x="227" y="291" text-anchor="middle" font-size="12" fill="#BF616A">~240μs × 1,024 = ~245 ms total stall</text>
+
+  <rect x="55" y="325" width="345" height="35" rx="4" style="fill:#F0D9D9;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="227" y="347" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">GPU STALLED — 75% throughput lost</text>
+
+  <!-- Bar chart: naïve -->
+  <rect x="55" y="378" width="345" height="110" rx="5" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="227" y="398" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Execution Time Breakdown</text>
+  <text x="75" y="422" font-size="12" fill="#212121">Useful compute:</text>
+  <rect x="190" y="410" width="55" height="16" rx="2" style="fill:#5E81AC;"/>
+  <text x="252" y="422" font-size="12" fill="#212121">25%</text>
+  <text x="75" y="448" font-size="12" fill="#212121">Fault handling:</text>
+  <rect x="190" y="436" width="143" height="16" rx="2" style="fill:#BF616A;"/>
+  <text x="339" y="448" font-size="12" fill="#212121">65%</text>
+  <text x="75" y="474" font-size="12" fill="#212121">TLB shootdown:</text>
+  <rect x="190" y="462" width="35" height="16" rx="2" style="fill:#9E9E9E;"/>
+  <text x="231" y="474" font-size="12" fill="#212121">10%</text>
+
+  <!-- RIGHT: DMT prefetch -->
+  <rect x="475" y="50" width="395" height="460" rx="8" style="fill:#F8FFF8;stroke:#4A8A99;stroke-width:2;"/>
+  <text x="672" y="73" text-anchor="middle" font-size="15" font-weight="bold" fill="#4A8A99">DMT + Prefetch: Storm Eliminated</text>
+
+  <rect x="500" y="88" width="345" height="90" rx="6" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="672" y="107" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">cuMemPrefetchAsync — Before Launch</text>
+  <text x="672" y="127" text-anchor="middle" font-size="12" fill="#4A8A99">cuMemPrefetchAsync(ptr, size, device)</text>
+  <text x="672" y="145" text-anchor="middle" font-size="12" fill="#212121">Host pre-maps all pages before kernel starts</text>
+  <text x="672" y="163" text-anchor="middle" font-size="12" fill="#212121">Zero page faults during GPU execution</text>
+
+  <line x1="672" y1="178" x2="672" y2="210" style="stroke:#4A8A99;stroke-width:3;" marker-end="url(#arr-teal-12-3)"/>
+
+  <rect x="525" y="215" width="320" height="90" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="685" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">DMT: Dynamic Memory Translation</text>
+  <text x="685" y="255" text-anchor="middle" font-size="12" fill="#212121">Predicts next kernel memory footprint</text>
+  <text x="685" y="273" text-anchor="middle" font-size="12" fill="#212121">HugeGPT: coalesces to 2MB → 512× TLB reach</text>
+  <text x="685" y="291" text-anchor="middle" font-size="12" fill="#212121">Pre-populates TLB before kernel launches</text>
+
+  <rect x="500" y="325" width="345" height="35" rx="4" style="fill:#CCE8EC;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="672" y="347" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">GPU RUNNING — 92% of native throughput</text>
+
+  <!-- Bar chart: optimized -->
+  <rect x="500" y="378" width="345" height="110" rx="5" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <text x="672" y="398" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Execution Time Breakdown</text>
+  <text x="520" y="422" font-size="12" fill="#212121">Useful compute:</text>
+  <rect x="635" y="410" width="140" height="16" rx="2" style="fill:#5E81AC;"/>
+  <text x="781" y="422" font-size="12" fill="#212121">92%</text>
+  <text x="520" y="448" font-size="12" fill="#212121">Prefetch overhead:</text>
+  <rect x="635" y="436" width="11" height="16" rx="2" style="fill:#BF616A;"/>
+  <text x="651" y="448" font-size="12" fill="#212121">5%</text>
+  <text x="520" y="474" font-size="12" fill="#212121">Residual sync:</text>
+  <rect x="635" y="462" width="5" height="16" rx="2" style="fill:#9E9E9E;"/>
+  <text x="646" y="474" font-size="12" fill="#212121">3%</text>
+
+  <!-- bottom legend -->
+  <rect x="30" y="522" width="840" height="24" rx="4" style="fill:#F5F5F5;stroke:#9E9E9E;stroke-width:1;"/>
+  <rect x="45" y="529" width="12" height="12" style="fill:#5E81AC;"/>
+  <text x="62" y="540" font-size="12" fill="#212121">Useful compute</text>
+  <rect x="185" y="529" width="12" height="12" style="fill:#BF616A;"/>
+  <text x="202" y="540" font-size="12" fill="#212121">Fault/prefetch overhead</text>
+  <rect x="390" y="529" width="12" height="12" style="fill:#9E9E9E;"/>
+  <text x="407" y="540" font-size="12" fill="#212121">TLB sync</text>
+  <text x="590" y="540" font-size="12" fill="#616161">Sources: HPCA 2023 (DMT), MICRO 2022 (HugeGPT)</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.3:</strong> GPU virtualization fault storm: naïve on-demand fault handling serializes 1,024 concurrent GPU thread faults through the host OS, stalling the GPU for ~245 ms and losing 75% throughput. DMT with cuMemPrefetchAsync eliminates faults entirely by pre-mapping all pages before kernel launch; HugeGPT coalesces 4 KB pages into 2 MB huge pages for 512× TLB reach, reducing overhead to ~3%.</figcaption>
+</figure>
+
 
 <p>When GPUs access unmapped memory, thousands of threads fault simultaneously. The OS must handle thousands of concurrent page faults, causing the entire GPU to stall. This section examines measured overhead (75% throughput loss), optimization strategies (prefetching, hints), and research directions (dynamic tiering, transparent huge pages).</p>
 
@@ -4670,6 +4866,132 @@ HugeGPT:
 <h2 id="section-12.5">12.5 Chapter Summary</h2>
 
 <p>This chapter has examined three scaling challenges—coherence, isolation, virtualization—but a common pattern emerges: MMU architecture for AI systems is fundamentally about choosing positions in three-dimensional trade-off space.</p>
+
+<figure id="fig-12-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+<svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+  <defs>
+    <marker id="arr-12-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" style="fill:#212121;"/></marker>
+  </defs>
+  <text x="450" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">MMU at AI Scale: Three-Dimensional Trade-off Matrix</text>
+
+  <!-- Dimension 1: Coherence (top-left) -->
+  <rect x="25" y="50" width="415" height="225" rx="8" style="fill:#EAF2F8;stroke:#5E81AC;stroke-width:2;"/>
+  <text x="232" y="72" text-anchor="middle" font-size="15" font-weight="bold" fill="#5E81AC">Dimension 1 — Coherence Strategy</text>
+  <rect x="40" y="82" width="385" height="22" rx="3" style="fill:#5E81AC;"/>
+  <text x="130" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Approach</text>
+  <text x="270" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Overhead @ 1024 GPU</text>
+  <text x="390" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Status</text>
+
+  <rect x="40" y="104" width="385" height="22" style="fill:#FFF;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="130" y="119" text-anchor="middle" font-size="12" fill="#212121">Serial broadcast (SW)</text>
+  <text x="270" y="119" text-anchor="middle" font-size="12" fill="#BF616A">47% overhead</text>
+  <text x="390" y="119" text-anchor="middle" font-size="12" fill="#9E9E9E">Baseline</text>
+
+  <rect x="40" y="126" width="385" height="22" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="130" y="141" text-anchor="middle" font-size="12" fill="#212121">Trans-FW (forwarding)</text>
+  <text x="270" y="141" text-anchor="middle" font-size="12" fill="#9E9E9E">30% overhead</text>
+  <text x="390" y="141" text-anchor="middle" font-size="12" fill="#5E81AC">Research</text>
+
+  <rect x="40" y="148" width="385" height="22" style="fill:#FFF;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="130" y="163" text-anchor="middle" font-size="12" fill="#212121">IDYLL (HW directory)</text>
+  <text x="270" y="163" text-anchor="middle" font-size="12" fill="#4A8A99">5% overhead</text>
+  <text x="390" y="163" text-anchor="middle" font-size="12" fill="#5E81AC">Research</text>
+
+  <rect x="40" y="170" width="385" height="22" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="130" y="185" text-anchor="middle" font-size="12" fill="#212121">XLA (static allocation)</text>
+  <text x="270" y="185" text-anchor="middle" font-size="12" fill="#4A8A99">0% overhead</text>
+  <text x="390" y="185" text-anchor="middle" font-size="12" fill="#212121">Production</text>
+
+  <rect x="40" y="202" width="385" height="55" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
+  <text x="232" y="221" text-anchor="middle" font-size="12" font-weight="bold" fill="#5E81AC">Key Insight</text>
+  <text x="232" y="239" text-anchor="middle" font-size="12" fill="#212121">Flexibility ↔ overhead trade-off is fundamental.</text>
+  <text x="232" y="255" text-anchor="middle" font-size="12" fill="#212121">XLA wins by eliminating dynamic remapping entirely.</text>
+
+  <!-- Dimension 2: Isolation (top-right) -->
+  <rect x="460" y="50" width="415" height="225" rx="8" style="fill:#F0EAF8;stroke:#7B68AC;stroke-width:2;"/>
+  <text x="667" y="72" text-anchor="middle" font-size="15" font-weight="bold" fill="#7B68AC">Dimension 2 — Isolation Mechanism</text>
+  <rect x="475" y="82" width="385" height="22" rx="3" style="fill:#7B68AC;"/>
+  <text x="580" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Mechanism</text>
+  <text x="720" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Security Level</text>
+  <text x="833" y="97" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFF">Perf cost</text>
+
+  <rect x="475" y="104" width="385" height="22" style="fill:#FFF;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="580" y="119" text-anchor="middle" font-size="12" fill="#212121">Shared TLB (no tag)</text>
+  <text x="720" y="119" text-anchor="middle" font-size="12" fill="#BF616A">Vulnerable</text>
+  <text x="833" y="119" text-anchor="middle" font-size="12" fill="#4A8A99">0%</text>
+
+  <rect x="475" y="126" width="385" height="22" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="580" y="141" text-anchor="middle" font-size="12" fill="#212121">SW TLB flush on ctx-switch</text>
+  <text x="720" y="141" text-anchor="middle" font-size="12" fill="#9E9E9E">Adequate</text>
+  <text x="833" y="141" text-anchor="middle" font-size="12" fill="#BF616A">~15%</text>
+
+  <rect x="475" y="148" width="385" height="22" style="fill:#FFF;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="580" y="163" text-anchor="middle" font-size="12" fill="#212121">HW PASID partitioning</text>
+  <text x="720" y="163" text-anchor="middle" font-size="12" fill="#4A8A99">Strong</text>
+  <text x="833" y="163" text-anchor="middle" font-size="12" fill="#9E9E9E">~8%</text>
+
+  <rect x="475" y="170" width="385" height="22" style="fill:#F5F5F5;stroke:#DDE4EE;stroke-width:1;"/>
+  <text x="580" y="185" text-anchor="middle" font-size="12" fill="#212121">CryptoMMU (AES-128)</text>
+  <text x="720" y="185" text-anchor="middle" font-size="12" fill="#4A8A99">Strongest</text>
+  <text x="833" y="185" text-anchor="middle" font-size="12" fill="#9E9E9E">~3%</text>
+
+  <rect x="475" y="202" width="385" height="55" rx="4" style="fill:#E8E0F5;stroke:#7B68AC;stroke-width:1;"/>
+  <text x="667" y="221" text-anchor="middle" font-size="12" font-weight="bold" fill="#7B68AC">Key Insight</text>
+  <text x="667" y="239" text-anchor="middle" font-size="12" fill="#212121">HW PASID costs less than SW flush (8% vs 15%).</text>
+  <text x="667" y="255" text-anchor="middle" font-size="12" fill="#212121">CryptoMMU cheapest: ~3% with AES-128.</text>
+
+  <!-- Dimension 3: Virtualization (full width, bottom) -->
+  <rect x="25" y="295" width="850" height="220" rx="8" style="fill:#F8F5E8;stroke:#A07830;stroke-width:2;"/>
+  <text x="450" y="317" text-anchor="middle" font-size="15" font-weight="bold" fill="#A07830">Dimension 3 — Virtualization Fault Strategy</text>
+
+  <!-- 4 boxes -->
+  <rect x="45" y="330" width="188" height="160" rx="6" style="fill:#FDECEA;stroke:#BF616A;stroke-width:1.5;"/>
+  <text x="139" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#BF616A">Naïve (Today)</text>
+  <text x="139" y="370" text-anchor="middle" font-size="12" fill="#212121">On-demand fault</text>
+  <text x="139" y="388" text-anchor="middle" font-size="12" fill="#212121">handling, serialized</text>
+  <text x="139" y="408" text-anchor="middle" font-size="12" fill="#BF616A">75% loss</text>
+  <text x="139" y="426" text-anchor="middle" font-size="12" fill="#212121">No changes needed</text>
+  <text x="139" y="444" text-anchor="middle" font-size="12" fill="#212121">Widely deployed</text>
+  <text x="139" y="475" text-anchor="middle" font-size="12" fill="#BF616A">⚠ Unacceptable at scale</text>
+
+  <rect x="248" y="330" width="188" height="160" rx="6" style="fill:#FFFFFF;stroke:#9E9E9E;stroke-width:1.5;"/>
+  <text x="342" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">Prefetch Hints</text>
+  <text x="342" y="370" text-anchor="middle" font-size="12" fill="#212121">App calls</text>
+  <text x="342" y="388" text-anchor="middle" font-size="12" fill="#212121">cuMemPrefetchAsync</text>
+  <text x="342" y="408" text-anchor="middle" font-size="12" fill="#4A8A99">~8% overhead</text>
+  <text x="342" y="426" text-anchor="middle" font-size="12" fill="#212121">SW change only</text>
+  <text x="342" y="444" text-anchor="middle" font-size="12" fill="#212121">Available in CUDA</text>
+  <text x="342" y="475" text-anchor="middle" font-size="12" fill="#4A8A99">✓ Practical now</text>
+
+  <rect x="451" y="330" width="188" height="160" rx="6" style="fill:#FFFFFF;stroke:#9E9E9E;stroke-width:1.5;"/>
+  <text x="545" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#5E81AC">DMT</text>
+  <text x="545" y="370" text-anchor="middle" font-size="12" fill="#212121">OS/MMU predicts</text>
+  <text x="545" y="388" text-anchor="middle" font-size="12" fill="#212121">footprint, pre-maps</text>
+  <text x="545" y="408" text-anchor="middle" font-size="12" fill="#4A8A99">~5% overhead</text>
+  <text x="545" y="426" text-anchor="middle" font-size="12" fill="#212121">HW + SW changes</text>
+  <text x="545" y="444" text-anchor="middle" font-size="12" fill="#212121">Research stage</text>
+  <text x="545" y="475" text-anchor="middle" font-size="12" fill="#5E81AC">→ Higher accuracy</text>
+
+  <rect x="654" y="330" width="188" height="160" rx="6" style="fill:#E8F5E9;stroke:#4A8A99;stroke-width:1.5;"/>
+  <text x="748" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#4A8A99">HugeGPT</text>
+  <text x="748" y="370" text-anchor="middle" font-size="12" fill="#212121">Coalesce to 2MB</text>
+  <text x="748" y="388" text-anchor="middle" font-size="12" fill="#212121">pages, 512× reach</text>
+  <text x="748" y="408" text-anchor="middle" font-size="12" fill="#4A8A99">~3% overhead</text>
+  <text x="748" y="426" text-anchor="middle" font-size="12" fill="#212121">Kernel + allocator</text>
+  <text x="748" y="444" text-anchor="middle" font-size="12" fill="#212121">MICRO 2022</text>
+  <text x="748" y="475" text-anchor="middle" font-size="12" fill="#4A8A99">✓ Near-native</text>
+
+  <!-- arrows between boxes -->
+  <line x1="235" y1="410" x2="246" y2="410" style="stroke:#4A8A99;stroke-width:1.5;stroke-dasharray:4,2;" marker-end="url(#arr-12-4)"/>
+  <line x1="438" y1="410" x2="449" y2="410" style="stroke:#4A8A99;stroke-width:1.5;stroke-dasharray:4,2;" marker-end="url(#arr-12-4)"/>
+  <line x1="641" y1="410" x2="652" y2="410" style="stroke:#4A8A99;stroke-width:1.5;stroke-dasharray:4,2;" marker-end="url(#arr-12-4)"/>
+  <text x="450" y="507" text-anchor="middle" font-size="12" fill="#A07830">→ Lower overhead, more HW/SW change required →</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.4:</strong> Chapter synthesis: MMU design for AI workloads involves three independent trade-off dimensions. Coherence (top-left) trades flexibility for overhead — XLA eliminates dynamic remapping entirely at 0% cost. Isolation (top-right) shows hardware PASID beats software TLB flush in both security and performance. Virtualization fault strategy (bottom) shows a progression from 75% throughput loss (naïve) to ~3% overhead (HugeGPT), with increasing hardware and software complexity required.</figcaption>
+</figure>
+
 
 <hr />
 
