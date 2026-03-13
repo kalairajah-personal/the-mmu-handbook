@@ -5365,7 +5365,6 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p><strong>Overhead at scale.</strong> The shootdown cost is dominated by IPI round-trip latency. On a 16-core system the overhead is modest (typically &lt;1% of cycles). Research by Villavieja et al. (measured in Mittal, 2016) shows this changes dramatically as core count grows: up to 4% of cycles at 16 cores, rising to 25% at 128 cores, because each IPI stalls the initiating core while acknowledgements arrive serially. AI training workloads with rapid gradient-buffer allocation and deallocation can reach 11–74 shootdowns per second, driving coherence overhead high enough to become the dominant bottleneck (GRIT, 2022). Software mitigations include batching shootdowns, lazy TLB invalidation (deferring flushes until a process is rescheduled), and PCID/ASID tagging to scope invalidations. Chapter 12 examines directory-based hardware solutions (IDYLL) that reduce multi-GPU shootdown overhead from O(N) to O(log N).</p>
 
-<p><em>References: Mittal, S. (2016). "A survey of techniques for architecting TLBs." CPE 29(10). <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">doi:10.1002/cpe.4061</a> (citing Villavieja et al. on shootdown overhead). Intel SDM Vol. 3A §10.12 (x2APIC IPI). ARM ARMv8-A Ref. Manual §D5.10 (TLBI instructions).</em></p>
 
 <h2 id="3.9-page-table-management-from-the-os-perspective">3.9 Page Table Management from the OS Perspective</h2>
 
@@ -5656,6 +5655,14 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <li>Gandini, C., Moreto, M., Cristal, A., Valero, M. "A Study of Hardware-Assisted Address Translation." <em>ACM SIGARCH Computer Architecture News</em>, 43(1):34–39, 2016.</li>
 
 <li>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., Ünsal, O. S. "Redundant Memory Mappings for Fast Access to Large Memories." <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 441–453, 2015. DOI: 10.1145/2749469.2749471</li>
+
+  <li><strong>§3.8.4 — TLB Coherence and Shootdown on Multicore Processors</strong></li>
+  <li>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016. (Citing Villavieja et al. on shootdown overhead.)
+    <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></li>
+  <li>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide</em>. §10.12: x2APIC IPI delivery. 2024.
+    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></li>
+  <li>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile</em>. §D5.10: TLB maintenance instructions (TLBI). ARM DDI 0487J.a, 2023.
+    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></li>
 </ol>
 
 

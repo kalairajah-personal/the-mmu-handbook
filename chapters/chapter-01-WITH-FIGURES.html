@@ -3394,7 +3394,6 @@ will experience more TLB misses.</p>
 
 <p><strong>The AI/ML reach crisis.</strong> Modern large language model training exposes just how narrow 4 KB TLB reach is. GPT-3's working set consists of approximately 350 GB of parameters, plus 700 GB each for momentum and variance under AdamW optimization, plus 50–100 GB of activations — totalling roughly 1,800 GB. An L1 TLB with 64 entries covering 256 KB addresses 0.000014% of that working set; TLB miss rate approaches 100%. Even the 1,536-entry L2 STLB covers only 6 MB. Wu &amp; Taylor (2021) confirmed this directly for deep learning benchmarks: mapping the kernel address space with 8 MB huge pages yielded "a single TLB entry where 4 KB pages would need 2,048 entries," producing 55–61% performance improvement. Switching to 2 MB pages shifts L1 reach from 256 KB to 128 MB (a 512× gain), meaning the L1 TLB alone can cover a meaningful fraction of typical training batches. This is why huge pages are increasingly favoured in AI infrastructure — a topic examined in depth in Chapters 9 and 14.</p>
 
-<p><em>References: Mittal, S. (2016). "A survey of techniques for architecting TLBs." CPE 29(10). <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">doi:10.1002/cpe.4061</a>. Qasem, A., &amp; Magee, J. (2012). "Improving TLB performance through demand-driven superpaging." SPE 43(6), 705–729. <a href="https://doi.org/10.1002/spe.2128" target="_blank" rel="noopener">doi:10.1002/spe.2128</a>. Wu, X., &amp; Taylor, V. (2021). "Ensemble learning for CANDLE DL benchmarks." CPE 35(15). <a href="https://doi.org/10.1002/cpe.6516" target="_blank" rel="noopener">doi:10.1002/cpe.6516</a>.</em></p>
 
 <h4 id="when-does-the-tlb-get-updated">When Does the TLB Get
 Updated?</h4>
@@ -4403,6 +4402,14 @@ errors". <em>ISCA 2014</em>.</p></li>
 (2018)</strong>. <em>Operating Systems: Three Easy Pieces</em>. Chapter
 18-23 (Virtual Memory). Available at:
 https://pages.cs.wisc.edu/~remzi/OSTEP/</p></li>
+
+  <li><strong>§1.8 — TLB Reach and AI Workloads</strong></li>
+  <li>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016.
+    <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></li>
+  <li>Qasem, A. and Magee, J. "Improving TLB performance through demand-driven superpaging." <em>Software: Practice and Experience (SPE)</em>, 43(6):705–729, 2012.
+    <a href="https://doi.org/10.1002/spe.2128" target="_blank" rel="noopener">DOI: 10.1002/spe.2128</a></li>
+  <li>Wu, X. and Taylor, V. "Ensemble learning for CANDLE deep learning benchmarks." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 35(15), 2021.
+    <a href="https://doi.org/10.1002/cpe.6516" target="_blank" rel="noopener">DOI: 10.1002/cpe.6516</a></li>
 </ol>
 <p><strong>Recommended Videos:</strong> - MIT 6.004: "Memory Hierarchy
 and Caches" (OCW) - CMU 15-213: "Virtual Memory" lecture by Bryant &amp;

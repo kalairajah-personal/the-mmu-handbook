@@ -1285,9 +1285,6 @@ L2 STLB (Shared):
   - 16 entries for 1GB pages
   - 12-way set-associative
   - 5-cycle latency</code></pre>
-<p><em>Reference: Intel 64 and IA-32 Architectures Optimization
-Reference Manual, Order Number 248966-046, June 2023, Section
-2.5.3.</em></p>
 <p>Notice the allocation strategy: Many small-page entries, fewer
 large-page entries. This reflects typical usage where most translations
 are 4KB, but a few critical large mappings (e.g., shared libraries, huge
@@ -3677,10 +3674,6 @@ and inverted page tables:</p>
 hierarchical tables due to: - Hardware page walkers prefer deterministic
 access patterns - Page walk caches optimize hierarchical lookups - Large
 pages benefit hierarchical structures</p>
-<p><em>Reference: Talluri, M., &amp; Hill, M. D. (1994). "Surpassing the
-TLB performance of superpages with less operating system support." ACM
-SIGPLAN Notices, 29(11), 171-182. This paper analyzes inverted page
-tables and proposes improvements.</em></p>
 <h3 id="shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables
 for Virtualization</h3>
 <p><strong>Context:</strong> Before hardware virtualization support
@@ -3766,10 +3759,6 @@ empty TLB</p>
   
 If running 100 VMs:
   10-100 GB of shadow page tables!</code></pre>
-<p><em>Reference: Waldspurger, C. A. (2002). "Memory resource management
-in VMware ESX server." ACM SIGOPS Operating Systems Review, 36(SI),
-181-194. Classic paper on shadow page table implementation in
-VMware.</em></p>
 <h3
 id="nestedextended-page-tables-eptnpt---modern-hardware-approach">4.9.3
 Nested/Extended Page Tables (EPT/NPT) - Modern Hardware Approach</h3>
@@ -3895,9 +3884,6 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb132-1"><a href="#cb1
 virtual page accessed via ITLB and DTLB:</p>
 <pre class="assembly"><code>; After changing page table entry affecting execute permissions
 invlpg [address]      ; Invalidates BOTH ITLB and DTLB</code></pre>
-<p><em>Reference: Intel 64 and IA-32 Architectures Software Developer's
-Manual, Volume 3A, Section 8.1.3: "Handling Self-Modifying
-Code."</em></p>
 <h4 id="arm64-explicit-coherency-required">ARM64: Explicit Coherency
 Required</h4>
 <p><strong>ARM64 requires explicit cache maintenance:</strong></p>
@@ -4023,9 +4009,6 @@ isb</code></pre>
 slower than x86's hardware coherency:</p>
 <pre><code>x86 SMC: ~100-200 cycles (mostly automatic)
 ARM SMC: ~500-1000 cycles (explicit cache maintenance)</code></pre>
-<p><em>Reference: ARM Architecture Reference Manual ARMv8, Section
-D5.10: "TLB maintenance instructions" and Section B2.2.5: "Maintenance
-of caches and memory hierarchy."</em></p>
 <h4 id="risc-v-software-responsibility">RISC-V: Software
 Responsibility</h4>
 <p><strong>RISC-V provides minimal hardware support:</strong></p>
@@ -4071,8 +4054,6 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb140-1"><a href="#cb1
 <span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a>        asm <span class="dt">volatile</span><span class="op">(</span><span class="st">&quot;cflush.d.l1 %0&quot;</span> <span class="op">::</span> <span class="st">&quot;r&quot;</span><span class="op">(</span>i<span class="op">));</span></span>
 <span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><em>Reference: RISC-V Instruction Set Manual, Volume I: Unprivileged
-ISA, Section 2.7: "FENCE.I Instruction."</em></p>
 <h3 id="jit-compilers-and-dynamic-code-generation">4.10.3 JIT Compilers
 and Dynamic Code Generation</h3>
 <p><strong>Just-In-Time (JIT) compilers</strong> generate code at
@@ -4490,10 +4471,6 @@ Guest 4KB, EPT 4KB          15,000        18%
 Guest 4KB, EPT 2MB          28,000        8%
 Guest 2MB, EPT 2MB          42,000        3%
 Guest 2MB, EPT 4KB          12,000        35% (thrashing!)</code></pre>
-<p><em>Reference: Ahn, J., Jin, S., &amp; Huh, J. (2012). "Revisiting
-hardware-assisted page walks for virtualized systems." ISCA 2012. This
-paper analyzes EPT/NPT TLB performance with various page size
-combinations.</em></p>
 <hr />
 <h2 id="gpu-and-hardware-accelerator-mmus">4.13 GPU and Hardware
 Accelerator MMUs</h2>
@@ -4743,11 +4720,6 @@ Result: Efficient TLB usage on both</code></pre>
 Discrete GPU, no prefetch      120 ms    15,000
 Discrete GPU, with prefetch    45 ms     0
 Integrated GPU (Apple M1)      28 ms     0 (unified memory)</code></pre>
-<p><em>References:</em> <em>1. NVIDIA CUDA Programming Guide, Chapter
-3.2: "Unified Memory Programming."</em> <em>2. AMD Graphics Core Next
-Architecture, Section 5: "Memory Hierarchy."</em> <em>3. Intel Data
-Center GPU documentation.</em> <em>4. ARM System Memory Management Unit
-Architecture Specification.</em></p>
 <hr />
 
 <h2 id="chapter-4-summary">4.14 Chapter Summary</h2>
@@ -4968,6 +4940,17 @@ News</em> 28.2 (2000): 117-127. DOI: 10.1145/342001.339668</p></li>
 optimizations for multi-GPU systems via decoupled modules." <em>IEEE
 Computer Architecture Letters</em> 21.2 (2022): 85-88. [Modern GPU MMU
 optimizations]</p></li>
+
+  <li><strong>§4.12 — Virtualization TLB Performance</strong></li>
+  <li>Ahn, J., Jin, S., and Huh, J. "Revisiting hardware-assisted page walks for virtualized systems." <em>Proceedings of the 39th Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 476–487, 2012.
+    <a href="https://doi.org/10.1145/2366231.2337200" target="_blank" rel="noopener">DOI: 10.1145/2366231.2337200</a></li>
+  <li><strong>§4.13 — GPU and Accelerator TLBs</strong></li>
+  <li>NVIDIA Corporation. <em>CUDA C++ Programming Guide</em>. Chapter 3.2: "Unified Memory Programming." 2024.
+    <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/" target="_blank" rel="noopener">docs.nvidia.com/cuda</a></li>
+  <li>AMD. <em>AMD Graphics Core Next Architecture, Generation 3</em>. Section 5: "Memory Hierarchy." 2016.
+    <a href="https://gpuopen.com/wp-content/uploads/2016/08/GCN3_Instruction_Set_Architecture_rev1.1.pdf" target="_blank" rel="noopener">gpuopen.com/GCN3</a></li>
+  <li>Intel Corporation. <em>Intel Data Center GPU Flex Series Product Brief</em>. 2023.
+    <a href="https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/data-center-gpu/flex-series/overview.html" target="_blank" rel="noopener">intel.com/data-center-gpu-flex</a></li>
 </ol>
 <hr />
 <p><strong>Note:</strong> All references are organized by topic for easy

@@ -22,11 +22,11 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 |---|-------|:-------:|-----:|
 | [01](chapters/chapter-01-WITH-FIGURES.html) | Memory Hierarchy and the Translation Problem | 23 | 296 KB |
 | [02](chapters/chapter-02-WITH-FIGURES.html) | Virtual Memory Concepts | 10 | 232 KB |
-| [03](chapters/chapter-03-WITH-FIGURES.html) | Page Table Structures and Implementation | 15 | 294 KB |
-| [04](chapters/chapter-04-WITH-FIGURES.html) | TLB Architecture and Organization | 9 | 329 KB |
-| [05](chapters/chapter-05-WITH-FIGURES.html) | IOMMU and Device Address Translation | 8 | 361 KB |
+| [03](chapters/chapter-03-WITH-FIGURES.html) | Page Table Structures and Implementation | 15 | 295 KB |
+| [04](chapters/chapter-04-WITH-FIGURES.html) | TLB Architecture and Organization | 9 | 328 KB |
+| [05](chapters/chapter-05-WITH-FIGURES.html) | IOMMU and Device Address Translation | 8 | 362 KB |
 | [06](chapters/chapter-06-WITH-FIGURES.html) | Memory Protection and Access Control | 5 | 335 KB |
-| [07](chapters/chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 8 | 752 KB |
+| [07](chapters/chapter-07-WITH-FIGURES.html) | Page Faults and Exception Handling | 8 | 753 KB |
 | [08](chapters/chapter-08-WITH-FIGURES.html) | Advanced MMU Topics: System Integration and Optimization | 7 | 330 KB |
 | [09](chapters/chapter-09-WITH-FIGURES.html) | Advanced Page Table Optimizations | 5 | 339 KB |
 | [10](chapters/chapter-10-WITH-FIGURES.html) | Device Memory and Peripheral Translation | 5 | 358 KB |

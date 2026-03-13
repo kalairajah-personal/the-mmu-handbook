@@ -4416,7 +4416,6 @@ Passthrough: 90% of bare metal IOPS!</code></pre>
 
 <p>Bhattacharjee &amp; Martonosi (2009) measured that VPID/ASID support improved TLB hit rate by 10–15 percentage points for virtualised workloads, because without tagging every VM entry/exit caused severe TLB thrashing. Chapter 3 §3.7.3 provides the full treatment of VMID+ASID interaction, combined TLB entry formats, and the RISC-V equivalent (VMID in <code>hgatp</code> plus ASID in <code>satp</code>).</p>
 
-<p><em>Reference: Bhattacharjee, A., &amp; Martonosi, M. (2009). "Characterizing the TLB behavior of emerging parallel workloads on chip multiprocessors." Proceedings of PACT 2009.</em></p>
 
 <h2 id="chapter-summary-and-key-takeaways">5.9 Chapter Summary</h2>
 <h3 id="core-concepts-recap">5.9.1 Core Concepts Recap</h3>
@@ -5401,7 +5400,11 @@ Solution:
    
 5. Fix mapping:
    # Ensure proper IOMMU mapping before DMA</code></pre>
-<hr /><h2 id="references">References</h2>
+<hr /
+  <li><strong>§5.8.9 — TLB Tagging for Virtual Contexts (VMID, ASID, PCID)</strong></li>
+  <li>Bhattacharjee, A. and Martonosi, M. "Characterizing the TLB behavior of emerging parallel workloads on chip multiprocessors." <em>Proceedings of the 18th International Conference on Parallel Architectures and Compilation Techniques (PACT)</em>, pp. 29–40, 2009.
+    <a href="https://doi.org/10.1145/1629575.1629579" target="_blank" rel="noopener">DOI: 10.1145/1629575.1629579</a></li>
+><h2 id="references">References</h2>
 <h3 id="architecture-specifications">Architecture Specifications</h3>
 <p>[1] Intel Corporation. "Intel Virtualization Technology for Directed
 I/O Architecture Specification, Revision 4.0." 2022.
