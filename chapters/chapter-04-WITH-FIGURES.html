@@ -2869,96 +2869,78 @@ TLB.</p>
 be addressed by all TLB entries:</p>
 
 <figure id="fig-4-6">
-<svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#212121"/>
+      <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
     </marker>
-    <marker id="arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#1565C0"/>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/>
     </marker>
-    <filter id="shadow"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
+    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/>
+    </marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#BF616A"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
   </defs>
-
-  <!-- Title -->
-  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">Large Pages and TLB Coverage: 4 KB vs 2 MB vs 1 GB Pages</text>
-
-  <!-- Column headers -->
-  <text x="135" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565C0">4 KB Pages</text>
-  <text x="430" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#00796B">2 MB Pages</text>
-  <text x="725" y="80" text-anchor="middle" font-size="15" font-weight="bold" fill="#E65100">1 GB Pages</text>
-
-  <!-- 4KB column -->
-  <g filter="url(#shadow)">
-    <rect x="30" y="92" width="210" height="320" rx="6" fill="#F5F5F5" stroke="#1565C0" stroke-width="2"/>
-  </g>
-  <!-- TLB entries - 4KB: show many small pages = poor coverage -->
-  <text x="135" y="118" text-anchor="middle" font-size="14" fill="#212121">512-entry TLB</text>
-  <text x="135" y="138" text-anchor="middle" font-size="14" fill="#212121">@ 4 KB/entry</text>
-  <rect x="55" y="150" width="160" height="40" rx="4" fill="#1565C0" stroke="#0D47A1" stroke-width="1.5"/>
-  <text x="135" y="175" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Coverage: 2 MB</text>
-  <!-- Visual bar - small -->
-  <rect x="65" y="205" width="16" height="160" rx="3" fill="#1565C0" opacity="0.15" stroke="#1565C0" stroke-width="1"/>
-  <text x="73" y="380" text-anchor="middle" font-size="11" fill="#616161" transform="rotate(-90,73,295)">2 MB covered</text>
-  <text x="135" y="230" text-anchor="middle" font-size="13" fill="#212121">512 entries ×</text>
-  <text x="135" y="250" text-anchor="middle" font-size="13" fill="#212121">4 KB = 2 MB</text>
-  <text x="135" y="285" text-anchor="middle" font-size="13" fill="#E65100">⚠ 1 TB workset</text>
-  <text x="135" y="305" text-anchor="middle" font-size="13" fill="#E65100">needs 262M</text>
-  <text x="135" y="325" text-anchor="middle" font-size="13" fill="#E65100">TLB entries!</text>
-  <text x="135" y="358" text-anchor="middle" font-size="13" fill="#212121">Miss rate:</text>
-  <text x="135" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#E65100">~25–50%</text>
-  <text x="135" y="398" text-anchor="middle" font-size="12" fill="#616161">(AI/ML workloads)</text>
-
-  <!-- 2MB column -->
-  <g filter="url(#shadow)">
-    <rect x="325" y="92" width="210" height="320" rx="6" fill="#F5F5F5" stroke="#00796B" stroke-width="2"/>
-  </g>
-  <text x="430" y="118" text-anchor="middle" font-size="14" fill="#212121">512-entry TLB</text>
-  <text x="430" y="138" text-anchor="middle" font-size="14" fill="#212121">@ 2 MB/entry</text>
-  <rect x="350" y="150" width="160" height="40" rx="4" fill="#00796B" stroke="#004D40" stroke-width="1.5"/>
-  <text x="430" y="175" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Coverage: 1 GB</text>
-  <!-- Visual bar - medium -->
-  <rect x="360" y="205" width="16" height="130" rx="3" fill="#00796B" opacity="0.25" stroke="#00796B" stroke-width="1"/>
-  <text x="430" y="230" text-anchor="middle" font-size="13" fill="#212121">512 entries ×</text>
-  <text x="430" y="250" text-anchor="middle" font-size="13" fill="#212121">2 MB = 1 GB</text>
-  <text x="430" y="285" text-anchor="middle" font-size="13" fill="#00796B">✓ Typical model</text>
-  <text x="430" y="305" text-anchor="middle" font-size="13" fill="#00796B">fits in TLB</text>
-  <text x="430" y="358" text-anchor="middle" font-size="13" fill="#212121">Miss rate:</text>
-  <text x="430" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#00796B">~2–5%</text>
-  <text x="430" y="398" text-anchor="middle" font-size="12" fill="#616161">(Linux default huge)</text>
-
-  <!-- 1GB column -->
-  <g filter="url(#shadow)">
-    <rect x="620" y="92" width="210" height="320" rx="6" fill="#F5F5F5" stroke="#E65100" stroke-width="2"/>
-  </g>
-  <text x="725" y="118" text-anchor="middle" font-size="14" fill="#212121">512-entry TLB</text>
-  <text x="725" y="138" text-anchor="middle" font-size="14" fill="#212121">@ 1 GB/entry</text>
-  <rect x="645" y="150" width="160" height="40" rx="4" fill="#E65100" stroke="#BF360C" stroke-width="1.5"/>
-  <text x="725" y="175" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Coverage: 512 GB</text>
-  <!-- Visual bar - large -->
-  <rect x="655" y="205" width="16" height="110" rx="3" fill="#E65100" opacity="0.35" stroke="#E65100" stroke-width="1"/>
-  <text x="725" y="230" text-anchor="middle" font-size="13" fill="#212121">512 entries ×</text>
-  <text x="725" y="250" text-anchor="middle" font-size="13" fill="#212121">1 GB = 512 GB</text>
-  <text x="725" y="285" text-anchor="middle" font-size="13" fill="#E65100">⚠ Fragmentation:</text>
-  <text x="725" y="305" text-anchor="middle" font-size="13" fill="#E65100">512× wasted RAM</text>
-  <text x="725" y="325" text-anchor="middle" font-size="13" fill="#E65100">if partially used</text>
-  <text x="725" y="358" text-anchor="middle" font-size="13" fill="#212121">Miss rate:</text>
-  <text x="725" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#E65100">&lt;0.1%</text>
-  <text x="725" y="398" text-anchor="middle" font-size="12" fill="#616161">(requires contiguous 1GB)</text>
-
-  <!-- Bottom summary bar -->
-  <rect x="30" y="432" width="840" height="2" fill="#9E9E9E"/>
-  <text x="450" y="460" text-anchor="middle" font-size="14" font-weight="bold" fill="#212121">TLB Reach Formula: reach = entries × page_size    |    AI/ML recommendation: 2 MB pages (best coverage/fragmentation balance)</text>
-  <text x="450" y="490" text-anchor="middle" font-size="13" fill="#616161">GPT-3 (1,800 GB working set): needs 900M × 4KB entries  →  only 900K × 2MB entries  →  only 1,800 × 1GB entries</text>
-  <text x="450" y="515" text-anchor="middle" font-size="13" fill="#616161">x86-64: L1 TLB 64 entries, L2 TLB 1,536 entries. ARM64: L1 TLB 48–128 entries. All benefit equally from larger pages.</text>
-
-  <!-- Ratio indicator -->
-  <text x="240" y="200" text-anchor="middle" font-size="22" fill="#9E9E9E">→</text>
-  <text x="240" y="225" text-anchor="middle" font-size="12" fill="#9E9E9E">512× reach</text>
-  <text x="535" y="200" text-anchor="middle" font-size="22" fill="#9E9E9E">→</text>
-  <text x="535" y="225" text-anchor="middle" font-size="12" fill="#9E9E9E">512× reach</text>
+  <rect width="900" height="560" fill="#FFFFFF"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Large Pages and TLB Coverage: 4 KB vs 2 MB vs 1 GB</text>
+  <text x="450" y="54" text-anchor="middle" font-size="13" fill="#616161">Same 512-entry TLB — vastly different reach depending on page size</text>
+  <rect x="30" y="70" width="240" height="36" rx="6" fill="#5E81AC"/>
+  <text x="150" y="94" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">4 KB Pages</text>
+  <rect x="330" y="70" width="240" height="36" rx="6" fill="#4A8A99"/>
+  <text x="450" y="94" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">2 MB Pages</text>
+  <rect x="630" y="70" width="240" height="36" rx="6" fill="#34495E"/>
+  <text x="750" y="94" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">1 GB Pages</text>
+  <rect x="30" y="118" width="240" height="130" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="150" y="142" text-anchor="middle" font-size="12" font-weight="normal" fill="#DDEAF5">512 entries × 4 KB</text>
+  <text x="150" y="165" text-anchor="middle" font-size="16" font-weight="bold" fill="#FFFFFF">Coverage: 2 MB</text>
+  <text x="150" y="188" text-anchor="middle" font-size="12" font-weight="normal" fill="#DDEAF5">GPT-3 needs 262M entries</text>
+  <rect x="70" y="198" width="160" height="38" rx="4" fill="#F5F5F5"/>
+  <text x="150" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Miss rate: 25–50%</text>
+  <text x="150" y="230" text-anchor="middle" font-size="12" font-weight="normal" fill="#BF616A">❌ AI/ML unusable</text>
+  <rect x="330" y="118" width="240" height="130" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="450" y="142" text-anchor="middle" font-size="12" font-weight="normal" fill="#CCE8EC">512 entries × 2 MB</text>
+  <text x="450" y="165" text-anchor="middle" font-size="16" font-weight="bold" fill="#FFFFFF">Coverage: 1 GB</text>
+  <text x="450" y="188" text-anchor="middle" font-size="12" font-weight="normal" fill="#CCE8EC">GPT-3 needs 1,800 entries</text>
+  <rect x="370" y="198" width="160" height="38" rx="4" fill="#F5F5F5"/>
+  <text x="450" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Miss rate: 2–5%</text>
+  <text x="450" y="230" text-anchor="middle" font-size="12" font-weight="normal" fill="#5E81AC">✓ Recommended</text>
+  <rect x="630" y="118" width="240" height="130" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="750" y="142" text-anchor="middle" font-size="12" font-weight="normal" fill="#B0BEC5">512 entries × 1 GB</text>
+  <text x="750" y="165" text-anchor="middle" font-size="16" font-weight="bold" fill="#FFFFFF">Coverage: 512 GB</text>
+  <text x="750" y="188" text-anchor="middle" font-size="12" font-weight="normal" fill="#B0BEC5">GPT-3: 2 entries needed!</text>
+  <rect x="670" y="198" width="160" height="38" rx="4" fill="#F5F5F5"/>
+  <text x="750" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">Miss rate: <0.1%</text>
+  <text x="750" y="230" text-anchor="middle" font-size="12" font-weight="normal" fill="#5E81AC">⚠ Fragmentation risk</text>
+  <text x="450" y="285" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">TLB Reach (relative scale)</text>
+  <rect x="85" y="295" width="130" height="18" rx="3" fill="#5E81AC"/>
+  <text x="150" y="309" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">2 MB</text>
+  <rect x="330" y="295" width="240" height="18" rx="3" fill="#4A8A99"/>
+  <text x="450" y="309" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">1 GB  (512× larger)</text>
+  <rect x="570" y="295" width="260" height="18" rx="3" fill="#34495E"/>
+  <text x="700" y="309" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">512 GB  (512× larger again)</text>
+  <rect x="60" y="330" width="780" height="56" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <text x="220" y="353" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">TLB Reach Formula:</text>
+  <text x="480" y="353" text-anchor="middle" font-size="12" font-weight="normal" fill="#212121">reach = entries × page_size    |    512 × 4 KB = 2 MB    |    512 × 2 MB = 1 GB    |    512 × 1 GB = 512 GB</text>
+  <text x="450" y="375" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">AI/ML recommendation: 2 MB pages — best coverage-to-fragmentation trade-off for 1–5 TB working sets</text>
+  <rect x="60" y="400" width="780" height="80" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="60" y="400" width="780" height="24" rx="0" fill="#34495E"/>
+  <text x="450" y="416" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">GPT-3 Example: 1,800 GB working set</text>
+  <text x="210" y="440" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">4 KB pages:</text>
+  <text x="210" y="458" text-anchor="middle" font-size="12" font-weight="normal" fill="#5E81AC">900 million entries needed</text>
+  <text x="450" y="440" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">2 MB pages:</text>
+  <text x="450" y="458" text-anchor="middle" font-size="12" font-weight="normal" fill="#4A8A99">900 thousand entries</text>
+  <text x="690" y="440" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">1 GB pages:</text>
+  <text x="690" y="458" text-anchor="middle" font-size="12" font-weight="normal" fill="#4A8A99">1,800 entries</text>
+  <text x="450" y="510" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">x86-64: L1 TLB 64 entries, L2 TLB 1,536 entries. ARM64: L1 48–128 entries. All benefit equally from larger pages.</text>
+  <text x="450" y="530" text-anchor="middle" font-size="11" font-weight="normal" fill="#616161">Linux: echo always > /sys/kernel/mm/transparent_hugepage/enabled   or use madvise(MADV_HUGEPAGE)</text>
 </svg>
-<figcaption><strong>Figure 4.6:</strong> Large pages and TLB coverage: 4 KB pages give only 2 MB coverage with a 512-entry TLB; 2 MB pages give 1 GB; 1 GB pages give 512 GB. The 2 MB page size offers the best coverage-to-fragmentation trade-off for AI/ML workloads.</figcaption>
+<figcaption><strong>Figure 4.6:</strong> Large pages and TLB coverage: 4 KB pages give only 2 MB reach with a 512-entry TLB; 2 MB pages give 1 GB; 1 GB pages give 512 GB. The 2 MB page size offers the best coverage-to-fragmentation trade-off for AI/ML workloads with terabyte-scale working sets.</figcaption>
 </figure>
 
 <pre><code>TLB Coverage = (Number of TLB entries) × (Page size)</code></pre>
@@ -4544,101 +4526,87 @@ pinned physical memory - OS pins memory pages (prevents swapping) - GPU
 uses physical addresses directly - Simple but inflexible</p>
 
 <figure id="fig-4-8">
-<svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
-    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#212121"/></marker>
-    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#1565C0"/></marker>
-    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00796B"/></marker>
-    <marker id="arr-o" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E65100"/></marker>
-    <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.18"/></filter>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
+    </marker>
+    <marker id="arr-b" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/>
+    </marker>
+    <marker id="arr-t" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#4A8A99"/>
+    </marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#BF616A"/>
+    </marker>
+    <filter id="sh">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
   </defs>
-
-  <text x="30" y="36" font-size="20" font-weight="bold" fill="#212121">GPU MMU Architecture vs CPU TLB</text>
-
-  <!-- LEFT: CPU TLB section -->
-  <rect x="20" y="55" width="390" height="490" rx="8" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <text x="215" y="82" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565C0">CPU TLB (x86-64 / ARM64)</text>
-  <text x="215" y="102" text-anchor="middle" font-size="13" fill="#616161">Hardware-managed, per-core, fully coherent</text>
-
-  <!-- CPU core -->
-  <rect x="80" y="118" width="270" height="50" rx="6" fill="#1565C0" filter="url(#sh)"/>
-  <text x="215" y="140" text-anchor="middle" font-size="15" fill="white" font-weight="bold">CPU Core</text>
-  <text x="215" y="158" text-anchor="middle" font-size="12" fill="#B3D1F0">x86-64 / ARM64 / RISC-V</text>
-
-  <!-- L1 TLB -->
-  <rect x="80" y="188" width="120" height="44" rx="6" fill="#1565C0" filter="url(#sh)"/>
-  <text x="140" y="207" text-anchor="middle" font-size="13" fill="white" font-weight="bold">L1 ITLB</text>
-  <text x="140" y="224" text-anchor="middle" font-size="11" fill="#B3D1F0">64 entries, 1-cyc</text>
-  <rect x="230" y="188" width="120" height="44" rx="6" fill="#1565C0" filter="url(#sh)"/>
-  <text x="290" y="207" text-anchor="middle" font-size="13" fill="white" font-weight="bold">L1 DTLB</text>
-  <text x="290" y="224" text-anchor="middle" font-size="11" fill="#B3D1F0">64 entries, 1-cyc</text>
-  <!-- Arrows down from CPU -->
-  <line x1="215" y1="168" x2="145" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
-  <line x1="215" y1="168" x2="285" y2="188" stroke="#1565C0" stroke-width="1.5" marker-end="url(#arr-b)"/>
-
-  <!-- L2 Unified TLB -->
-  <rect x="80" y="252" width="270" height="44" rx="6" fill="#00796B" filter="url(#sh)"/>
-  <text x="215" y="272" text-anchor="middle" font-size="14" fill="white" font-weight="bold">L2 Unified TLB (Stlb)</text>
-  <text x="215" y="288" text-anchor="middle" font-size="11" fill="#B2DFDB">1,536 entries, 6–8 cycles</text>
-  <line x1="140" y1="232" x2="140" y2="252" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr-t)"/>
-  <line x1="290" y1="232" x2="290" y2="252" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr-t)"/>
-
-  <!-- Page Table Walker -->
-  <rect x="80" y="316" width="270" height="44" rx="6" fill="#212121" filter="url(#sh)"/>
-  <text x="215" y="338" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Hardware Page Table Walker</text>
-  <text x="215" y="354" text-anchor="middle" font-size="11" fill="#B0BEC5">Walks CR3/TTBR1 on miss; ~100 ns</text>
-  <line x1="215" y1="296" x2="215" y2="316" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Key properties -->
-  <rect x="55" y="375" width="320" height="140" rx="6" fill="white" stroke="#9E9E9E" stroke-width="1"/>
-  <text x="215" y="398" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">CPU TLB Properties</text>
-  <text x="75" y="420" font-size="13" fill="#212121">✓ 1 TLB per core — full isolation</text>
-  <text x="75" y="440" font-size="13" fill="#212121">✓ Hardware shootdown via x2APIC IPI</text>
-  <text x="75" y="460" font-size="13" fill="#212121">✓ ASID/PCID prevents full flush</text>
-  <text x="75" y="480" font-size="13" fill="#E65100">✗ 512 entries × 4 KB = 2 MB reach</text>
-  <text x="75" y="500" font-size="13" fill="#E65100">✗ 25% IPI overhead @128 cores</text>
-
-  <!-- RIGHT: GPU MMU section -->
-  <rect x="490" y="55" width="390" height="490" rx="8" fill="#F5F5F5" stroke="#E65100" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <text x="685" y="82" text-anchor="middle" font-size="15" font-weight="bold" fill="#E65100">GPU MMU (NVIDIA / AMD)</text>
-  <text x="685" y="102" text-anchor="middle" font-size="13" fill="#616161">Shared, massively parallel, 2-level TLB</text>
-
-  <!-- GPU SMs -->
-  <rect x="510" y="118" width="340" height="50" rx="6" fill="#E65100" filter="url(#sh)"/>
-  <text x="680" y="140" text-anchor="middle" font-size="15" fill="white" font-weight="bold">128 Streaming Multiprocessors (SMs)</text>
-  <text x="680" y="158" text-anchor="middle" font-size="12" fill="#FFCCBC">Each SM = 1 thread block scheduler + shared resources</text>
-
-  <!-- Per-SM TLB -->
-  <rect x="510" y="188" width="340" height="44" rx="6" fill="#E65100" filter="url(#sh)"/>
-  <text x="680" y="209" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Per-SM L1 TLB (private)</text>
-  <text x="680" y="226" text-anchor="middle" font-size="11" fill="#FFCCBC">32–64 entries per SM, ~1–4 cycles</text>
-  <line x1="680" y1="168" x2="680" y2="188" stroke="#E65100" stroke-width="1.5" marker-end="url(#arr-o)"/>
-
-  <!-- Shared L2 TLB -->
-  <rect x="510" y="252" width="340" height="44" rx="6" fill="#00796B" filter="url(#sh)"/>
-  <text x="680" y="272" text-anchor="middle" font-size="14" fill="white" font-weight="bold">Shared L2 TLB (GPC-level)</text>
-  <text x="680" y="288" text-anchor="middle" font-size="11" fill="#B2DFDB">~4K entries, shared across SMs in GPC</text>
-  <line x1="680" y1="232" x2="680" y2="252" stroke="#00796B" stroke-width="1.5" marker-end="url(#arr-t)"/>
-
-  <!-- MMU / IOMMU -->
-  <rect x="510" y="316" width="340" height="44" rx="6" fill="#212121" filter="url(#sh)"/>
-  <text x="680" y="338" text-anchor="middle" font-size="14" fill="white" font-weight="bold">GPU MMU + IOMMU</text>
-  <text x="680" y="354" text-anchor="middle" font-size="11" fill="#B0BEC5">PCIe ATS / NVLink 2-stage page walk; ~1–10 µs on miss</text>
-  <line x1="680" y1="296" x2="680" y2="316" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Key properties -->
-  <rect x="525" y="375" width="320" height="140" rx="6" fill="white" stroke="#9E9E9E" stroke-width="1"/>
-  <text x="685" y="398" text-anchor="middle" font-size="13" font-weight="bold" fill="#212121">GPU MMU Properties</text>
-  <text x="545" y="420" font-size="13" fill="#00796B">✓ Unified VA space via NVLink/SVM</text>
-  <text x="545" y="440" font-size="13" fill="#00796B">✓ HW broadcast shootdown via NVSwitch</text>
-  <text x="545" y="460" font-size="13" fill="#00796B">✓ 2 MB pages → 1,024× TLB reach</text>
-  <text x="545" y="480" font-size="13" fill="#E65100">✗ TLB miss = PCIe page fault (25× slower)</text>
-  <text x="545" y="500" font-size="13" fill="#E65100">✗ O(N) shootdown: all 128 SMs stall</text>
-
-  <!-- Bottom connector -->
-  <rect x="20" y="548" width="860" height="2" fill="#9E9E9E"/>
-  <text x="450" y="572" text-anchor="middle" font-size="13" fill="#212121" font-weight="bold">Key difference: CPU TLB = per-core, tiny, coherent.  GPU MMU = shared hierarchy, large reach, costly miss.</text>
-  <text x="450" y="590" text-anchor="middle" font-size="12" fill="#616161">NVIDIA H100: 132 SMs × 32-entry L1 TLB + shared L2. AMD MI300X: 228 CUs with similar 2-level hierarchy.</text>
+  <rect width="900" height="580" fill="#FFFFFF"/>
+  <text x="450" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">GPU MMU Architecture vs CPU TLB</text>
+  <text x="450" y="54" text-anchor="middle" font-size="13" fill="#616161">Per-core isolated TLBs (CPU) vs shared hierarchical MMU (GPU)</text>
+  <rect x="20" y="65" width="415" height="450" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="20" y="65" width="415" height="28" rx="0" fill="#5E81AC"/>
+  <text x="227" y="83" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">CPU TLB — x86-64 / ARM64 (per-core, isolated)</text>
+  <rect x="90" y="105" width="255" height="44" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="217" y="123" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">CPU Core</text>
+  <text x="217" y="140" text-anchor="middle" font-size="12" fill="#DDEAF5">x86-64 / ARM64 / RISC-V</text>
+  <rect x="80" y="165" width="115" height="44" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="137" y="183" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">L1 ITLB</text>
+  <text x="137" y="200" text-anchor="middle" font-size="11" fill="#DDEAF5">64 entries / 1 cycle</text>
+  <rect x="240" y="165" width="115" height="44" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="297" y="183" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">L1 DTLB</text>
+  <text x="297" y="200" text-anchor="middle" font-size="11" fill="#DDEAF5">64 entries / 1 cycle</text>
+  <line x1="217" y1="149" x2="142" y2="165" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <line x1="217" y1="149" x2="292" y2="165" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <rect x="80" y="225" width="275" height="44" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="217" y="243" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">L2 Unified TLB (STLB)</text>
+  <text x="217" y="260" text-anchor="middle" font-size="11" fill="#CCE8EC">1,536 entries / 6–8 cycles</text>
+  <line x1="137" y1="209" x2="137" y2="225" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#arr-t)"/>
+  <line x1="297" y1="209" x2="297" y2="225" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#arr-t)"/>
+  <rect x="80" y="285" width="275" height="44" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="217" y="303" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">Hardware Page Table Walker</text>
+  <text x="217" y="320" text-anchor="middle" font-size="11" fill="#B0BEC5">Walks CR3/TTBR1 on miss  ~100 ns</text>
+  <line x1="217" y1="269" x2="217" y2="285" stroke="#34495E" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="30" y="345" width="395" height="155" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="30" y="345" width="395" height="22" rx="0" fill="#34495E"/>
+  <text x="227" y="360" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">CPU TLB Properties</text>
+  <text x="50" y="378" text-anchor="start" font-size="12" font-weight="normal" fill="#5E81AC">✓ 1 TLB per core — fully isolated</text>
+  <text x="50" y="400" text-anchor="start" font-size="12" font-weight="normal" fill="#5E81AC">✓ Hardware shootdown via x2APIC IPI</text>
+  <text x="50" y="422" text-anchor="start" font-size="12" font-weight="normal" fill="#5E81AC">✓ ASID/PCID avoids full flush on context switch</text>
+  <text x="50" y="444" text-anchor="start" font-size="12" font-weight="normal" fill="#BF616A">✗ 512 entries × 4 KB = only 2 MB reach</text>
+  <text x="50" y="466" text-anchor="start" font-size="12" font-weight="normal" fill="#BF616A">✗ 25% IPI overhead at 128 cores</text>
+  <rect x="465" y="65" width="415" height="450" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="465" y="65" width="415" height="28" rx="0" fill="#4A8A99"/>
+  <text x="672" y="83" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">GPU MMU — NVIDIA H100 / AMD MI300X (shared)</text>
+  <rect x="475" y="105" width="395" height="44" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="672" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">128 Streaming Multiprocessors (SMs)</text>
+  <text x="672" y="141" text-anchor="middle" font-size="11" fill="#B0BEC5">Each SM = thread block scheduler + CUDA cores</text>
+  <rect x="475" y="165" width="395" height="44" rx="6" fill="#5E81AC" filter="url(#sh)"/>
+  <text x="672" y="183" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">Per-SM L1 TLB (private per SM)</text>
+  <text x="672" y="200" text-anchor="middle" font-size="11" fill="#DDEAF5">32–64 entries / 1–4 cycles</text>
+  <line x1="672" y1="149" x2="672" y2="165" stroke="#5E81AC" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <rect x="475" y="225" width="395" height="44" rx="6" fill="#4A8A99" filter="url(#sh)"/>
+  <text x="672" y="243" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">Shared L2 TLB (GPC-level)</text>
+  <text x="672" y="260" text-anchor="middle" font-size="11" fill="#CCE8EC">~4K entries shared across SMs in GPC</text>
+  <line x1="672" y1="209" x2="672" y2="225" stroke="#4A8A99" stroke-width="1.5" marker-end="url(#arr-t)"/>
+  <rect x="475" y="285" width="395" height="44" rx="6" fill="#34495E" filter="url(#sh)"/>
+  <text x="672" y="303" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">GPU MMU + IOMMU</text>
+  <text x="672" y="320" text-anchor="middle" font-size="11" fill="#B0BEC5">PCIe ATS / NVLink 2-stage walk  1–10 µs on miss</text>
+  <line x1="672" y1="269" x2="672" y2="285" stroke="#34495E" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="475" y="345" width="395" height="155" rx="6" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="475" y="345" width="395" height="22" rx="0" fill="#34495E"/>
+  <text x="672" y="360" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">GPU MMU Properties</text>
+  <text x="490" y="378" text-anchor="start" font-size="12" font-weight="normal" fill="#4A8A99">✓ Unified VA space via NVLink SVM</text>
+  <text x="490" y="400" text-anchor="start" font-size="12" font-weight="normal" fill="#4A8A99">✓ HW broadcast shootdown via NVSwitch</text>
+  <text x="490" y="422" text-anchor="start" font-size="12" font-weight="normal" fill="#4A8A99">✓ 2 MB pages → 1,024× TLB reach</text>
+  <text x="490" y="444" text-anchor="start" font-size="12" font-weight="normal" fill="#BF616A">✗ TLB miss = PCIe page fault  25× CPU latency</text>
+  <text x="490" y="466" text-anchor="start" font-size="12" font-weight="normal" fill="#BF616A">✗ O(N) shootdown: all 128 SMs stall</text>
+  <rect x="20" y="523" width="860" height="42" rx="6" fill="#34495E" stroke="#34495E" stroke-width="1"/>
+  <text x="450" y="541" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">Key: CPU TLB = per-core, tiny, fully coherent.  GPU MMU = shared hierarchy, large reach, but costly on miss.</text>
+  <text x="450" y="558" text-anchor="middle" font-size="11" font-weight="normal" fill="#B0BEC5">NVIDIA H100: 132 SMs × 32-entry L1 + shared L2.  AMD MI300X: 228 CUs with similar 2-level hierarchy.</text>
 </svg>
 <figcaption><strong>Figure 4.8:</strong> GPU MMU architecture versus CPU TLB. CPUs use per-core, fully-coherent hardware-managed TLBs with ASID isolation. GPU MMUs use a shared two-level hierarchy (per-SM L1 + shared L2) with hardware broadcast shootdown via NVSwitch, but a TLB miss incurs a full PCIe page fault at 25× CPU miss latency.</figcaption>
 </figure>
