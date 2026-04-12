@@ -2,7 +2,7 @@
 
 A comprehensive technical reference covering Memory Management Units (MMU), Translation Lookaside Buffers (TLB), and modern memory systems — from foundational concepts through cutting-edge AI/ML accelerator implementations.
 
-**Live site:** [the-mmu-handbook.github.io/the-mmu-handbook](https://the-mmu-handbook.github.io/the-mmu-handbook/)
+**Live site:** [kalairajah-personal.github.io/the-mmu-handbook](https://kalairajah-personal.github.io/the-mmu-handbook/)
 
 ---
 
