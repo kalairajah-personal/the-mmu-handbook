@@ -1240,7 +1240,7 @@ Accelerators</h1>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#section-11.1">11.1 Introduction: Scale Changes Everything</a></li>
-<li><a href="#section-11.2">11.2 Google TPU: Compiler-Managed Memory</a></li>
+<li><a href="#section-11.10">11.2 Google TPU: Compiler-Managed Memory</a></li>
 <li><a href="#section-11.3">11.3 NVIDIA GPU Unified Virtual Memory</a></li>
 <li><a href="#section-11.4">11.4 Multi-GPU TLB Synchronization: NVLink and NVSwitch</a></li>
 <li><a href="#section-11.5">11.5 Page Size Strategy for AI Workloads</a></li>
@@ -1248,12 +1248,10 @@ Accelerators</h1>
 <li><a href="#section-11.7">11.7 Intel Gaudi 2 and RDMA Integration</a></li>
 <li><a href="#section-11.8">11.8 Apple M-Series Unified Memory Architecture</a></li>
 <li><a href="#section-11.9">11.9 Common Pitfalls and Production Best Practices</a></li>
-<li><a href="#section-11.2">11.10 Chapter Summary</a></li>
+<li><a href="#section-11.10">11.10 Chapter Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </nav>
-<h1 id="chapter-11-virtual-memory-in-aiml-accelerators">Chapter 11:
-Virtual Memory in AI/ML Accelerators</h1>
 <h2 id="section-11.1">11.1 Introduction: Scale
 Changes Everything</h2>
 <p>On a February morning in 2024, engineers at a leading AI lab
@@ -5745,7 +5743,7 @@ class="sourceCode swift"><code class="sourceCode swift"><span id="cb182-1"><a hr
 <span id="cb182-20"><a href="#cb182-20" aria-hidden="true" tabindex="-1"></a>    defer_npu_inference<span class="op">()</span></span>
 <span id="cb182-21"><a href="#cb182-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <hr />
-<h2 id="section-11.2">11.10 Chapter Summary</h2>
+<h2 id="section-11.10">11.10 Chapter Summary</h2>
 <p>This chapter examined how AI and machine learning accelerators—spanning the full spectrum from Google's no-MMU TPU architecture to NVIDIA's unified virtual memory, AMD's chiplet-based MI300X, Intel's Gaudi 2, and Apple's M-series—each make fundamentally different memory management design decisions driven by their target workloads.</p>
 <p>Google's TPU architecture demonstrates that for pure matrix-multiply workloads, eliminating the MMU entirely is the right engineering choice. The XLA compiler statically allocates every tensor to a fixed physical address at compile time, removing page table overhead and enabling sustained 900 GB/s HBM bandwidth utilization. The tradeoff is inflexibility: models must fit within statically known memory bounds, and runtime dynamic allocation is not possible.</p>
 <p>NVIDIA's Unified Virtual Memory (UVM) takes the opposite approach, providing a shared address space between CPU and GPU with hardware-managed migration. The benefit is programming simplicity—<code>cudaMallocManaged</code> allocates memory that migrates on demand. The cost is page fault storms during the first training epoch, which can inflate per-iteration time by 20× without careful use of <code>cudaMemPrefetchAsync</code> and <code>cudaMemAdvise</code>. Production deployments rely heavily on these mitigation strategies.</p>
@@ -6489,7 +6487,7 @@ considered trade-offs.</p>
                 "short": "Virtual Memory Challenges in AI/ML Accelerators",
                 "sections": [
                       {"text": "11.1 Introduction: Scale Changes Everything", "id": "section-11.1"},
-                      {"text": "11.2 Google TPU: Compiler-Managed Memory", "id": "section-11.2"},
+                      {"text": "11.2 Google TPU: Compiler-Managed Memory", "id": "section-11.10"},
                       {"text": "11.3 NVIDIA GPU Unified Virtual Memory", "id": "section-11.3"},
                       {"text": "11.4 Multi-GPU TLB Synchronization: NVLink and NVSwitch", "id": "section-11.4"},
                       {"text": "11.5 Page Size Strategy for AI Workloads", "id": "section-11.5"},

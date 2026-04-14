@@ -725,11 +725,9 @@ Dive</h1>
 <li><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a></li>
 <li><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a></li>
 <li><a href="#section-4.14">4.14 Chapter Summary</a></li>
-<li><a href="#section-4.15">References</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
-<h1 id="chapter-4-translation-lookaside-buffer-tlb---deep-dive">Chapter
-4: Translation Lookaside Buffer (TLB) - Deep Dive</h1>
 <h2 id="section-4.1">4.1
 Introduction: The Most Critical Cache You've Never Heard Of</h2>
 <p>In Chapter 1, we introduced the Translation Lookaside Buffer (TLB) as
@@ -4567,7 +4565,7 @@ Integrated GPU (Apple M1)      28 ms     0 (unified memory)</code></pre>
 <p>GPU and accelerator MMUs were examined as the chapter's final frontier. GPU L1 TLBs are small (64–128 entries per shader multiprocessor) but hundreds of them operate in parallel; a single miss from one warp can serialise the entire multiprocessor if it requires a page table walk. NVIDIA's UVM architecture and the Pichai coalescing mechanism represent the state of the art for GPU address translation at scale.</p>
 <p><strong>Chapter 5</strong> extends this analysis to I/O devices, examining how the IOMMU performs the same address translation function for DMA operations—and why the costs and design choices differ fundamentally when the entity requesting translation cannot tolerate page faults or handle TLB misses in software.</p>
 
-<h2 id="section-4.15">References</h2>
+<h2 id="references">References</h2>
 <h3 id="general-tlb-architecture-and-design">General TLB Architecture and Design</h3>
 <ol type="1">
 <li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures
@@ -4962,7 +4960,6 @@ optimizations]</p></li>
                       {"text": "4.12 Virtualization with Mismatched Page Sizes", "id": "section-4.12"},
                       {"text": "4.13 GPU and Hardware Accelerator MMUs", "id": "section-4.13"},
                       {"text": "4.14 Chapter Summary", "id": "section-4.14"},
-                      {"text": "References", "id": "section-4.15"},
                       {"text": "References", "id": "references"}
                 ]
           },
