@@ -9,6 +9,7 @@
     
     
 <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -155,80 +156,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -772,37 +707,18 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <body>
 <div class="container">
 
-<h1 id="chapter-12">Chapter 12: When MMU Architecture Breaks - AI at Scale</h1>
+<header id="title-block-header">
+<h1 class="title">Chapter 12: When MMU Architecture Breaks - AI at Scale</h1>
+</header>
 
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#section-12.1">12.1 The Six Drivers of AI Memory Systems</a></li>
 <li><a href="#section-12.2">12.2 The Architectural Cost of Runtime Address Translation</a></li>
-<li><a href="#section-12.3">12.1 Introduction</a></li>
-<li><a href="#section-12.4">12.2 Multi-GPU TLB Coordination</a>
-  <ul>
-  <li><a href="#section-12.4.1">12.2.1 GRIT</a></li>
-  <li><a href="#section-12.4.2">12.2.2 Trans-FW</a></li>
-  <li><a href="#section-12.4.3">12.2.3 ecoTLB</a></li>
-  <li><a href="#section-12.4.4">12.2.4 IDYLL</a></li>
-  <li><a href="#section-12.4.5">12.2.5 XLA</a></li>
-  </ul>
-</li>
-<li><a href="#section-12.5">12.3 Multi-Tenancy Security</a>
-  <ul>
-  <li><a href="#section-12.5.1">12.3.1 TunneLs Attack</a></li>
-  <li><a href="#section-12.5.2">12.3.2 Three Architectures</a></li>
-  <li><a href="#section-12.5.3">12.3.3 CryptoMMU</a></li>
-  </ul>
-</li>
-<li><a href="#section-12.6">12.4 GPU Virtualization</a>
-  <ul>
-  <li><a href="#section-12.6.1">12.4.1 LVM</a></li>
-  <li><a href="#section-12.6.2">12.4.2 Prefetching</a></li>
-  <li><a href="#section-12.6.3">12.4.3 DMT</a></li>
-  <li><a href="#section-12.6.4">12.4.4 HugeGPT</a></li>
-  </ul>
-</li>
+<li><a href="#section-12.3">12.3 Introduction - When Good Architecture Faces New Constraints</a></li>
+<li><a href="#section-12.4">12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem</a></li>
+<li><a href="#section-12.5">12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs</a></li>
+<li><a href="#section-12.6">12.6 Virtualization - The Page Fault Challenge</a></li>
 <li><a href="#section-12.7">12.7 Chapter Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
@@ -822,8 +738,9 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>AI training transforms this equation. GPT-3 with 175 billion parameters requires 350 GB for parameters alone, plus 700 GB each for momentum and variance (AdamW optimizer), and 50-100 GB for activations. Total working set: 1,800 GB. The same 512-entry TLB now covers only 1 GB of 1,800 GB—0.055% coverage. TLB miss rate: 99.945%.</p>
 
-<figure id="fig-12-1">
-<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-12-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -879,7 +796,8 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <text x="780" y="503" text-anchor="middle" font-size="11" fill="#BF616A">TLB prefetch ineffective</text>
   <line x1="678" y1="467" x2="528" y2="315" stroke="#212121" stroke-width="1.5" marker-end="url(#arr)"/>
 </svg>
-<figcaption><strong>Figure 12.1:</strong> The six drivers of AI memory system stress. Three scale drivers (working set size, GPU count, memory bandwidth) and three operational drivers (multi-tenancy, virtualisation overhead, irregular access patterns) combine to expose fundamental mismatches between conventional MMU design assumptions and large-scale AI workload requirements.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.1:</strong> The six drivers of AI memory system stress. Three scale drivers (working set size, GPU count, memory bandwidth) and three operational drivers (multi-tenancy, virtualisation overhead, irregular access patterns) combine to expose fundamental mismatches between conventional MMU design assumptions and large-scale AI workload requirements.</figcaption>
 </figure>
 
 
@@ -945,8 +863,9 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>At AI scale with 90% bandwidth utilization, this compounds. H100 GPUs perform 100 billion memory accesses per second. With 5% TLB miss rate (using 2MB pages), 5 billion misses occur per second. Wasted cycles: 750 billion per second. At 2.5 GHz, this represents 300 wasted seconds per second—impossible without pipelining, but resulting in measured 20-30% effective overhead.</p>
 
-<figure id="fig-12-2">
-<svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-12-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -1041,7 +960,8 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <text x="450" y="415" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Key Mitigation: 2 MB Huge Pages → 512× TLB reach → LLM inference overhead 70% → 12%</text>
   <text x="450" y="437" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">Source: Ausavarungnirun et al. MICRO 2017, GRIT OSDI 2021, production measurements from cloud providers.</text>
 </svg>
-<figcaption><strong>Figure 12.2:</strong> Address translation overhead breakdown per 1,000 memory accesses. LLM inference with 4 KB pages wastes 70% of cycles on TLB misses and page walks; 2 MB pages reduce this to 12% (88% TLB hit rate). Distributed training loses an additional 40% to shootdown overhead. Data: Ausavarungnirun et al. MICRO 2017, GRIT OSDI 2021.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 12.2:</strong> Address translation overhead breakdown per 1,000 memory accesses. LLM inference with 4 KB pages wastes 70% of cycles on TLB misses and page walks; 2 MB pages reduce this to 12% (88% TLB hit rate). Distributed training loses an additional 40% to shootdown overhead. Data: Ausavarungnirun et al. MICRO 2017, GRIT OSDI 2021.</figcaption>
 </figure>
 
 
@@ -6123,38 +6043,14 @@ Scenario 4: Research (Larger-than-Memory)
                 "file": "chapter-12-WITH-FIGURES.html",
                 "short": "When MMU Architecture Breaks - AI at Scale",
                 "sections": [
-                      {
-                            "text": "12.1 The Six Drivers of AI Memory Systems",
-                            "id": "section-12.1"
-                      },
-                      {
-                            "text": "12.2 The Architectural Cost of Runtime Address Translation",
-                            "id": "section-12.2"
-                      },
-                      {
-                            "text": "12.3 Introduction - When Good Architecture Faces New Constraints",
-                            "id": "section-12.3"
-                      },
-                      {
-                            "text": "12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem",
-                            "id": "section-12.4"
-                      },
-                      {
-                            "text": "12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs",
-                            "id": "section-12.5"
-                      },
-                      {
-                            "text": "12.6 Virtualization - The Page Fault Challenge",
-                            "id": "section-12.6"
-                      },
-                      {
-                            "text": "12.7 Chapter Summary",
-                            "id": "section-12.7"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "12.1 The Six Drivers of AI Memory Systems", "id": "section-12.1"},
+                      {"text": "12.2 The Architectural Cost of Runtime Address Translation", "id": "section-12.2"},
+                      {"text": "12.3 Introduction - When Good Architecture Faces New Constraints", "id": "section-12.3"},
+                      {"text": "12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem", "id": "section-12.4"},
+                      {"text": "12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs", "id": "section-12.5"},
+                      {"text": "12.6 Virtualization - The Page Fault Challenge", "id": "section-12.6"},
+                      {"text": "12.7 Chapter Summary", "id": "section-12.7"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

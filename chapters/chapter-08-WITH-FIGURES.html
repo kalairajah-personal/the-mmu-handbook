@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 8: Advanced MMU Topics - System Integration and Optimization</title>
   <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -152,80 +153,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -632,22 +567,6 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
-
-  ol.references {
-    padding-left: 1.6em;
-    line-height: 1.7;
-  }
-  ol.references > li {
-    margin-bottom: 0.75em;
-    color: #333;
-  }
-  ol.references a {
-    color: #4A7BAC;
-    word-break: break-all;
-  }
-  ol.references a:hover {
-    text-decoration: underline;
-  }
 </style>
 <style>
         body {
@@ -790,75 +709,16 @@ and Optimization</h1>
 
 <nav id="TOC" role="doc-toc">
 <ul>
-  <li><a href="#introduction-the-crisis-point" id="toc-introduction-the-crisis-point">8.1 Introduction: The Crisis Point</a>
-  <ul>
-    <li><a href="#the-three-scenarios" id="toc-the-three-scenarios">8.1.1 Three Real-World Scenarios</a></li>
-    <li><a href="#the-hardware-software-contract" id="toc-the-hardware-software-contract">8.1.2 The Hardware–Software Contract</a></li>
-  </ul>
-  </li>
-  <li><a href="#nested-page-tables-beyond-the-basics" id="toc-nested-page-tables-beyond-the-basics">8.2 Nested Page Tables: Beyond the Basics</a>
-  <ul>
-    <li><a href="#nested-fault-taxonomy" id="toc-nested-fault-taxonomy">8.2.1 Nested Fault Taxonomy</a></li>
-    <li><a href="#ept-prepopulation" id="toc-ept-prepopulation">8.2.2 EPT Pre-population and Large EPT Pages</a></li>
-  </ul>
-  </li>
-  <li><a href="#architecture-differences-nested-fault-handling" id="toc-architecture-differences-nested-fault-handling">8.3 Architecture Differences in Nested Fault Handling</a>
-  <ul>
-    <li><a href="#x86-64-ept-violations" id="toc-x86-64-ept-violations">8.3.1 x86-64 EPT Violations</a></li>
-    <li><a href="#arm64-stage2" id="toc-arm64-stage2">8.3.2 ARM64 Stage-2 Faults</a></li>
-    <li><a href="#riscv-h-extension" id="toc-riscv-h-extension">8.3.3 RISC-V H Extension</a></li>
-    <li><a href="#cross-architecture-comparison" id="toc-cross-architecture-comparison">8.3.4 Practical Guidance for Hypervisor Developers</a></li>
-  </ul>
-  </li>
-  <li><a href="#accessed-dirty-bits" id="toc-accessed-dirty-bits">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</a>
-  <ul>
-    <li><a href="#ad-mechanisms" id="toc-ad-mechanisms">8.4.1 Hardware A/D Bit Mechanisms</a></li>
-    <li><a href="#software-aging-cycle" id="toc-software-aging-cycle">8.4.2 The Clear-and-Check Aging Cycle</a></li>
-    <li><a href="#dirty-bit-eviction-cost" id="toc-dirty-bit-eviction-cost">8.4.3 Dirty Bit and Eviction Cost</a></li>
-    <li><a href="#cross-reference-ch2" id="toc-cross-reference-ch2">8.4.4 Relationship to Page Replacement Algorithms</a></li>
-  </ul>
-  </li>
-  <li><a href="#page-replacement-algorithms" id="toc-page-replacement-algorithms">8.5 Page Replacement Algorithms: From Theory to Practice</a>
-  <ul>
-    <li><a href="#the-ideal-perfect-lru" id="toc-the-ideal-perfect-lru">8.5.1 The Ideal: Perfect LRU</a></li>
-    <li><a href="#clock-algorithm-practical-lru-approximation-1" id="toc-clock-algorithm-practical-lru-approximation-1">8.5.2 Clock Algorithm: Practical LRU Approximation</a></li>
-    <li><a href="#two-handed-clock-considering-cleanliness" id="toc-two-handed-clock-considering-cleanliness">8.5.3 Two-Handed Clock: Considering Cleanliness</a></li>
-    <li><a href="#multi-generational-lru-mglru-modern-sophistication" id="toc-multi-generational-lru-mglru-modern-sophistication">8.5.4 Multi-Generational LRU (MGLRU): Modern Sophistication</a></li>
-  </ul>
-  </li>
-  <li><a href="#memory-reclaim" id="toc-memory-reclaim">8.6 Memory Reclaim: When and How to Free Pages</a>
-  <ul>
-    <li><a href="#watermarks-detecting-memory-pressure-1" id="toc-watermarks-detecting-memory-pressure-1">8.6.1 Watermarks: Detecting Memory Pressure</a></li>
-    <li><a href="#kswapd-background-reclaim-daemon-1" id="toc-kswapd-background-reclaim-daemon-1">8.6.2 kswapd: Background Reclaim Daemon</a></li>
-    <li><a href="#direct-reclaim-the-emergency-path-1" id="toc-direct-reclaim-the-emergency-path-1">8.6.3 Direct Reclaim: The Emergency Path</a></li>
-    <li><a href="#swappiness-tuning-reclaim-behavior" id="toc-swappiness-tuning-reclaim-behavior">8.6.4 Swappiness: Tuning Reclaim Behavior</a></li>
-    <li><a href="#oom-killer-the-last-resort-1" id="toc-oom-killer-the-last-resort-1">8.6.5 OOM Killer: The Last Resort</a></li>
-  </ul>
-  </li>
-  <li><a href="#page-table-management" id="toc-page-table-management">8.7 Page Table Management: The Meta-Problem</a>
-  <ul>
-    <li><a href="#page-table-overhead-calculations" id="toc-page-table-overhead-calculations">8.7.1 Page Table Overhead Calculations</a></li>
-    <li><a href="#lazy-allocation-avoiding-waste" id="toc-lazy-allocation-avoiding-waste">8.7.2 Lazy Allocation: Avoiding Waste</a></li>
-    <li><a href="#page-table-reclamation" id="toc-page-table-reclamation">8.7.3 Page Table Reclamation</a></li>
-    <li><a href="#compact-vs-sparse-layouts" id="toc-compact-vs-sparse-layouts">8.7.4 Compact vs Sparse Layouts</a></li>
-    <li><a href="#huge-pages-the-ultimate-optimization" id="toc-huge-pages-the-ultimate-optimization">8.7.5 Huge Pages: The Ultimate Optimization</a></li>
-  </ul>
-  </li>
-  <li><a href="#performance-analysis-and-tuning" id="toc-performance-analysis-and-tuning">8.8 Performance Analysis and Tuning</a>
-  <ul>
-    <li><a href="#essential-profiling-tools" id="toc-essential-profiling-tools">8.8.1 Essential Profiling Tools</a></li>
-    <li><a href="#common-performance-issues" id="toc-common-performance-issues">8.8.2 Common Performance Issues</a></li>
-    <li><a href="#tuning-parameters" id="toc-tuning-parameters">8.8.3 Tuning Parameters</a></li>
-  </ul>
-  </li>
-  <li><a href="#chapter-summary" id="toc-chapter-summary">8.9 Chapter Summary</a>
-  <ul>
-    <li><a href="#integration-with-previous-chapters" id="toc-integration-with-previous-chapters">Integration with Previous Chapters</a></li>
-    <li><a href="#practical-takeaways-1" id="toc-practical-takeaways-1">Practical Takeaways</a></li>
-    <li><a href="#the-big-picture-1" id="toc-the-big-picture-1">The Big Picture</a></li>
-    </ul>
-  </li>
-  <li><a href="#references" id="toc-references">References</a></li>
+<li><a href="#section-8.1">8.1 Introduction: The Crisis Point</a></li>
+<li><a href="#section-8.2">8.2 Nested Page Tables: Beyond the Basics</a></li>
+<li><a href="#section-8.3">8.3 Architecture Differences in Nested Fault Handling</a></li>
+<li><a href="#section-8.4">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</a></li>
+<li><a href="#section-8.5">8.5 Page Replacement Algorithms: From Theory to Practice</a></li>
+<li><a href="#section-8.6">8.6 Memory Reclaim: When and How to Free Pages</a></li>
+<li><a href="#section-8.7">8.7 Page Table Management: The Meta-Problem</a></li>
+<li><a href="#section-8.8">8.8 Performance Analysis and Tuning</a></li>
+<li><a href="#section-8.9">8.9 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 
@@ -866,7 +726,7 @@ and Optimization</h1>
 
 
 
-<h2 id="introduction-the-crisis-point">8.1 Introduction: The Crisis Point</h2>
+<h2 id="section-8.1">8.1 Introduction: The Crisis Point</h2>
 <p>Consider a production PostgreSQL database server with 24 GB of RAM. The monitoring dashboard shows 17 GB "available" memory — plenty of headroom, right? Then, without warning, the database process is killed. The system log contains one cryptic line: <code>Out of memory: Killed process 4721 (postgres) score 823</code>. How can a process be killed when 17 GB is "available"?</p>
 <p>The answer lies in how the Linux kernel distinguishes between memory that is <em>free</em> and memory that is merely <em>reclaimable</em>. That 17 GB was almost entirely page cache — file data buffered in RAM to speed up reads. When a large memory allocation demand arrived, the kernel needed pages <em>immediately</em>, discovered that reclaiming cache required writing dirty pages to disk, could not complete reclaim fast enough, and triggered the OOM killer as a last resort. The database had done nothing wrong. The system's memory management cascade had failed to keep pace with demand.</p>
 <p>This chapter bridges the hardware mechanisms covered in Chapters 1–7 with the software policies that drive real system behaviour. We have established how the MMU translates addresses (Chapter 3), how TLBs accelerate that translation (Chapter 4), and how page faults interrupt and redirect execution (Chapter 7). Now we examine <em>what happens when memory genuinely runs short</em>: which pages are chosen for eviction, how the kernel manages nested virtualisation faults, how hardware-software cooperation via accessed and dirty bits drives reclaim decisions, and what performance levers a systems programmer can pull when things go wrong.</p>
@@ -984,7 +844,7 @@ and Optimization</h1>
 <p>The hardware–software contract for memory reclaim rests on two bits embedded in every page table entry: the <strong>Accessed (A) bit</strong> and the <strong>Dirty (D) bit</strong>. The hardware sets these bits automatically as pages are accessed and written, providing the OS with a low-cost usage signal that does not require instrumentation of every memory access. The OS reads and clears these bits periodically, using the pattern of recent access to classify pages as hot or cold. Cold clean pages are trivially evictable; cold dirty pages must be written back before eviction; hot pages are left in place.</p>
 <p>The mechanism seems simple, but the details — and the subtle differences between x86-64, ARM64, and RISC-V implementations — determine whether a system handles memory pressure gracefully or collapses into thrashing. Sections 8.2–8.4 establish the foundation; Sections 8.5–8.8 show how these primitives compose into the full Linux memory management stack.</p>
 
-<h2 id="nested-page-tables-beyond-the-basics">8.2 Nested Page Tables: Beyond the Basics</h2>
+<h2 id="section-8.2">8.2 Nested Page Tables: Beyond the Basics</h2>
 <p>Chapter 3 introduced two-stage address translation for virtualisation: a guest virtual address (GVA) first traverses the guest's own page tables (Stage 1) to produce a guest physical address (GPA), which then traverses the host's EPT or Stage-2 tables to yield a host physical address (HPA). We calculated that without caching, this walk could require up to 25 memory accesses. We showed that TLBs and page walk caches reduce the steady-state overhead to 2–7%. What we did not cover was what happens when the translation fails at either or both stages — and why those failures are so much more expensive than a simple page fault on bare metal.</p>
 
 <h3 id="nested-fault-taxonomy">8.2.1 Nested Fault Taxonomy</h3>
@@ -1113,7 +973,7 @@ and Optimization</h1>
 <p>The principal mitigation for Type 4 storms is <strong>EPT pre-population</strong>: the hypervisor maps all expected GPA→HPA translations in the EPT at VM creation time, before the guest boots. This transforms the boot-time cascade of thousands of Type 2 faults into a one-time upfront cost during VM initialisation. For a 4 GB VM, pre-populating the EPT with 4 KB pages requires 1 million EPT entries — about 8 MB of host memory — and takes roughly 20 ms. That 20 ms cost is paid once; without it, the VM spends an equivalent amount of time processing EPT faults during every boot.</p>
 <p>A complementary strategy is using <strong>2 MB EPT pages</strong> (large pages at the EPT level). Because each 2 MB EPT entry covers 512 contiguous 4 KB pages, a 4 GB VM's EPT shrinks from 1 million entries to just 2,048. This reduces the number of EPT faults during boot by 512× and also improves EPT TLB (EPTP cache) hit rates. The tradeoff is 2 MB alignment requirements for guest memory and reduced granularity for COW and live-migration dirty tracking.</p>
 
-<h2 id="architecture-differences-nested-fault-handling">8.3 Architecture Differences in Nested Fault Handling</h2>
+<h2 id="section-8.3">8.3 Architecture Differences in Nested Fault Handling</h2>
 <p>While all three major ISA families provide two-stage translation for virtualisation, they differ significantly in what information the hypervisor receives when a Stage-2 fault occurs and how efficiently batched fault processing can be implemented. Figure 8.3 provides a side-by-side comparison across x86-64, ARM64, and RISC-V.</p>
 
 <figure id="fig-8-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -1247,7 +1107,7 @@ and Optimization</h1>
 <h3 id="cross-architecture-comparison">8.3.4 Practical Guidance for Hypervisor Developers</h3>
 <p>The key takeaway from the architecture comparison is that fault-handling overhead is not just about raw latency — it is about the information available to avoid redundant work. An x86-64 hypervisor receiving an EPT violation knows immediately whether it is handling a simple unmapped GPA (install EPT entry, re-enter) or a cascading PT-walk fault (likely requiring pre-population of a range of GPA→HPA mappings to prevent recurrence). A RISC-V hypervisor receiving a Guest Page Fault must spend extra cycles rediscovering this context. Cross-referencing this section with Chapter 3 §3.6 (which describes two-stage translation structure) and Chapter 7 §7.3 (which covers x86-64 fault qualification fields in the single-stage context) provides the complete picture of how hardware-reported fault information shapes OS and hypervisor design.</p>
 
-<h2 id="accessed-dirty-bits">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</h2>
+<h2 id="section-8.4">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</h2>
 <p>When physical memory fills, the OS must choose which pages to evict. Optimal eviction requires knowing two things about each page: how recently it was accessed (recency) and whether it has been modified since it was last loaded from disk (cleanliness). The MMU provides both signals through the Accessed (A) bit and the Dirty (D) bit embedded in every PTE. Figure 8.4 summarises how each major ISA implements these bits and the dramatic cost difference between clean and dirty eviction.</p>
 
 <figure id="fig-8-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -1395,7 +1255,7 @@ and Optimization</h1>
 <h3 id="cross-reference-ch2">8.4.4 Relationship to Page Replacement Algorithms</h3>
 <p>The A and D bits feed directly into the page replacement algorithms discussed in Section 8.5. The Clock algorithm uses the A bit as a "second chance" flag: on first examination, a page with A=1 gets its bit cleared and is passed over; on second examination with A=0, it is evicted. Linux's Multi-Generational LRU (MGLRU, Section 8.5.4) extends this to four generations, using A-bit patterns over multiple scan periods to classify pages from "youngest" (accessed recently) to "oldest" (not accessed in multiple periods). As established in Chapter 2 §2.3, the accessed bit provides hardware support for approximate LRU at near-zero cost per access — the crucial insight that makes practical LRU approximation feasible at scale.</p>
 
-<h2 id="page-replacement-algorithms">8.5 Page
+<h2 id="section-8.5">8.5 Page
 Replacement Algorithms: From Theory to Practice</h2>
 <p>Now that we understand how the hardware provides A and D bits, we can
 explore how software uses them to make intelligent eviction decisions.
@@ -1403,8 +1263,9 @@ The goal is simple: when we must evict pages, choose the ones least
 likely to be needed soon. The challenge is doing this efficiently
 without perfect knowledge of future access patterns.</p>
 
-<figure id="fig-8-5" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<figure id="fig-8-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
 <defs>
   <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
   <marker id="arr85" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -1625,7 +1486,8 @@ without perfect knowledge of future access patterns.</p>
 <text x="468" y="514" style="font-size:13px;fill:#3A5070;">• Access bit checked: page promoted or demoted</text>
 <text x="468" y="532" style="font-size:12px;fill:#616161;">ARM/x86 hardware sets Accessed bit per PTE access.</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.5:</strong> Bélády's OPT versus LRU on a 15-step reference string with 3 frames. OPT achieves 6 faults by evicting the page used furthest in the future; LRU incurs 8 faults. OPT is the theoretical lower bound and is used as a benchmark for real algorithms.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.5:</strong> Bélády's OPT versus LRU on a 15-step reference string with 3 frames. OPT achieves 6 faults by evicting the page used furthest in the future; LRU incurs 8 faults. OPT is the theoretical lower bound and is used as a benchmark for real algorithms.</figcaption>
 </figure>
 
 
@@ -2064,15 +1926,16 @@ pages (accessed once, then aged out quickly).</p>
 <p>MGLRU represents the state-of-the-art in page replacement. It
 provides better LRU approximation than Clock or two-list approaches
 while maintaining similar O(1) amortized cost.</p>
-<h2 id="memory-reclaim">8.6 Memory Reclaim:
+<h2 id="section-8.6">8.6 Memory Reclaim:
 When and How to Free Pages</h2>
 <p>Page replacement algorithms tell us <strong>which</strong> pages to
 evict. Now we need to understand <strong>when</strong> eviction happens
 and <strong>how</strong> the kernel manages the process of freeing
 memory under pressure.</p>
 
-<figure id="fig-8-6" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<figure id="fig-8-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
 <defs>
   <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
   <marker id="arr86" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2183,7 +2046,8 @@ memory under pressure.</p>
 <text x="370" y="542" style="font-size:13px;fill:#3A5070;font-weight:bold;">zone_reclaim_mode</text>
 <text x="370" y="560" style="font-size:12px;fill:#444;">  NUMA: reclaim from local node first</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.6:</strong> Linux kswapd memory reclaim state machine. kswapd wakes when free memory drops below the low watermark, scans the inactive LRU list, initiates writeback or page freeing, and returns to sleep once the high watermark is reached. If no pages can be reclaimed, the OOM killer is invoked.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.6:</strong> Linux kswapd memory reclaim state machine. kswapd wakes when free memory drops below the low watermark, scans the inactive LRU list, initiates writeback or page freeing, and returns to sleep once the high watermark is reached. If no pages can be reclaimed, the OOM killer is invoked.</figcaption>
 </figure>
 
 
@@ -2718,15 +2582,16 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb119-1"><a href
 deadlock. Proper memory management (sizing, tuning swappiness,
 monitoring) should prevent OOM from ever happening in production.</p>
 <hr />
-<h2 id="page-table-management">8.7 Page Table
+<h2 id="section-8.7">8.7 Page Table
 Management: The Meta-Problem</h2>
 <p>We've discussed evicting data pages to free memory. But page tables
 themselves consume memory—often a surprising amount. On a system with
 hundreds of processes or VMs, page table overhead can reach gigabytes.
 This creates a meta-problem: we need memory to manage memory.</p>
 
-<figure id="fig-8-7" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<figure id="fig-8-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr87" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2851,7 +2716,8 @@ This creates a meta-problem: we need memory to manage memory.</p>
 <text x="478" y="510" style="font-size:11px;fill:#EBCB8B;font-family:monospace;">now anon-rss:0kB, file-rss:0kB,</text>
 <text x="478" y="528" style="font-size:11px;fill:#BF616A;font-family:monospace;">shmem-rss:0kB</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.7:</strong> Linux OOM killer scoring and selection. The badness score is computed as (RSS / total_pages) × 1000 plus the oom_score_adj tunable. The process with the highest score is sent SIGKILL; kernel threads and processes with adj = −1000 are immune.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 8.7:</strong> Linux OOM killer scoring and selection. The badness score is computed as (RSS / total_pages) × 1000 plus the oom_score_adj tunable. The process with the highest score is sent SIGKILL; kernel threads and processes with adj = −1000 are immune.</figcaption>
 </figure>
 
 
@@ -3250,7 +3116,7 @@ walks</strong> (one fewer level to traverse)</p>
 <p>The challenge is allocation: 2MB huge pages require 2MB contiguous
 physical memory, which may not be available due to fragmentation.</p>
 <hr />
-<h2 id="performance-analysis-and-tuning">8.8 Performance Analysis and
+<h2 id="section-8.8">8.8 Performance Analysis and
 Tuning</h2>
 <p>We've explored the mechanisms—now let's see how to diagnose problems
 and optimize real systems. This section covers the tools for identifying
@@ -3552,7 +3418,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb142-1"><a href
 <span id="cb142-18"><a href="#cb142-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Query</span> p99: 180 ms <span class="er">(</span><span class="ex">14×</span> faster!<span class="kw">)</span></span>
 <span id="cb142-19"><a href="#cb142-19" aria-hidden="true" tabindex="-1"></a><span class="ex">TLB</span> miss rate: 8% → 0.3% <span class="er">(</span><span class="ex">27×</span> improvement<span class="kw">)</span></span></code></pre></div>
 <hr />
-<h2 id="chapter-summary">8.9 Chapter Summary</h2>
+<h2 id="section-8.9">8.9 Chapter Summary</h2>
 <p>We began this chapter with a mystery: a PostgreSQL instance killed by
 the OOM killer despite 17 GB of "available" memory. Now we can explain
 exactly what happened:</p>
@@ -4127,46 +3993,16 @@ table overhead), and hardware constraints (physical RAM limits).</p>
                 "file": "chapter-08-WITH-FIGURES.html",
                 "short": "Advanced MMU Topics: System Integration and Optimization",
                 "sections": [
-                      {
-                            "text": "8.1 Introduction: The Crisis Point",
-                            "id": "introduction-the-crisis-point"
-                      },
-                      {
-                            "text": "8.2 Nested Page Tables: Beyond the Basics",
-                            "id": "nested-page-tables-beyond-the-basics"
-                      },
-                      {
-                            "text": "8.3 Architecture Differences in Nested Fault Handling",
-                            "id": "architecture-differences-nested-fault-handling"
-                      },
-                      {
-                            "text": "8.4 Accessed and Dirty Bits",
-                            "id": "accessed-dirty-bits"
-                      },
-                      {
-                            "text": "8.5 Page Replacement Algorithms: From Theory to Practice",
-                            "id": "page-replacement-algorithms"
-                      },
-                      {
-                            "text": "8.6 Memory Reclaim: When and How to Free Pages",
-                            "id": "memory-reclaim"
-                      },
-                      {
-                            "text": "8.7 Page Table Management: The Meta-Problem",
-                            "id": "page-table-management"
-                      },
-                      {
-                            "text": "8.8 Performance Analysis and Tuning",
-                            "id": "performance-analysis-and-tuning"
-                      },
-                      {
-                            "text": "8.9 Chapter Summary",
-                            "id": "chapter-summary"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "8.1 Introduction: The Crisis Point", "id": "section-8.1"},
+                      {"text": "8.2 Nested Page Tables: Beyond the Basics", "id": "section-8.2"},
+                      {"text": "8.3 Architecture Differences in Nested Fault Handling", "id": "section-8.3"},
+                      {"text": "8.4 Accessed and Dirty Bits: Hardware\u2013Software Cooperation", "id": "section-8.4"},
+                      {"text": "8.5 Page Replacement Algorithms: From Theory to Practice", "id": "section-8.5"},
+                      {"text": "8.6 Memory Reclaim: When and How to Free Pages", "id": "section-8.6"},
+                      {"text": "8.7 Page Table Management: The Meta-Problem", "id": "section-8.7"},
+                      {"text": "8.8 Performance Analysis and Tuning", "id": "section-8.8"},
+                      {"text": "8.9 Chapter Summary", "id": "section-8.9"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

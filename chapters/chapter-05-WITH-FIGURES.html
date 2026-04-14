@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 5: IOMMU and DMA Remapping - Deep Dive</title>
   <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -152,80 +153,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -842,177 +777,18 @@ border-radius: 4px;
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-5-iommu-and-dma-remapping---deep-dive" id="toc-chapter-5-iommu-and-dma-remapping---deep-dive">Chapter 5: IOMMU
-and DMA Remapping - Deep Dive</a>
-<ul>
-<li><a href="#introduction-the-io-device-memory-access-problem" id="toc-introduction-the-io-device-memory-access-problem">5.1
-Introduction: The I/O Device Memory Access Problem</a>
-<ul>
-<li><a href="#direct-memory-access-dma-basics" id="toc-direct-memory-access-dma-basics">5.1.1 Direct Memory Access
-(DMA) Basics</a></li>
-<li><a href="#problems-with-traditional-dma" id="toc-problems-with-traditional-dma">5.1.2 Problems with Traditional
-DMA</a></li>
-<li><a href="#the-iommu-solution" id="toc-the-iommu-solution">5.1.3 The
-IOMMU Solution</a></li>
-<li><a href="#iommu-benefits-realized" id="toc-iommu-benefits-realized">5.1.4 IOMMU Benefits Realized</a></li>
-<li><a href="#iommu-vs-cpu-mmu-similarities-and-differences" id="toc-iommu-vs-cpu-mmu-similarities-and-differences">5.1.5 IOMMU vs
-CPU MMU: Similarities and Differences</a></li>
-<li><a href="#iommu-platforms-intel-amd-arm" id="toc-iommu-platforms-intel-amd-arm">5.1.6 IOMMU Platforms: Intel,
-AMD, ARM</a></li>
-<li><a href="#chapter-roadmap" id="toc-chapter-roadmap">5.1.7 Chapter
-Roadmap</a></li>
-</ul></li>
-<li><a href="#iommu-architecture-fundamentals" id="toc-iommu-architecture-fundamentals">5.2 IOMMU Architecture
-Fundamentals</a>
-<ul>
-<li><a href="#core-components" id="toc-core-components">5.2.1 Core
-Components</a></li>
-<li><a href="#device-identification" id="toc-device-identification">5.2.2 Device Identification</a></li>
-<li><a href="#complete-translation-flow" id="toc-complete-translation-flow">5.2.3 Complete Translation
-Flow</a></li>
-</ul></li>
-<li><a href="#intel-vt-d-virtualization-technology-for-directed-io" id="toc-intel-vt-d-virtualization-technology-for-directed-io">5.3 Intel
-VT-d (Virtualization Technology for Directed I/O)</a>
-<ul>
-<li><a href="#vt-d-overview-and-evolution" id="toc-vt-d-overview-and-evolution">5.3.1 VT-d Overview and
-Evolution</a></li>
-<li><a href="#root-table-and-context-entries" id="toc-root-table-and-context-entries">5.3.2 Root Table and Context
-Entries</a></li>
-<li><a href="#scalable-mode-vs-legacy-mode" id="toc-scalable-mode-vs-legacy-mode">5.3.3 Scalable Mode vs Legacy
-Mode</a></li>
-<li><a href="#pasid-process-address-space-id" id="toc-pasid-process-address-space-id">5.3.4 PASID (Process Address
-Space ID)</a></li>
-<li><a href="#intel-vt-d-page-tables" id="toc-intel-vt-d-page-tables">5.3.5 Intel VT-d Page Tables</a></li>
-<li><a href="#intel-iotlb-structure" id="toc-intel-iotlb-structure">5.3.6 Intel IOTLB Structure</a></li>
-<li><a href="#interrupt-remapping" id="toc-interrupt-remapping">5.3.7
-Interrupt Remapping</a></li>
-<li><a href="#posted-interrupts" id="toc-posted-interrupts">5.3.8 Posted
-Interrupts</a></li>
-<li><a href="#real-hardware-intel-sapphire-rapids-vt-d" id="toc-real-hardware-intel-sapphire-rapids-vt-d">5.3.9 Real Hardware:
-Intel Sapphire Rapids VT-d</a></li>
-</ul></li>
-<li><a href="#amd-iommu-amd-vi" id="toc-amd-iommu-amd-vi">5.4 AMD IOMMU
-(AMD-Vi)</a>
-<ul>
-<li><a href="#amd-vi-overview" id="toc-amd-vi-overview">5.4.1 AMD-Vi
-Overview</a></li>
-<li><a href="#device-table-structure" id="toc-device-table-structure">5.4.2 Device Table Structure</a></li>
-<li><a href="#amd-io-page-tables" id="toc-amd-io-page-tables">5.4.3 AMD
-I/O Page Tables</a></li>
-<li><a href="#amd-iotlb" id="toc-amd-iotlb">5.4.4 AMD IOTLB</a></li>
-<li><a href="#amd-interrupt-remapping" id="toc-amd-interrupt-remapping">5.4.5 AMD Interrupt Remapping</a></li>
-<li><a href="#guestnested-paging" id="toc-guestnested-paging">5.4.6
-Guest/Nested Paging</a></li>
-<li><a href="#amd-iommu-vs-intel-vt-d-comparison" id="toc-amd-iommu-vs-intel-vt-d-comparison">5.4.7 AMD IOMMU vs Intel
-VT-d Comparison</a></li>
-<li><a href="#amd-epyc-iommu-performance" id="toc-amd-epyc-iommu-performance">5.4.8 AMD EPYC IOMMU
-Performance</a></li>
-</ul></li>
-<li><a href="#arm-smmu-system-memory-management-unit" id="toc-arm-smmu-system-memory-management-unit">5.5 ARM SMMU (System
-Memory Management Unit)</a>
-<ul>
-<li><a href="#arm-smmu-overview-and-evolution" id="toc-arm-smmu-overview-and-evolution">5.5.1 ARM SMMU Overview and
-Evolution</a></li>
-<li><a href="#stream-ids-and-stream-table" id="toc-stream-ids-and-stream-table">5.5.2 Stream IDs and Stream
-Table</a></li>
-<li><a href="#two-stage-translation" id="toc-two-stage-translation">5.5.3 Two-Stage Translation</a></li>
-<li><a href="#smmu-tlb-structure" id="toc-smmu-tlb-structure">5.5.4 SMMU
-TLB Structure</a></li>
-<li><a href="#command-queue-and-event-queue" id="toc-command-queue-and-event-queue">5.5.5 Command Queue and Event
-Queue</a></li>
-<li><a href="#page-request-interface-pri" id="toc-page-request-interface-pri">5.5.6 Page Request Interface
-(PRI)</a></li>
-<li><a href="#smmuv3-enhancements" id="toc-smmuv3-enhancements">5.5.7
-SMMUv3 Enhancements</a></li>
-<li><a href="#arm-neoverse-smmu-example" id="toc-arm-neoverse-smmu-example">5.5.8 ARM Neoverse SMMU
-Example</a></li>
-</ul></li>
-<li><a href="#iommu-page-tables-cross-platform-analysis" id="toc-iommu-page-tables-cross-platform-analysis">5.6 IOMMU Page
-Tables: Cross-Platform Analysis</a>
-<ul>
-<li><a href="#page-table-format-comparison" id="toc-page-table-format-comparison">5.6.1 Page Table Format
-Comparison</a></li>
-<li><a href="#translation-walk-algorithms" id="toc-translation-walk-algorithms">5.6.2 Translation Walk
-Algorithms</a></li>
-<li><a href="#large-page-support-comparison" id="toc-large-page-support-comparison">5.6.3 Large Page Support
-Comparison</a></li>
-<li><a href="#shared-vs-separate-page-tables" id="toc-shared-vs-separate-page-tables">5.6.4 Shared vs Separate Page
-Tables</a></li>
-</ul></li>
-<li><a href="#iotlb-performance-and-optimization" id="toc-iotlb-performance-and-optimization">5.7 IOTLB Performance and
-Optimization</a>
-<ul>
-<li><a href="#iotlb-architecture-deep-dive" id="toc-iotlb-architecture-deep-dive">5.7.1 IOTLB Architecture Deep
-Dive</a></li>
-<li><a href="#iotlb-miss-penalties" id="toc-iotlb-miss-penalties">5.7.2
-IOTLB Miss Penalties</a></li>
-<li><a href="#measuring-iotlb-performance" id="toc-measuring-iotlb-performance">5.7.3 Measuring IOTLB
-Performance</a></li>
-<li><a href="#optimization-techniques" id="toc-optimization-techniques">5.7.4 Optimization Techniques</a></li>
-<li><a href="#real-world-performance-analysis" id="toc-real-world-performance-analysis">5.7.5 Real-World Performance
-Analysis</a></li>
-</ul></li>
-<li><a href="#device-assignment-and-sr-iov" id="toc-device-assignment-and-sr-iov">5.8 Device Assignment and
-SR-IOV</a>
-<ul>
-<li><a href="#device-passthrough-basics" id="toc-device-passthrough-basics">5.8.1 Device Passthrough
-Basics</a></li>
-<li><a href="#device-assignment-workflow" id="toc-device-assignment-workflow">5.8.2 Device Assignment
-Workflow</a></li>
-<li><a href="#vfio-virtual-function-io-framework" id="toc-vfio-virtual-function-io-framework">5.8.3 VFIO (Virtual Function
-I/O) Framework</a></li>
-<li><a href="#sr-iov-single-root-io-virtualization" id="toc-sr-iov-single-root-io-virtualization">5.8.4 SR-IOV (Single Root
-I/O Virtualization)</a></li>
-<li><a href="#sr-iov-with-iommu" id="toc-sr-iov-with-iommu">5.8.5 SR-IOV
-with IOMMU</a></li>
-<li><a href="#nested-translation-for-sr-iov" id="toc-nested-translation-for-sr-iov">5.8.6 Nested Translation for
-SR-IOV</a></li>
-<li><a href="#device-assignment-security-considerations" id="toc-device-assignment-security-considerations">5.8.7 Device
-Assignment Security Considerations</a></li>
-<li><a href="#performance-measurements" id="toc-performance-measurements">5.8.8 Performance
-Measurements</a></li>
-</li>
-<li><a href="#tlb-tagging-vmid-asid" id="toc-tlb-tagging-vmid-asid">5.8.9 TLB Tagging for Virtual Contexts: VMID, ASID, and PCID</a>
-</ul></li>
-<li><a href="#chapter-summary-and-key-takeaways" id="toc-chapter-summary">5.11 Chapter Summary</a>
-<ul>
-<li><a href="#core-concepts-recap" id="toc-core-concepts-recap">5.11.1 Core Concepts Recap</a></li>
-<li><a href="#platform-comparison-summary" id="toc-platform-comparison-summary">5.9.2 Platform Comparison
-Summary</a></li>
-<li><a href="#performance-guidelines" id="toc-performance-guidelines">5.9.3 Performance Guidelines</a></li>
-<li><a href="#security-considerations" id="toc-security-considerations">5.9.4 Security Considerations</a></li>
-<li><a href="#use-case-decision-matrix" id="toc-use-case-decision-matrix">5.9.5 Use Case Decision
-Matrix</a></li>
-<li><a href="#future-directions" id="toc-future-directions">5.9.6 Future
-Directions</a></li>
-</ul></li>
-<li><a href="#iommu-in-operating-systems" id="toc-iommu-in-operating-systems">5.9 IOMMU in Operating Systems</a>
-<ul>
-<li><a href="#linux-iommu-subsystem" id="toc-linux-iommu-subsystem">5.10.1 Linux IOMMU Subsystem</a></li>
-<li><a href="#linux-iommu-api" id="toc-linux-iommu-api">5.10.2 Linux
-IOMMU API</a></li>
-<li><a href="#linux-dma-api-with-iommu" id="toc-linux-dma-api-with-iommu">5.10.3 Linux DMA API with
-IOMMU</a></li>
-<li><a href="#linux-vfio-framework" id="toc-linux-vfio-framework">5.10.4
-Linux VFIO Framework</a></li>
-<li><a href="#windows-iommu-support" id="toc-windows-iommu-support">5.10.5 Windows IOMMU Support</a></li>
-<li><a href="#debugging-iommu-issues" id="toc-debugging-iommu-issues">5.10.6 Debugging IOMMU Issues</a></li>
-</ul></li>
-<li><a href="#performance-optimization-and-best-practices" id="toc-performance-optimization-and-best-practices">5.10 Performance
-Optimization and Best Practices</a>
-<ul>
-<li><a href="#optimization-decision-tree" id="toc-optimization-decision-tree">5.11.1 Optimization Decision
-Tree</a></li>
-<li><a href="#comprehensive-best-practices" id="toc-comprehensive-best-practices">5.11.2 Comprehensive Best
-Practices</a></li>
-<li><a href="#performance-tuning-checklist" id="toc-performance-tuning-checklist">5.11.3 Performance Tuning
-Checklist</a></li>
-<li><a href="#common-pitfalls-and-solutions" id="toc-common-pitfalls-and-solutions">5.11.4 Common Pitfalls and
-Solutions</a></li>
-<li><a href="#troubleshooting-guide" id="toc-troubleshooting-guide">5.11.5 Troubleshooting Guide</a></li>
-</ul></li>
-<li><a href="#references" id="toc-references">References</a></li>
-</ul></li>
+<li><a href="#section-5.1">5.1 Introduction: The I/O Device Memory Access Problem</a></li>
+<li><a href="#section-5.2">5.2 IOMMU Architecture Fundamentals</a></li>
+<li><a href="#section-5.3">5.3 Intel VT-d (Virtualization Technology for Directed I/O)</a></li>
+<li><a href="#section-5.4">5.4 AMD IOMMU (AMD-Vi)</a></li>
+<li><a href="#section-5.5">5.5 ARM SMMU (System Memory Management Unit)</a></li>
+<li><a href="#section-5.6">5.6 IOMMU Page Tables: Cross-Platform Analysis</a></li>
+<li><a href="#section-5.7">5.7 IOTLB Performance and Optimization</a></li>
+<li><a href="#section-5.8">5.8 Device Assignment and SR-IOV</a></li>
+<li><a href="#section-5.9">5.9 IOMMU in Operating Systems</a></li>
+<li><a href="#section-5.10">5.10 Performance Optimization and Best Practices</a></li>
+<li><a href="#section-5.11">5.11 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 <h1 id="chapter-5-iommu-and-dma-remapping---deep-dive">Chapter 5: IOMMU
@@ -1021,7 +797,7 @@ and DMA Remapping - Deep Dive</h1>
 3 (Page Tables) and 4 (TLB). Familiarity with virtual memory, page table
 structures, and address translation is assumed.</p>
 <hr />
-<h2 id="introduction-the-io-device-memory-access-problem">5.1
+<h2 id="section-5.1">5.1
 Introduction: The I/O Device Memory Access Problem</h2>
 <p>Modern computer systems face a critical security challenge: how do we
 allow I/O devices to access memory efficiently while preventing them
@@ -1440,7 +1216,7 @@ structures (IOMMU uses similar structures) - Chapter 4: TLB architecture
 (IOTLB parallels CPU TLB)</p>
 <p>Let's begin with IOMMU architectural fundamentals.</p>
 <hr />
-<h2 id="iommu-architecture-fundamentals">5.2 IOMMU Architecture
+<h2 id="section-5.2">5.2 IOMMU Architecture
 Fundamentals</h2>
 <p>Every IOMMU, regardless of vendor, shares common architectural
 components. Understanding these core building blocks is essential before
@@ -1971,7 +1747,7 @@ IOTLB Miss (with PWC):
   IOTLB insert: 5 ns
   Total: ~190 ns</code></pre>
 <hr />
-<h2 id="intel-vt-d-virtualization-technology-for-directed-io">5.3 Intel
+<h2 id="section-5.3">5.3 Intel
 VT-d (Virtualization Technology for Directed I/O)</h2>
 <p>Intel's VT-d is the IOMMU implementation found in Xeon, Core i7/i9,
 and other Intel processors. It has evolved significantly since its
@@ -2653,7 +2429,7 @@ ID) - ✅ Page table structures - ✅ IOTLB architecture - ✅ Interrupt
 remapping - ✅ Posted interrupts - ✅ Real hardware specs (Sapphire
 Rapids)</p>
 <hr />
-<h2 id="amd-iommu-amd-vi">5.4 AMD IOMMU (AMD-Vi)</h2>
+<h2 id="section-5.4">5.4 AMD IOMMU (AMD-Vi)</h2>
 <p>AMD's IOMMU implementation, also called AMD-Vi (AMD Virtualization
 for I/O), provides DMA remapping and device isolation for AMD
 processors. While conceptually similar to Intel VT-d, AMD IOMMU has a
@@ -2976,7 +2752,7 @@ Performance (10 GbE Network):
 <p><strong>Advantages:</strong> - Simpler device table lookup - Flexible
 page table levels - Competitive performance</p>
 <hr />
-<h2 id="arm-smmu-system-memory-management-unit">5.5 ARM SMMU (System
+<h2 id="section-5.5">5.5 ARM SMMU (System
 Memory Management Unit)</h2>
 <p>ARM's System Memory Management Unit (SMMU) provides IOMMU
 functionality for ARM-based systems. SMMUs are particularly important in
@@ -3340,7 +3116,7 @@ Optimization:
 ~2,600 words for ARM)</p>
 <p>Total so far: ~11,000 words</p>
 <hr />
-<h2 id="iommu-page-tables-cross-platform-analysis">5.6 IOMMU Page
+<h2 id="section-5.6">5.6 IOMMU Page
 Tables: Cross-Platform Analysis</h2>
 <p>Having examined Intel, AMD, and ARM IOMMU page tables individually,
 let's compare their designs and understand common patterns.</p>
@@ -3609,7 +3385,7 @@ Benefits:
   - VM isolation maintained
   - Best of both worlds</code></pre>
 <hr />
-<h2 id="iotlb-performance-and-optimization">5.7 IOTLB Performance and
+<h2 id="section-5.7">5.7 IOTLB Performance and
 Optimization</h2>
 <p>IOTLB performance is critical for I/O-intensive workloads.
 Understanding IOTLB behavior and optimization techniques can
@@ -3952,7 +3728,7 @@ Results:
 Tables, ~2,500 words for IOTLB Performance)</p>
 <p>Total chapter word count: ~13,500 words</p>
 <hr />
-<h2 id="device-assignment-and-sr-iov">5.8 Device Assignment and
+<h2 id="section-5.8">5.8 Device Assignment and
 SR-IOV</h2>
 <p>One of the IOMMU's most important use cases is enabling secure device
 passthrough to virtual machines. Understanding how device assignment
@@ -4383,7 +4159,7 @@ Passthrough: 90% of bare metal IOPS!</code></pre>
 <p>Bhattacharjee &amp; Martonosi (2009) measured that VPID/ASID support improved TLB hit rate by 10–15 percentage points for virtualised workloads, because without tagging every VM entry/exit caused severe TLB thrashing. Chapter 3 §3.7.3 provides the full treatment of VMID+ASID interaction, combined TLB entry formats, and the RISC-V equivalent (VMID in <code>hgatp</code> plus ASID in <code>satp</code>).</p>
 
 
-<h2 id="iommu-in-operating-systems">5.9 IOMMU in Operating Systems</h2>
+<h2 id="section-5.9">5.9 IOMMU in Operating Systems</h2>
 <p>Operating systems provide abstraction layers over IOMMU hardware,
 making it easier for drivers and applications to use DMA safely.
 Understanding OS IOMMU support is essential for practical
@@ -4906,7 +4682,7 @@ Fault reason 02: Invalid device
 <span id="cb213-13"><a href="#cb213-13" aria-hidden="true" tabindex="-1"></a><span class="st"># ARM SMMU</span></span>
 <span id="cb213-14"><a href="#cb213-14" aria-hidden="true" tabindex="-1"></a><span class="st">arm-smmu.disable_bypass=0</span></span></code></pre></div>
 <hr />
-<h2 id="performance-optimization-and-best-practices">5.10 Performance
+<h2 id="section-5.10">5.10 Performance
 Optimization and Best Practices</h2>
 <h3 id="optimization-decision-tree">5.11.1 Optimization Decision
 Tree</h3>
@@ -5120,7 +4896,7 @@ Solution:
   <li><strong>§5.8.9 — TLB Tagging for Virtual Contexts (VMID, ASID, PCID)</strong></li>
   <li>Bhattacharjee, A. and Martonosi, M. "Characterizing the TLB behavior of emerging parallel workloads on chip multiprocessors." <em>Proceedings of the 18th International Conference on Parallel Architectures and Compilation Techniques (PACT)</em>, pp. 29–40, 2009.
     <a href="https://doi.org/10.1145/1629575.1629579" target="_blank" rel="noopener">DOI: 10.1145/1629575.1629579</a></li>
-><h2 id="chapter-summary-and-key-takeaways">5.11 Chapter Summary</h2>
+><h2 id="section-5.11">5.11 Chapter Summary</h2>
 <h3 id="core-concepts-recap">5.9.1 Core Concepts Recap</h3>
 <p><strong>The IOMMU Problem:</strong> - Traditional DMA: Security
 nightmare, virtualization impossible - IOMMU Solution: Virtual addresses
@@ -5780,54 +5556,18 @@ Centers Using IOMMU." <em>ACM EuroSys</em>, 2020. DOI:
                 "file": "chapter-05-WITH-FIGURES.html",
                 "short": "IOMMU and DMA Remapping - Deep Dive",
                 "sections": [
-                      {
-                            "text": "5.1 Introduction: The I/O Device Memory Access Problem",
-                            "id": "introduction-the-io-device-memory-access-problem"
-                      },
-                      {
-                            "text": "5.2 IOMMU Architecture Fundamentals",
-                            "id": "iommu-architecture-fundamentals"
-                      },
-                      {
-                            "text": "5.3 Intel VT-d (Virtualization Technology for Directed I/O)",
-                            "id": "intel-vt-d-virtualization-technology-for-directed-io"
-                      },
-                      {
-                            "text": "5.4 AMD IOMMU (AMD-Vi)",
-                            "id": "amd-iommu-amd-vi"
-                      },
-                      {
-                            "text": "5.5 ARM SMMU (System Memory Management Unit)",
-                            "id": "arm-smmu-system-memory-management-unit"
-                      },
-                      {
-                            "text": "5.6 IOMMU Page Tables: Cross-Platform Analysis",
-                            "id": "iommu-page-tables-cross-platform-analysis"
-                      },
-                      {
-                            "text": "5.7 IOTLB Performance and Optimization",
-                            "id": "iotlb-performance-and-optimization"
-                      },
-                      {
-                            "text": "5.8 Device Assignment and SR-IOV",
-                            "id": "device-assignment-and-sr-iov"
-                      },
-                      {
-                            "text": "5.11 Chapter Summary",
-                            "id": "chapter-summary-and-key-takeaways"
-                      },
-                      {
-                            "text": "5.9 IOMMU in Operating Systems",
-                            "id": "iommu-in-operating-systems"
-                      },
-                      {
-                            "text": "5.10 Performance Optimization and Best Practices",
-                            "id": "performance-optimization-and-best-practices"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "5.1 Introduction: The I/O Device Memory Access Problem", "id": "section-5.1"},
+                      {"text": "5.2 IOMMU Architecture Fundamentals", "id": "section-5.2"},
+                      {"text": "5.3 Intel VT-d (Virtualization Technology for Directed I/O)", "id": "section-5.3"},
+                      {"text": "5.4 AMD IOMMU (AMD-Vi)", "id": "section-5.4"},
+                      {"text": "5.5 ARM SMMU (System Memory Management Unit)", "id": "section-5.5"},
+                      {"text": "5.6 IOMMU Page Tables: Cross-Platform Analysis", "id": "section-5.6"},
+                      {"text": "5.7 IOTLB Performance and Optimization", "id": "section-5.7"},
+                      {"text": "5.8 Device Assignment and SR-IOV", "id": "section-5.8"},
+                      {"text": "5.9 IOMMU in Operating Systems", "id": "section-5.9"},
+                      {"text": "5.10 Performance Optimization and Best Practices", "id": "section-5.10"},
+                      {"text": "5.11 Chapter Summary", "id": "section-5.11"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

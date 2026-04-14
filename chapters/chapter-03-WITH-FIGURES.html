@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 3: Page Table Structures and Implementation</title>
     <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -153,79 +154,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {  background-color: #f8f8f8; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ef2929; } /* Alert */
-    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #204a87; } /* Attribute */
-    code span.bn { color: #0000cf; } /* BaseN */
-    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4e9a06; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #8f5902; font-style: italic; } /* Comment */
-    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-    code span.dt { color: #204a87; } /* DataType */
-    code span.dv { color: #0000cf; } /* DecVal */
-    code span.er { color: #a40000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #0000cf; } /* Float */
-    code span.fu { color: #204a87; font-weight: bold; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-    code span.ot { color: #8f5902; } /* Other */
-    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
-    code span.ss { color: #4e9a06; } /* SpecialString */
-    code span.st { color: #4e9a06; } /* String */
-    code span.va { color: #000000; } /* Variable */
-    code span.vs { color: #4e9a06; } /* VerbatimString */
-    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -767,123 +703,26 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<h1 id="chapter-3-page-table-structures-and-implementation">Chapter 3: Page Table Structures and Implementation</h1>
+<header id="title-block-header">
+<h1 class="title">Chapter 3: Page Table Structures and Implementation</h1>
+</header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-3-page-table-structures-and-implementation" id="toc-chapter-3-page-table-structures-and-implementation">Chapter 3: Page Table Structures and Implementation</a>
-<ul>
-<li><a href="#3.1-introduction" id="toc-3.1-introduction">3.1 Introduction</a>
-<ul>
-<li><a href="#why-page-table-design-matters" id="toc-why-page-table-design-matters">Why Page Table Design Matters</a>
-</li>
-<li><a href="#the-evolution-from-simple-to-sophisticated" id="toc-the-evolution-from-simple-to-sophisticated">The Evolution: From Simple to Sophisticated</a>
-</li>
-<li><a href="#what-this-chapter-covers" id="toc-what-this-chapter-covers">What This Chapter Covers</a>
-</li>
-<li><a href="#a-note-on-architecture-coverage" id="toc-a-note-on-architecture-coverage">A Note on Architecture Coverage</a>
-</li>
-<li><a href="#roadmap-for-part-2" id="toc-roadmap-for-part-2">Roadmap for Part 2</a>
-</ul></li>
-<li><a href="#3.2-single-level-page-tables-the-simplest-approach" id="toc-3.2-single-level-page-tables-the-simplest-approach">3.2 Single-Level Page Tables: The Simplest Approach</a>
-<ul>
-<li><a href="#3.2.1-structure-and-mechanics" id="toc-3.2.1-structure-and-mechanics">3.2.1 Structure and Mechanics</a>
-</li>
-<li><a href="#3.2.2-size-calculations-and-memory-overhead" id="toc-3.2.2-size-calculations-and-memory-overhead">3.2.2 Size Calculations and Memory Overhead</a>
-</li>
-<li><a href="#3.2.3-advantages-and-when-single-level-tables-make-sense" id="toc-3.2.3-advantages-and-when-single-level-tables-make-sense">3.2.3 Advantages and When Single-Level Tables Make Sense</a>
-</li>
-<li><a href="#3.2.4-fundamental-limitations" id="toc-3.2.4-fundamental-limitations">3.2.4 Fundamental Limitations</a>
-</ul></li>
-<li><a href="#3.3-two-level-page-tables" id="toc-3.3-two-level-page-tables">3.3 Two-Level Page Tables</a>
-<ul>
-<li><a href="#3.3.1-the-hierarchical-structure" id="toc-3.3.1-the-hierarchical-structure">3.3.1 The Hierarchical Structure</a>
-</li>
-<li><a href="#3.3.2-x86-32-bit-example-the-classic-implementation" id="toc-3.3.2-x86-32-bit-example-the-classic-implementation">3.3.2 x86 32-bit Example: The Classic Implementation</a>
-</li>
-<li><a href="#3.3.3-translation-walkthrough-with-concrete-example" id="toc-3.3.3-translation-walkthrough-with-concrete-example">3.3.3 Translation Walkthrough with Concrete Example</a>
-</li>
-<li><a href="#3.3.4-memory-savings-analysis" id="toc-3.3.4-memory-savings-analysis">3.3.4 Memory Savings Analysis</a>
-</li>
-<li><a href="#3.3.5-the-cost-translation-complexity" id="toc-3.3.5-the-cost-translation-complexity">3.3.5 The Cost: Translation Complexity</a>
-</li>
-<li><a href="#3.3.6-transition-to-more-levels" id="toc-3.3.6-transition-to-more-levels">3.3.6 Transition to More Levels</a>
-</ul></li>
-<li><a href="#3.4-multi-level-page-tables-3-levels" id="toc-3.4-multi-level-page-tables-3-levels">3.4 Multi-Level Page Tables (3+ Levels)</a>
-<ul>
-<li><a href="#3.4.1-x86-64-four-level-paging-the-current-standard" id="toc-3.4.1-x86-64-four-level-paging-the-current-standard">3.4.1 x86-64 Four-Level Paging: The Current Standard</a>
-</li>
-<li><a href="#3.4.2-x86-64-five-level-paging-expanding-to-128-pb" id="toc-3.4.2-x86-64-five-level-paging-expanding-to-128-pb">3.4.2 x86-64 Five-Level Paging: Expanding to 128 PB</a>
-</li>
-<li><a href="#3.4.3-arm64-page-table-structures" id="toc-3.4.3-arm64-page-table-structures">3.4.3 ARM64 Page Table Structures</a>
-</li>
-<li><a href="#3.4.4-risc-v-page-table-structures" id="toc-3.4.4-risc-v-page-table-structures">3.4.4 RISC-V Page Table Structures</a>
-</li>
-<li><a href="#3.4.5-translation-process-summary" id="toc-3.4.5-translation-process-summary">3.4.5 Translation Process Summary</a>
-</ul></li>
-<li><a href="#3.5-virtualization-two-stage-address-translation" id="toc-3.5-virtualization-two-stage-address-translation">3.5 Virtualization: Two-Stage Address Translation</a>
-<ul>
-<li><a href="#3.6.2-intel-ept-extended-page-tables" id="toc-3.6.2-intel-ept-extended-page-tables">3.6.2 Intel EPT (Extended Page Tables)</a>
-</li>
-<li><a href="#3.6.3-amd-npt-nested-page-tables" id="toc-3.6.3-amd-npt-nested-page-tables">3.6.3 AMD NPT (Nested Page Tables)</a>
-</li>
-<li><a href="#3.6.4-arm-stage-2-translation" id="toc-3.6.4-arm-stage-2-translation">3.6.4 ARM Stage 2 Translation</a>
-</li>
-<li><a href="#3.6.5-risc-v-hypervisor-extension" id="toc-3.6.5-risc-v-hypervisor-extension">3.6.5 RISC-V Hypervisor Extension</a>
-</li>
-<li><a href="#3.6.6-performance-impact-and-mitigations" id="toc-3.6.6-performance-impact-and-mitigations">3.6.6 Performance Impact and Mitigations</a>
-</li>
-<li><a href="#3.6.7-why-two-stages-matter" id="toc-3.6.7-why-two-stages-matter">3.6.7 Why Two Stages Matter</a>
-</ul></li>
-<li><a href="#3.6-what-gets-cached-tlb-and-page-walk-caches" id="toc-3.6-what-gets-cached-tlb-and-page-walk-caches">3.6 What Gets Cached: TLB and Page Walk Caches</a>
-<ul>
-<li><a href="#3.7.1-translation-lookaside-buffer-tlb-final-translation-cache" id="toc-3.7.1-translation-lookaside-buffer-tlb-final-translation-cache">3.7.1 Translation Lookaside Buffer (TLB): Final Translation Cache</a>
-</li>
-<li><a href="#3.7.2-page-walk-caches-the-hidden-optimization" id="toc-3.7.2-page-walk-caches-the-hidden-optimization">3.7.2 Page Walk Caches: The Hidden Optimization</a>
-</li>
-<li><a href="#3.7.3-caching-in-virtualization-combined-tlb" id="toc-3.7.3-caching-in-virtualization-combined-tlb">3.7.3 Caching in Virtualization: Combined TLB</a>
-</li>
-<li><a href="#3.7.4-what-is-not-cached-important-clarifications" id="toc-3.7.4-what-is-not-cached-important-clarifications">3.7.4 What Is NOT Cached: Important Clarifications</a>
-</li>
-<li><a href="#3.7.5-caching-hierarchy-summary-table" id="toc-3.7.5-caching-hierarchy-summary-table">3.7.5 Caching Hierarchy Summary Table</a>
-</li>
-<li><a href="#3.7.6-performance-implications" id="toc-3.7.6-performance-implications">3.7.6 Performance Implications</a>
-</ul></li>
-<li><a href="#3.7-hardware-page-table-walker" id="toc-3.7-hardware-page-table-walker">3.7 Hardware Page Table Walker</a>
-<ul>
-<li><a href="#3.8.1-the-page-walk-state-machine" id="toc-3.8.1-the-page-walk-state-machine">3.8.1 The Page Walk State Machine</a>
-</li>
-<li><a href="#3.8.2-hardware-managed-vs-software-managed-bits" id="toc-3.8.2-hardware-managed-vs-software-managed-bits">3.8.2 Hardware-Managed vs Software-Managed Bits</a>
-</li>
-<li><a href="#3.8.3-performance-characteristics" id="toc-3.8.3-performance-characteristics">3.8.3 Performance Characteristics</a>
-</li>
-<li><a href="#3.8.4-tlb-coherence-and-shootdown-mechanisms" id="toc-3.8.4-tlb-coherence-and-shootdown-mechanisms">3.8.4 TLB Coherence and Shootdown on Multicore Processors</a>
-</ul></li>
-<li><a href="#3.8-page-table-management-from-the-os-perspective" id="toc-3.8-page-table-management-from-the-os-perspective">3.8 Page Table Management from the OS Perspective</a>
-<ul>
-<li><a href="#3.9.1-process-creation-and-page-table-allocation" id="toc-3.9.1-process-creation-and-page-table-allocation">3.9.1 Process Creation and Page Table Allocation</a>
-</li>
-<li><a href="#3.9.2-copy-on-write-cow-and-fork" id="toc-3.9.2-copy-on-write-cow-and-fork">3.9.2 Copy-on-Write (COW) and Fork</a>
-</li>
-<li><a href="#3.9.3-transparent-huge-pages-thp" id="toc-3.9.3-transparent-huge-pages-thp">3.9.3 Transparent Huge Pages (THP)</a>
-</li>
-<li><a href="#3.9.4-page-table-reclamation" id="toc-3.9.4-page-table-reclamation">3.9.4 Page Table Reclamation</a>
-</ul></li>
-<li><a href="#3.9-design-trade-offs" id="toc-3.9-design-trade-offs">3.9 Design Trade-offs</a>
-<ul>
-<li><a href="#3.10.1-memory-overhead-vs-translation-speed" id="toc-3.10.1-memory-overhead-vs-translation-speed">3.10.1 Memory Overhead vs Translation Speed</a>
-</li>
-<li><a href="#3.10.2-page-size-selection" id="toc-3.10.2-page-size-selection">3.10.2 Page Size Selection</a>
-</li>
-<li><a href="#3.10.3-hardware-vs-software-complexity" id="toc-3.10.3-hardware-vs-software-complexity">3.10.3 Hardware vs Software Complexity</a>
-</li>
-<li><a href="#3.10.4-virtualization-overhead" id="toc-3.10.4-virtualization-overhead">3.10.4 Virtualization Overhead</a>
-</ul></li>
-<li><a href="#3.10-chapter-summary" id="toc-3.10-chapter-summary">3.10 Chapter Summary</a>
-</li></ul>
-</li></ul>
+<li><a href="#section-3.1">3.1 Introduction</a></li>
+<li><a href="#section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</a></li>
+<li><a href="#section-3.3">3.3 Two-Level Page Tables</a></li>
+<li><a href="#section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</a></li>
+<li><a href="#section-3.5">3.5 Virtualization: Two-Stage Address Translation</a></li>
+<li><a href="#section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</a></li>
+<li><a href="#section-3.7">3.7 Hardware Page Table Walker</a></li>
+<li><a href="#section-3.8">3.8 Page Table Management from the OS Perspective</a></li>
+<li><a href="#section-3.9">3.9 Design Trade-offs</a></li>
+<li><a href="#section-3.10">3.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
+</ul>
 </nav>
 
-<h2 id="3.1-introduction">3.1 Introduction</h2>
+<h2 id="section-3.1">3.1 Introduction</h2>
 
 <p>In the first two chapters, we established the fundamental concepts of memory management and virtual memory. We explored how the Memory Management Unit (MMU) provides the crucial abstraction layer between virtual addresses—what programs see—and physical addresses—where data actually resides in RAM. We introduced page tables as the data structures that store these virtual-to-physical mappings, and we touched on important optimization structures like the Translation Lookaside Buffer (TLB) and multi-level page tables.</p>
 
@@ -981,7 +820,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Let's begin our detailed exploration of page table structures.</p>
 
-<h2 id="3.2-single-level-page-tables-the-simplest-approach">3.2 Single-Level Page Tables: The Simplest Approach</h2>
+<h2 id="section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</h2>
 <figure id="fig-3-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="950" height="550" viewBox="0 0 950 550" xmlns="http://www.w3.org/2000/svg">
@@ -1660,7 +1499,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The single-level page table, despite its limitations, teaches us the fundamental mechanics of address translation. Every more sophisticated page table structure builds on these basics, adding levels of indirection to solve the memory overhead problem while preserving the elegance of the virtual-to-physical mapping concept.</p>
 
-<h2 id="3.3-two-level-page-tables">3.3 Two-Level Page Tables</h2>
+<h2 id="section-3.3">3.3 Two-Level Page Tables</h2>
 <figure id="fig-3-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
@@ -2168,9 +2007,10 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The two-level page table represents a sweet spot for 32-bit systems: it provides dramatic memory savings over single-level tables while adding minimal complexity and only modest (TLB-mitigated) performance overhead. Its success in the x86 architecture influenced the design of virtually all subsequent page table implementations.</p>
 
-<h2 id="3.4-multi-level-page-tables-3-levels">3.4 Multi-Level Page Tables (3+ Levels)</h2>
-<figure id="fig-3-5">
-<svg width="900" height="622" viewBox="0 0 900 622" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<h2 id="section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</h2>
+<figure id="fig-3-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="622" viewBox="0 0 900 622" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <rect width="900" height="622" fill="#FFFFFF"/>
   <text x="450" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Page Table Memory Overhead Comparison</text>
   <rect x="30" y="52" width="840" height="56" rx="6" fill="#34495E"/>
@@ -2242,7 +2082,8 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <text x="450" y="574" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A8A99">Key Insight: Multi-level tables reduce overhead by 99%+ for sparse address spaces!</text>
   <text x="450" y="594" text-anchor="middle" font-size="13" fill="#616161">Only allocate tables for used regions — overhead grows with actual usage, not address space size</text>
 </svg>
-<figcaption><strong>Figure 3.5:</strong> Page table memory overhead across architectures: single-level tables require contiguous allocation; multi-level designs allocate only second-level tables for mapped regions, achieving near-zero overhead for sparse address spaces.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 3.5:</strong> Page table memory overhead across architectures: single-level tables require contiguous allocation; multi-level designs allocate only second-level tables for mapped regions, achieving near-zero overhead for sparse address spaces.</figcaption>
 </figure>
 
 
@@ -2936,7 +2777,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <p>The progression shows a clear pattern: each additional level multiplies the address space by 512 (the number of entries per table).</p>
 
-<h2 id="3.5-virtualization-two-stage-address-translation">3.5 Virtualization: Two-Stage Address Translation</h2>
+<h2 id="section-3.5">3.5 Virtualization: Two-Stage Address Translation</h2>
 <figure id="fig-3-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="600" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
@@ -4363,7 +4204,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <p>The complexity of 20+ potential memory accesses is completely hidden from both guest operating systems and applications by sophisticated caching. This is a triumph of hardware/software co-design: software (hypervisors) provides the management interfaces, hardware provides transparent acceleration.</p>
 
-<h2 id="3.6-what-gets-cached-tlb-and-page-walk-caches">3.6 What Gets Cached: TLB and Page Walk Caches</h2>
+<h2 id="section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</h2>
 <figure id="fig-3-11" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="950" height="650" viewBox="0 0 950 650" xmlns="http://www.w3.org/2000/svg">
@@ -4894,7 +4735,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <li><strong>Performance debugging</strong>: Identifying TLB thrashing</li>
 <li><strong>Architecture design</strong>: Balancing TLB size vs complexity</li>
 
-<h2 id="3.7-hardware-page-table-walker">3.7 Hardware Page Table Walker</h2>
+<h2 id="section-3.7">3.7 Hardware Page Table Walker</h2>
 <figure id="fig-3-12" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="1000" height="700" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
@@ -5194,7 +5035,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <p><strong>Overhead at scale.</strong> The shootdown cost is dominated by IPI round-trip latency. On a 16-core system the overhead is modest (typically &lt;1% of cycles). Research by Villavieja et al. (measured in Mittal, 2016) shows this changes dramatically as core count grows: up to 4% of cycles at 16 cores, rising to 25% at 128 cores, because each IPI stalls the initiating core while acknowledgements arrive serially. AI training workloads with rapid gradient-buffer allocation and deallocation can reach 11–74 shootdowns per second, driving coherence overhead high enough to become the dominant bottleneck (GRIT, 2022). Software mitigations include batching shootdowns, lazy TLB invalidation (deferring flushes until a process is rescheduled), and PCID/ASID tagging to scope invalidations. Chapter 12 examines directory-based hardware solutions (IDYLL) that reduce multi-GPU shootdown overhead from O(N) to O(log N).</p>
 
 
-<h2 id="3.8-page-table-management-from-the-os-perspective">3.8 Page Table Management from the OS Perspective</h2>
+<h2 id="section-3.8">3.8 Page Table Management from the OS Perspective</h2>
 
 <p>While hardware handles the mechanics of translation, the operating system is responsible for allocating, initializing, and managing page tables. Let's examine key OS-level page table operations.</p>
 
@@ -5304,7 +5145,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>This is the inverse of lazy allocation: lazily free page tables when no longer needed.</p>
 
-<h2 id="3.9-design-trade-offs">3.9 Design Trade-offs</h2>
+<h2 id="section-3.9">3.9 Design Trade-offs</h2>
 
 <p>Having explored page table structures in depth, let's step back and analyze the fundamental trade-offs that architects face.</p>
 
@@ -5394,7 +5235,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <p>Result: 2-7% typical overhead—acceptable for cloud computing.</p>
 
-<h2 id="3.10-chapter-summary">3.10 Chapter Summary</h2>
+<h2 id="section-3.10">3.10 Chapter Summary</h2>
 
 <p>In this chapter, we've explored page table structures from simple to complex, always grounding our discussion in real-world implementations:</p>
 
@@ -5662,50 +5503,17 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
                 "file": "chapter-03-WITH-FIGURES.html",
                 "short": "Page Table Structures and Implementation",
                 "sections": [
-                      {
-                            "text": "3.1 Introduction",
-                            "id": "3.1-introduction"
-                      },
-                      {
-                            "text": "3.2 Single-Level Page Tables: The Simplest Approach",
-                            "id": "3.2-single-level-page-tables-the-simplest-approach"
-                      },
-                      {
-                            "text": "3.3 Two-Level Page Tables",
-                            "id": "3.3-two-level-page-tables"
-                      },
-                      {
-                            "text": "3.4 Multi-Level Page Tables (3+ Levels)",
-                            "id": "3.4-multi-level-page-tables-3-levels"
-                      },
-                      {
-                            "text": "3.5 Virtualization: Two-Stage Address Translation",
-                            "id": "3.5-virtualization-two-stage-address-translation"
-                      },
-                      {
-                            "text": "3.6 What Gets Cached: TLB and Page Walk Caches",
-                            "id": "3.6-what-gets-cached-tlb-and-page-walk-caches"
-                      },
-                      {
-                            "text": "3.7 Hardware Page Table Walker",
-                            "id": "3.7-hardware-page-table-walker"
-                      },
-                      {
-                            "text": "3.8 Page Table Management from the OS Perspective",
-                            "id": "3.8-page-table-management-from-the-os-perspective"
-                      },
-                      {
-                            "text": "3.9 Design Trade-offs",
-                            "id": "3.9-design-trade-offs"
-                      },
-                      {
-                            "text": "3.10 Chapter Summary",
-                            "id": "3.10-chapter-summary"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "3.1 Introduction", "id": "section-3.1"},
+                      {"text": "3.2 Single-Level Page Tables: The Simplest Approach", "id": "section-3.2"},
+                      {"text": "3.3 Two-Level Page Tables", "id": "section-3.3"},
+                      {"text": "3.4 Multi-Level Page Tables (3+ Levels)", "id": "section-3.4"},
+                      {"text": "3.5 Virtualization: Two-Stage Address Translation", "id": "section-3.5"},
+                      {"text": "3.6 What Gets Cached: TLB and Page Walk Caches", "id": "section-3.6"},
+                      {"text": "3.7 Hardware Page Table Walker", "id": "section-3.7"},
+                      {"text": "3.8 Page Table Management from the OS Perspective", "id": "section-3.8"},
+                      {"text": "3.9 Design Trade-offs", "id": "section-3.9"},
+                      {"text": "3.10 Chapter Summary", "id": "section-3.10"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

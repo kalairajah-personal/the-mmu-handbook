@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 10: Hardware Accelerators and External MMU Access</title>
   <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -152,80 +153,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -773,179 +708,21 @@ Access</h1>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-10-hardware-accelerators-and-external-mmu-access"
-id="toc-chapter-10-hardware-accelerators-and-external-mmu-access">Chapter
-10: Hardware Accelerators and External MMU Access</a>
-<ul>
-<li><a href="#introduction-beyond-the-cpu-core"
-id="toc-introduction-beyond-the-cpu-core">10.1 Introduction: Beyond the
-CPU Core</a>
-<ul>
-<li><a href="#the-evolution-of-device-memory-access"
-id="toc-the-evolution-of-device-memory-access">The Evolution of Device
-Memory Access</a></li>
-<li><a href="#what-this-chapter-covers"
-id="toc-what-this-chapter-covers">What This Chapter Covers</a></li>
-<li><a href="#why-these-mechanisms-matter"
-id="toc-why-these-mechanisms-matter">Why These Mechanisms
-Matter</a></li>
-<li><a href="#relationship-to-previous-chapters"
-id="toc-relationship-to-previous-chapters">Relationship to Previous
-Chapters</a></li>
-</ul></li>
-<li><a href="#iommu-architecture-deep-dive"
-id="toc-iommu-architecture-deep-dive">10.2 IOMMU Architecture Deep
-Dive</a>
-<ul>
-<li><a href="#the-core-challenge-per-device-isolation"
-id="toc-the-core-challenge-per-device-isolation">The Core Challenge:
-Per-Device Isolation</a></li>
-<li><a href="#intel-vt-d-architecture"
-id="toc-intel-vt-d-architecture">Intel VT-d Architecture</a></li>
-<li><a href="#iommu-page-fault-handling"
-id="toc-iommu-page-fault-handling">IOMMU Page Fault Handling</a></li>
-<li><a href="#performance-case-study-nvme-with-iommu"
-id="toc-performance-case-study-nvme-with-iommu">Performance Case Study:
-NVMe with IOMMU</a></li>
-<li><a href="#amd-iommu-amd-vi-differences"
-id="toc-amd-iommu-amd-vi-differences">AMD IOMMU (AMD-Vi)
-Differences</a></li>
-<li><a href="#arm-smmu-system-memory-management-unit"
-id="toc-arm-smmu-system-memory-management-unit">ARM SMMU (System Memory
-Management Unit)</a></li>
-</ul></li>
-<li><a href="#pcie-ats-and-address-translation-services"
-id="toc-pcie-ats-and-address-translation-services">10.3 PCIe ATS and
-Address Translation Services</a>
-<ul>
-<li><a href="#the-ats-innovation" id="toc-the-ats-innovation">The ATS
-Innovation</a></li>
-<li><a href="#ats-protocol-messages" id="toc-ats-protocol-messages">ATS
-Protocol Messages</a></li>
-<li><a href="#pasid-process-address-space-id"
-id="toc-pasid-process-address-space-id">PASID: Process Address Space
-ID</a></li>
-<li><a href="#pri-page-request-interface"
-id="toc-pri-page-request-interface">PRI: Page Request Interface</a></li>
-</ul></li>
-<li><a href="#rdma-and-memory-registration"
-id="toc-rdma-and-memory-registration">10.4 RDMA and Memory
-Registration</a>
-<ul>
-<li><a href="#the-rdma-model" id="toc-the-rdma-model">The RDMA
-Model</a></li>
-<li><a href="#traditional-memory-registration"
-id="toc-traditional-memory-registration">Traditional Memory
-Registration</a></li>
-<li><a href="#the-registration-problem-in-practice"
-id="toc-the-registration-problem-in-practice">The Registration Problem
-in Practice</a></li>
-<li><a href="#solution-1-pre-registration"
-id="toc-solution-1-pre-registration">Solution 1:
-Pre-Registration</a></li>
-<li><a href="#solution-2-memory-registration-cache"
-id="toc-solution-2-memory-registration-cache">Solution 2: Memory
-Registration Cache</a></li>
-<li><a href="#solution-3-on-demand-paging-odp"
-id="toc-solution-3-on-demand-paging-odp">Solution 3: On-Demand Paging
-(ODP)</a></li>
-<li><a href="#hybrid-approach-explicit-odp"
-id="toc-hybrid-approach-explicit-odp">Hybrid Approach: Explicit +
-ODP</a></li>
-<li><a href="#case-study-redis-with-rdma"
-id="toc-case-study-redis-with-rdma">Case Study: Redis with RDMA</a></li>
-</ul></li>
-<li><a href="#smart-nics-and-data-processing-units"
-id="toc-smart-nics-and-data-processing-units">10.5 Smart NICs and Data
-Processing Units</a>
-<ul>
-<li><a href="#nvidia-bluefield-dpu-architecture"
-id="toc-nvidia-bluefield-dpu-architecture">NVIDIA BlueField DPU
-Architecture</a></li>
-<li><a href="#accessing-host-memory-from-dpu"
-id="toc-accessing-host-memory-from-dpu">Accessing Host Memory from
-DPU</a></li>
-<li><a href="#use-case-1-ovs-offload"
-id="toc-use-case-1-ovs-offload">Use Case 1: OVS Offload</a></li>
-<li><a href="#use-case-2-nvme-of-target"
-id="toc-use-case-2-nvme-of-target">Use Case 2: NVMe-oF Target</a></li>
-<li><a href="#coherency-challenges"
-id="toc-coherency-challenges">Coherency Challenges</a></li>
-<li><a href="#real-world-deployment-cloud-provider-networking"
-id="toc-real-world-deployment-cloud-provider-networking">Real-World
-Deployment: Cloud Provider Networking</a></li>
-<li><a href="#intel-pac-programmable-acceleration-card-with-cci-p"
-id="toc-intel-pac-programmable-acceleration-card-with-cci-p">Intel PAC
-(Programmable Acceleration Card) with CCI-P</a></li>
-<li><a href="#fpga-cpu-memory-access-example"
-id="toc-fpga-cpu-memory-access-example">FPGA → CPU Memory Access
-Example</a></li>
-<li><a href="#use-case-genomics-alignment"
-id="toc-use-case-genomics-alignment">Use Case: Genomics
-Alignment</a></li>
-<li><a href="#cache-coherency-protocol"
-id="toc-cache-coherency-protocol">Cache Coherency Protocol</a></li>
-<li><a href="#amd-ccix-cache-coherent-interconnect-for-accelerators"
-id="toc-amd-ccix-cache-coherent-interconnect-for-accelerators">AMD CCIX
-(Cache Coherent Interconnect for Accelerators)</a></li>
-</ul></li>
-<li><a href="#video-and-media-accelerators"
-id="toc-video-and-media-accelerators">10.6 Video and Media
-Accelerators</a>
-<ul>
-<li><a href="#intel-quicksync-architecture"
-id="toc-intel-quicksync-architecture">Intel QuickSync
-Architecture</a></li>
-<li><a href="#nvidia-nvencnvdec" id="toc-nvidia-nvencnvdec">NVIDIA
-NVENC/NVDEC</a></li>
-</ul></li>
-<li><a href="#multi-device-coherency-and-coordination"
-id="toc-multi-device-coherency-and-coordination">10.7 Multi-Device
-Coherency and Coordination</a>
-<ul>
-<li><a href="#the-tlb-shootdown-problem"
-id="toc-the-tlb-shootdown-problem">The TLB Shootdown Problem</a></li>
-<li><a href="#batching-tlb-invalidations"
-id="toc-batching-tlb-invalidations">Batching TLB Invalidations</a></li>
-<li><a href="#cross-device-ordering"
-id="toc-cross-device-ordering">Cross-Device Ordering</a></li>
-<li><a href="#deadlock-avoidance" id="toc-deadlock-avoidance">Deadlock
-Avoidance</a></li>
-<li><a href="#system-architecture" id="toc-system-architecture">System
-Architecture</a></li>
-<li><a href="#memory-layout-and-sharing"
-id="toc-memory-layout-and-sharing">Memory Layout and Sharing</a></li>
-<li><a href="#iommu-configuration" id="toc-iommu-configuration">IOMMU
-Configuration</a></li>
-<li><a href="#device-synchronization"
-id="toc-device-synchronization">Device Synchronization</a></li>
-<li><a href="#tlb-coherency-across-devices"
-id="toc-tlb-coherency-across-devices">TLB Coherency Across
-Devices</a></li>
-<li><a href="#performance-results"
-id="toc-performance-results">Performance Results</a></li>
-</ul></li>
-<li><a href="#summary-and-best-practices"
-id="toc-summary-and-best-practices">10.10 Summary and Best Practices</a>
-<ul>
-<li><a href="#key-techniques-recap" id="toc-key-techniques-recap">Key
-Techniques Recap</a></li>
-<li><a href="#common-pitfalls-to-avoid-detailed-analysis"
-id="toc-common-pitfalls-to-avoid-detailed-analysis">Common Pitfalls to
-Avoid: Detailed Analysis</a></li>
-<li><a href="#decision-framework" id="toc-decision-framework">Decision
-Framework</a></li>
-<li><a href="#looking-forward" id="toc-looking-forward">Looking
-Forward</a></li>
-<li><a href="#references" id="toc-references">References</a></li>
-</ul></li>
-</ul></li>
+<li><a href="#section-10.1">10.1 Introduction: Beyond the CPU Core</a></li>
+<li><a href="#section-10.2">10.2 IOMMU Architecture Deep Dive</a></li>
+<li><a href="#section-10.3">10.3 PCIe ATS and Address Translation Services</a></li>
+<li><a href="#section-10.4">10.4 RDMA and Memory Registration</a></li>
+<li><a href="#section-10.5">10.5 Smart NICs and Data Processing Units</a></li>
+<li><a href="#section-10.6">10.6 Video and Media Accelerators</a></li>
+<li><a href="#section-10.7">10.7 Multi-Device Coherency and Coordination</a></li>
+<li><a href="#section-10.8">10.8 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 <h1
 id="chapter-10-hardware-accelerators-and-external-mmu-access">Chapter
 10: Hardware Accelerators and External MMU Access</h1>
-<h2 id="introduction-beyond-the-cpu-core">10.1 Introduction: Beyond the
+<h2 id="section-10.1">10.1 Introduction: Beyond the
 CPU Core</h2>
 <p>On a March afternoon in 2018, engineers at a high-frequency trading
 firm discovered an anomaly that would cost them $1.2 million in a single
@@ -1243,7 +1020,7 @@ microsecond-latency protocols.</p>
 <p>Let's begin by examining the IOMMU itself—the central piece of
 hardware that enables device virtual memory.</p>
 <hr />
-<h2 id="iommu-architecture-deep-dive">10.2 IOMMU Architecture Deep
+<h2 id="section-10.2">10.2 IOMMU Architecture Deep
 Dive</h2>
 <p>The Input-Output Memory Management Unit sits between devices and
 system memory, intercepting every DMA transaction and translating
@@ -1253,8 +1030,9 @@ handle memory accesses from dozens of independent devices
 simultaneously—network cards, GPUs, storage controllers, and more. This
 fundamental difference shapes its architecture.</p>
 
-<figure id="fig-10-1" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<figure id="fig-10-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.14"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -1374,7 +1152,8 @@ fundamental difference shapes its architecture.</p>
 <text x="50" y="532" style="font-size:12px;fill:#3A5070;">• VFIO framework (Linux): exposes IOMMU domains to userspace for DPDK, QEMU device passthrough</text>
 <text x="50" y="550" style="font-size:12px;fill:#3A5070;">• Performance: zero-copy DMA eliminates memcpy overhead between kernel bounce buffers and device memory</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.1:</strong> IOMMU VT-d DMA remapping architecture. The IOMMU maintains per-device IO page tables, an IOTLB for caching translations, and a root/context table mapping PCIe Bus:Device:Function identifiers to isolated DMA domains. Each device is confined to its own IOVA space, preventing rogue DMA and enabling safe VM device passthrough.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.1:</strong> IOMMU VT-d DMA remapping architecture. The IOMMU maintains per-device IO page tables, an IOTLB for caching translations, and a root/context table mapping PCIe Bus:Device:Function identifiers to isolated DMA domains. Each device is confined to its own IOVA space, preventing rogue DMA and enabling safe VM device passthrough.</figcaption>
 </figure>
 
 
@@ -1834,7 +1613,7 @@ Virtualized mode:
   Stage 1 + Stage 2: Device VA → IPA → PA
   Latency: ~50% higher (two translation walks)</code></pre>
 <hr />
-<h2 id="pcie-ats-and-address-translation-services">10.3 PCIe ATS and
+<h2 id="section-10.3">10.3 PCIe ATS and
 Address Translation Services</h2>
 <figure id="fig-10-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
@@ -1911,8 +1690,9 @@ Every device access must go through the IOMMU's IOTLB, and with only
 Translation Services (ATS) solve this by moving the translation cache
 from the IOMMU into the device itself.</p>
 
-<figure id="fig-10-3" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-10-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2000,7 +1780,8 @@ from the IOMMU into the device itself.</p>
 <text x="50" y="526" style="font-size:13px;font-weight:bold;fill:#1E3A5A;">Queues</text>
 <text x="220" y="526" style="font-size:12px;fill:#444;">Tx/Rx queue pair(s) partitioned from NIC hardware</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.3:</strong> SR-IOV single-root I/O virtualisation. A physical function (PF) creates up to 256 virtual functions (VFs), each with isolated MMIO BARs, dedicated MSI-X interrupt vectors, and an independent IOMMU DMA domain. VFs are assigned directly to VMs or containers via VFIO passthrough.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.3:</strong> SR-IOV single-root I/O virtualisation. A physical function (PF) creates up to 256 virtual functions (VFs), each with isolated MMIO BARs, dedicated MSI-X interrupt vectors, and an independent IOMMU DMA domain. VFs are assigned directly to VMs or containers via VFIO passthrough.</figcaption>
 </figure>
 
 
@@ -2327,7 +2108,7 @@ performance (62 → 78 Gbps) 2. But huge pages are still critical (78 → 91
 Gbps) 3. The combination nearly eliminates IOMMU overhead 4. Flexibility
 (non-pinned memory) with minimal performance cost</p>
 <hr />
-<h2 id="rdma-and-memory-registration">10.4 RDMA and Memory
+<h2 id="section-10.4">10.4 RDMA and Memory
 Registration</h2>
 <p>Remote Direct Memory Access (RDMA) promises zero-copy
 networking—applications can read and write remote memory directly
@@ -2336,8 +2117,9 @@ creates a fundamental tension: RDMA NICs need stable physical addresses,
 while virtual memory allows pages to move. Memory registration is how we
 resolve this conflict.</p>
 
-<figure id="fig-10-4" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-10-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2432,7 +2214,8 @@ resolve this conflict.</p>
 <rect x="36" y="480" width="820" height="36" rx="4" style="fill:#DDEAF5;stroke:#5E81AC;stroke-width:1;"/>
 <text x="446" y="502" style="font-size:12px;fill:#1E3A5A;text-anchor:middle;">ODP supported: Mellanox ConnectX-4+, Intel Omni-Path; requires kernel ib_umem_odp module; implicit ODP (iODP) in ConnectX-6+</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.4:</strong> RDMA On-Demand Paging (ODP). Traditional ibv_reg_mr pins all pages upfront, locking them in RAM. ODP registers memory regions without pinning; page translations are resolved lazily when the NIC issues a fault, then pushed to the NIC MMU by the kernel ODP fault handler, enabling RDMA over demand-paged virtual memory.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.4:</strong> RDMA On-Demand Paging (ODP). Traditional ibv_reg_mr pins all pages upfront, locking them in RAM. ODP registers memory regions without pinning; page translations are resolved lazily when the NIC issues a fault, then pushed to the NIC MMU by the kernel ODP fault handler, enabling RDMA over demand-paged virtual memory.</figcaption>
 </figure>
 
 
@@ -2814,7 +2597,7 @@ acceptable for their SLA (200 µs)</p>
 <p>For a high-frequency trading system with sub-microsecond latency
 requirements, they would choose traditional registration instead.</p>
 <hr />
-<h2 id="smart-nics-and-data-processing-units">10.5 Smart NICs and Data
+<h2 id="section-10.5">10.5 Smart NICs and Data
 Processing Units</h2>
 <p>A Smart NIC or DPU (Data Processing Unit) is a network card with
 embedded general-purpose processors—typically ARM cores running Linux.
@@ -2822,8 +2605,9 @@ Unlike traditional NICs that offload specific functions (TCP checksum,
 RDMA), Smart NICs can run arbitrary software, making them programmable
 infrastructure accelerators.</p>
 
-<figure id="fig-10-5" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-10-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2924,7 +2708,8 @@ infrastructure accelerators.</p>
 <text x="30" y="500" style="font-size:12px;fill:#444;">• Storage: NVMe-oF target runs on DPU ARM cores</text>
 <text x="30" y="520" style="font-size:12px;fill:#444;">• Security: encryption/keys never visible to host OS</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.5:</strong> SmartNIC / DPU memory architecture. The DPU (e.g., NVIDIA BlueField-3) integrates ARM cores, local LPDDR5 DRAM, packet processing engines, and crypto/compress offload engines behind a PCIe endpoint interface. The DPU runs its own Linux kernel and maintains its own IOMMU, isolating DPU DMA from host memory.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 10.5:</strong> SmartNIC / DPU memory architecture. The DPU (e.g., NVIDIA BlueField-3) integrates ARM cores, local LPDDR5 DRAM, packet processing engines, and crypto/compress offload engines behind a PCIe endpoint interface. The DPU runs its own Linux kernel and maintains its own IOMMU, isolating DPU DMA from host memory.</figcaption>
 </figure>
 
 
@@ -3438,7 +3223,7 @@ CPU compatibility   Intel only        Multi-vendor</code></pre>
 bandwidth (newer PCIe generations). The choice depends on whether
 latency or bandwidth is the bottleneck.</p>
 <hr />
-<h2 id="video-and-media-accelerators">10.6 Video and Media
+<h2 id="section-10.6">10.6 Video and Media
 Accelerators</h2>
 <p>Video encode/decode engines are specialized accelerators found on
 most modern CPUs and GPUs. They access memory differently than
@@ -3554,7 +3339,7 @@ Bandwidth: ~20 GB/s (limited by PCIe)</code></pre>
 The extra 2 ms (12 ms vs 10 ms) is acceptable compared to 30 ms copy
 overhead.</p>
 <hr />
-<h2 id="multi-device-coherency-and-coordination">10.7 Multi-Device
+<h2 id="section-10.7">10.7 Multi-Device
 Coherency and Coordination</h2>
 <p>When multiple devices access the same memory simultaneously,
 coordinating TLB invalidations and cache coherency becomes the hardest
@@ -4024,7 +3809,7 @@ bandwidth bottleneck 2. IOMMU with huge pages added minimal overhead
 (6%) 3. Device synchronization was well-designed (no deadlocks) 4. All
 devices supported required features (ATS, ODP, etc.)</p>
 <hr />
-<h2 id="summary-and-best-practices">10.8 Chapter Summary</h2>
+<h2 id="section-10.8">10.8 Chapter Summary</h2>
 <p>This chapter explored how non-CPU devices access virtual memory
 through the IOMMU and related protocols. The landscape is complex, with
 multiple trade-offs between performance, security, and flexibility.
@@ -5153,42 +4938,15 @@ everywhere, with explicit copies only when demonstrably necessary.</p><script>
                 "file": "chapter-10-WITH-FIGURES.html",
                 "short": "Hardware Accelerators and External MMU Access",
                 "sections": [
-                      {
-                            "text": "10.1 Introduction: Beyond the CPU Core",
-                            "id": "introduction-beyond-the-cpu-core"
-                      },
-                      {
-                            "text": "10.2 IOMMU Architecture Deep Dive",
-                            "id": "iommu-architecture-deep-dive"
-                      },
-                      {
-                            "text": "10.3 PCIe ATS and Address Translation Services",
-                            "id": "pcie-ats-and-address-translation-services"
-                      },
-                      {
-                            "text": "10.4 RDMA and Memory Registration",
-                            "id": "rdma-and-memory-registration"
-                      },
-                      {
-                            "text": "10.5 Smart NICs and Data Processing Units",
-                            "id": "smart-nics-and-data-processing-units"
-                      },
-                      {
-                            "text": "10.6 Video and Media Accelerators",
-                            "id": "video-and-media-accelerators"
-                      },
-                      {
-                            "text": "10.7 Multi-Device Coherency and Coordination",
-                            "id": "multi-device-coherency-and-coordination"
-                      },
-                      {
-                            "text": "10.8 Chapter Summary",
-                            "id": "summary-and-best-practices"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "10.1 Introduction: Beyond the CPU Core", "id": "section-10.1"},
+                      {"text": "10.2 IOMMU Architecture Deep Dive", "id": "section-10.2"},
+                      {"text": "10.3 PCIe ATS and Address Translation Services", "id": "section-10.3"},
+                      {"text": "10.4 RDMA and Memory Registration", "id": "section-10.4"},
+                      {"text": "10.5 Smart NICs and Data Processing Units", "id": "section-10.5"},
+                      {"text": "10.6 Video and Media Accelerators", "id": "section-10.6"},
+                      {"text": "10.7 Multi-Device Coherency and Coordination", "id": "section-10.7"},
+                      {"text": "10.8 Chapter Summary", "id": "section-10.8"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {
@@ -5565,6 +5323,8 @@ everywhere, with explicit copies only when demonstrably necessary.</p><script>
 <li><p>NVIDIA Corporation. <em>NVIDIA NVLink and NVSwitch: Highest Bandwidth Chip-to-Chip Interconnect</em>. NVIDIA Technical Brief TB-10253-001. NVIDIA Corporation, 2022.</p></li>
 <li><p>Ferdman, M., Adileh, A., Kocberber, O., Volos, S., Alisafaee, M., Jevdjic, D., Kaynak, C., Popescu, A.D., Ailamaki, A., and Falsafi, B. "Clearing the Clouds: A Study of Emerging Scale-out Workloads on Modern Hardware." <em>17th International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2012)</em>. ACM, 2012. DOI: 10.1145/2150976.2150982</p></li>
 <li><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. <em>Architectural and Operating System Support for Virtual Memory</em>. Synthesis Lectures on Computer Architecture. Morgan &amp; Claypool, 2017. DOI: 10.2200/S00786ED1V01Y201707CAC040</p></li>
+<li><p>Arm Limited. <em>ARM System Memory Management Unit Architecture Specification — SMMU architecture version 3.</em> ARM IHI 0070F. 2022. https://developer.arm.com/documentation/ihi0070/</p></li>
+<li><p>Cutress, I. <em>AMD EPYC 7003 Series: The AMD Milan Deep Dive Review.</em> AnandTech. March 2021. https://www.anandtech.com/show/16529/amd-epyc-milan-review</p></li>
 </ol>
 
 </body>

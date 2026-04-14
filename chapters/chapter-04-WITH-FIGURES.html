@@ -9,6 +9,7 @@
     
     
 <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -155,80 +156,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -776,259 +711,26 @@ Dive</h1>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-4-translation-lookaside-buffer-tlb---deep-dive"
-id="toc-chapter-4-translation-lookaside-buffer-tlb---deep-dive">Chapter
-4: Translation Lookaside Buffer (TLB) - Deep Dive</a>
-<ul>
-<li><a href="#introduction-the-most-critical-cache-youve-never-heard-of"
-id="toc-introduction-the-most-critical-cache-youve-never-heard-of">4.1
-Introduction: The Most Critical Cache You've Never Heard Of</a>
-<ul>
-<li><a href="#why-the-tlb-deserves-deep-study"
-id="toc-why-the-tlb-deserves-deep-study">Why the TLB Deserves Deep
-Study</a></li>
-<li><a href="#what-well-cover" id="toc-what-well-cover">What We'll
-Cover</a></li>
-</ul></li>
-<li><a href="#tlb-architecture-and-organization"
-id="toc-tlb-architecture-and-organization">4.2 TLB Architecture and
-Organization</a>
-<ul>
-<li><a href="#the-tlb-hierarchy-why-multiple-levels"
-id="toc-the-tlb-hierarchy-why-multiple-levels">4.2.1 The TLB Hierarchy:
-Why Multiple Levels?</a></li>
-<li><a href="#tlb-entry-structure-what-does-each-entry-store"
-id="toc-tlb-entry-structure-what-does-each-entry-store">4.2.2 TLB Entry
-Structure: What Does Each Entry Store?</a></li>
-<li><a href="#associativity-and-replacement-policies"
-id="toc-associativity-and-replacement-policies">4.2.3 Associativity and
-Replacement Policies</a></li>
-</ul></li>
-<li><a href="#tlb-management-hardware-vs-software"
-id="toc-tlb-management-hardware-vs-software">4.3 TLB Management:
-Hardware vs Software</a>
-<ul>
-<li><a href="#hardware-managed-tlbs-the-x86-and-arm-approach"
-id="toc-hardware-managed-tlbs-the-x86-and-arm-approach">4.3.1
-Hardware-Managed TLBs: The x86 and ARM Approach</a></li>
-<li><a href="#software-managed-tlbs-the-risc-v-and-mips-approach"
-id="toc-software-managed-tlbs-the-risc-v-and-mips-approach">4.3.2
-Software-Managed TLBs: The RISC-V and MIPS Approach</a></li>
-<li><a href="#hybrid-approaches-and-modern-trends"
-id="toc-hybrid-approaches-and-modern-trends">4.3.3 Hybrid Approaches and
-Modern Trends</a></li>
-</ul></li>
-<li><a href="#address-space-identifiers-asid-pcid-and-vmid"
-id="toc-address-space-identifiers-asid-pcid-and-vmid">4.4 Address Space
-Identifiers: ASID, PCID, and VMID</a>
-<ul>
-<li><a href="#the-context-switch-problem"
-id="toc-the-context-switch-problem">4.4.1 The Context Switch
-Problem</a></li>
-<li><a href="#asid-arms-address-space-identifier"
-id="toc-asid-arms-address-space-identifier">4.4.2 ASID: ARM's Address
-Space Identifier</a></li>
-<li><a href="#pcid-x86-64s-process-context-identifier"
-id="toc-pcid-x86-64s-process-context-identifier">4.4.3 PCID: x86-64's
-Process Context Identifier</a></li>
-<li><a href="#vmid-virtualization-machine-identifier"
-id="toc-vmid-virtualization-machine-identifier">4.4.4 VMID:
-Virtualization Machine Identifier</a></li>
-</ul></li>
-<li><a href="#tlb-operations-and-instructions"
-id="toc-tlb-operations-and-instructions">4.5 TLB Operations and
-Instructions</a>
-<ul>
-<li><a href="#tlb-invalidation-instructions"
-id="toc-tlb-invalidation-instructions">4.5.1 TLB Invalidation
-Instructions</a></li>
-<li><a href="#tlb-shootdown-multicore-synchronization"
-id="toc-tlb-shootdown-multicore-synchronization">4.5.2 TLB Shootdown:
-Multicore Synchronization</a></li>
-<li><a href="#batching-and-optimization"
-id="toc-batching-and-optimization">4.5.3 Batching and
-Optimization</a></li>
-</ul></li>
-<li><a href="#large-pages-and-tlb-coverage"
-id="toc-large-pages-and-tlb-coverage">4.6 Large Pages and TLB
-Coverage</a>
-<ul>
-<li><a href="#the-tlb-coverage-problem"
-id="toc-the-tlb-coverage-problem">4.6.1 The TLB Coverage
-Problem</a></li>
-<li><a href="#large-page-sizes" id="toc-large-page-sizes">4.6.2 Large
-Page Sizes</a></li>
-<li><a href="#tlb-coverage-improvement-with-large-pages"
-id="toc-tlb-coverage-improvement-with-large-pages">4.6.3 TLB Coverage
-Improvement with Large Pages</a></li>
-<li><a href="#hardware-support-for-large-pages"
-id="toc-hardware-support-for-large-pages">4.6.4 Hardware Support for
-Large Pages</a></li>
-<li><a href="#operating-system-support-transparent-huge-pages"
-id="toc-operating-system-support-transparent-huge-pages">4.6.5 Operating
-System Support: Transparent Huge Pages</a></li>
-<li><a href="#huge-page-performance-measurements"
-id="toc-huge-page-performance-measurements">4.6.6 Huge Page Performance
-Measurements</a></li>
-<li><a href="#gb-page-support" id="toc-gb-page-support">4.6.7 1GB Page
-Support</a></li>
-</ul></li>
-<li><a href="#multicore-tlb-coherency"
-id="toc-multicore-tlb-coherency">4.7 Multicore TLB Coherency</a>
-<ul>
-<li><a href="#the-tlb-coherency-problem"
-id="toc-the-tlb-coherency-problem">4.7.1 The TLB Coherency
-Problem</a></li>
-<li><a href="#tlb-shootdown-protocol-revisited"
-id="toc-tlb-shootdown-protocol-revisited">4.7.2 TLB Shootdown Protocol
-(Revisited)</a></li>
-<li><a href="#hardware-tlb-coherency-support"
-id="toc-hardware-tlb-coherency-support">4.7.3 Hardware TLB Coherency
-Support</a></li>
-<li><a href="#tlb-coherency-and-memory-ordering"
-id="toc-tlb-coherency-and-memory-ordering">4.7.4 TLB Coherency and
-Memory Ordering</a></li>
-<li><a href="#batched-tlb-shootdown-optimization"
-id="toc-batched-tlb-shootdown-optimization">4.7.5 Batched TLB Shootdown
-Optimization</a></li>
-<li><a href="#tlb-coherency-in-numa-systems"
-id="toc-tlb-coherency-in-numa-systems">4.7.6 TLB Coherency in NUMA
-Systems</a></li>
-</ul></li>
-<li><a href="#platform-specific-tlb-implementations"
-id="toc-platform-specific-tlb-implementations">4.8 Platform-Specific TLB
-Implementations</a>
-<ul>
-<li><a href="#intel-x86-64-tlb-architecture"
-id="toc-intel-x86-64-tlb-architecture">4.8.1 Intel x86-64 TLB
-Architecture</a></li>
-<li><a href="#amd-zen-4-tlb-architecture-2022"
-id="toc-amd-zen-4-tlb-architecture-2022">4.8.2 AMD Zen 4 TLB
-Architecture (2022)</a></li>
-<li><a href="#arm-cortex-a78-tlb-architecture-2020"
-id="toc-arm-cortex-a78-tlb-architecture-2020">4.8.3 ARM Cortex-A78 TLB
-Architecture (2020)</a></li>
-<li><a href="#risc-v-implementation-sifive-u74-2020"
-id="toc-risc-v-implementation-sifive-u74-2020">4.8.4 RISC-V
-Implementation: SiFive U74 (2020)</a></li>
-<li><a href="#apple-m-series-tlb-architecture"
-id="toc-apple-m-series-tlb-architecture">4.8.5 Apple M-Series TLB
-Architecture</a></li>
-</ul></li>
-<li><a href="#alternative-page-table-structures-and-tlb-implications"
-id="toc-alternative-page-table-structures-and-tlb-implications">4.9
-Alternative Page Table Structures and TLB Implications</a>
-<ul>
-<li><a href="#inverted-page-tables" id="toc-inverted-page-tables">4.9.1
-Inverted Page Tables</a></li>
-<li><a href="#shadow-page-tables-for-virtualization"
-id="toc-shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables
-for Virtualization</a></li>
-<li><a
-href="#nestedextended-page-tables-eptnpt---modern-hardware-approach"
-id="toc-nestedextended-page-tables-eptnpt---modern-hardware-approach">4.9.3
-Nested/Extended Page Tables (EPT/NPT) - Modern Hardware
-Approach</a></li>
-<li><a href="#other-page-table-variations"
-id="toc-other-page-table-variations">4.9.4 Other Page Table
-Variations</a></li>
-</ul></li>
-<li><a href="#self-modifying-code-and-instructiondata-coherency"
-id="toc-self-modifying-code-and-instructiondata-coherency">4.10
-Self-Modifying Code and Instruction/Data Coherency</a>
-<ul>
-<li><a href="#the-coherency-problem"
-id="toc-the-coherency-problem">4.10.1 The Coherency Problem</a></li>
-<li><a href="#architecture-specific-handling"
-id="toc-architecture-specific-handling">4.10.2 Architecture-Specific
-Handling</a></li>
-<li><a href="#jit-compilers-and-dynamic-code-generation"
-id="toc-jit-compilers-and-dynamic-code-generation">4.10.3 JIT Compilers
-and Dynamic Code Generation</a></li>
-<li><a href="#write-xor-execute-wx-security"
-id="toc-write-xor-execute-wx-security">4.10.4 Write XOR Execute (W^X)
-Security</a></li>
-</ul></li>
-<li><a href="#multithreading-and-tlb-sharing"
-id="toc-multithreading-and-tlb-sharing">4.11 Multithreading and TLB
-Sharing</a>
-<ul>
-<li><a href="#smt-architectures-intel-hyperthreading-and-amd-smt"
-id="toc-smt-architectures-intel-hyperthreading-and-amd-smt">4.11.1 SMT
-Architectures: Intel Hyperthreading and AMD SMT</a></li>
-<li><a href="#tlb-partitioning-strategies"
-id="toc-tlb-partitioning-strategies">4.11.2 TLB Partitioning
-Strategies</a></li>
-<li><a href="#tlb-miss-handling-with-smt"
-id="toc-tlb-miss-handling-with-smt">4.11.3 TLB Miss Handling with
-SMT</a></li>
-<li><a href="#asidpcid-with-smt" id="toc-asidpcid-with-smt">4.11.4
-ASID/PCID with SMT</a></li>
-<li><a href="#performance-impact-of-smt-on-tlb"
-id="toc-performance-impact-of-smt-on-tlb">4.11.5 Performance Impact of
-SMT on TLB</a></li>
-</ul></li>
-<li><a href="#virtualization-with-mismatched-page-sizes"
-id="toc-virtualization-with-mismatched-page-sizes">4.12 Virtualization
-with Mismatched Page Sizes</a>
-<ul>
-<li><a href="#two-stage-translation-recap"
-id="toc-two-stage-translation-recap">4.12.1 Two-Stage Translation
-Recap</a></li>
-<li><a href="#mismatched-page-sizes-the-problem"
-id="toc-mismatched-page-sizes-the-problem">4.12.2 Mismatched Page Sizes:
-The Problem</a></li>
-<li><a href="#intel-ept-with-mixed-page-sizes"
-id="toc-intel-ept-with-mixed-page-sizes">4.12.3 Intel EPT with Mixed
-Page Sizes</a></li>
-<li><a href="#amd-npt-with-mixed-page-sizes"
-id="toc-amd-npt-with-mixed-page-sizes">4.12.4 AMD NPT with Mixed Page
-Sizes</a></li>
-<li><a href="#arm64-stage-2-translation"
-id="toc-arm64-stage-2-translation">4.12.5 ARM64 Stage 2
-Translation</a></li>
-<li><a href="#risc-v-hypervisor-extension"
-id="toc-risc-v-hypervisor-extension">4.12.6 RISC-V Hypervisor
-Extension</a></li>
-<li><a href="#performance-recommendations"
-id="toc-performance-recommendations">4.12.7 Performance
-Recommendations</a></li>
-</ul></li>
-<li><a href="#gpu-and-hardware-accelerator-mmus"
-id="toc-gpu-and-hardware-accelerator-mmus">4.13 GPU and Hardware
-Accelerator MMUs</a>
-<ul>
-<li><a href="#why-gpus-need-mmus" id="toc-why-gpus-need-mmus">4.13.1 Why
-GPUs Need MMUs</a></li>
-<li><a href="#nvidia-gpu-mmu-architecture"
-id="toc-nvidia-gpu-mmu-architecture">4.13.2 NVIDIA GPU MMU
-Architecture</a></li>
-<li><a href="#gpu-page-fault-handling"
-id="toc-gpu-page-fault-handling">4.13.3 GPU Page Fault Handling</a></li>
-<li><a href="#amd-gpu-mmu-iommu-integration"
-id="toc-amd-gpu-mmu-iommu-integration">4.13.4 AMD GPU MMU (IOMMU
-Integration)</a></li>
-<li><a href="#intel-gpus-and-shared-virtual-memory"
-id="toc-intel-gpus-and-shared-virtual-memory">4.13.5 Intel GPUs and
-Shared Virtual Memory</a></li>
-<li><a href="#apple-m-series-unified-memory"
-id="toc-apple-m-series-unified-memory">4.13.6 Apple M-series Unified
-Memory</a></li>
-<li><a href="#iommu-and-dma-remapping"
-id="toc-iommu-and-dma-remapping">4.13.7 IOMMU and DMA Remapping</a></li>
-<li><a href="#performance-considerations"
-id="toc-performance-considerations">4.13.8 Performance
-Considerations</a></li>
-</ul></li>
-<li><a href="#chapter-4-summary" id="toc-chapter-4-summary">4.14 Chapter Summary</a></li>
-<li><a href="#chapter-4-references"
-id="toc-chapter-4-references">Chapter 4: References</a></li>
-</ul></li>
+<li><a href="#section-4.1">4.1 Introduction: The Most Critical Cache You've Never Heard Of</a></li>
+<li><a href="#section-4.2">4.2 TLB Architecture and Organization</a></li>
+<li><a href="#section-4.3">4.3 TLB Management: Hardware vs Software</a></li>
+<li><a href="#section-4.4">4.4 Address Space Identifiers: ASID, PCID, and VMID</a></li>
+<li><a href="#section-4.5">4.5 TLB Operations and Instructions</a></li>
+<li><a href="#section-4.6">4.6 Large Pages and TLB Coverage</a></li>
+<li><a href="#section-4.7">4.7 Multicore TLB Coherency</a></li>
+<li><a href="#section-4.8">4.8 Platform-Specific TLB Implementations</a></li>
+<li><a href="#section-4.9">4.9 Alternative Page Table Structures and TLB Implications</a></li>
+<li><a href="#section-4.10">4.10 Self-Modifying Code and Instruction/Data Coherency</a></li>
+<li><a href="#section-4.11">4.11 Multithreading and TLB Sharing</a></li>
+<li><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a></li>
+<li><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a></li>
+<li><a href="#section-4.14">4.14 Chapter Summary</a></li>
+<li><a href="#section-4.15">References</a></li>
 </ul>
 </nav>
 <h1 id="chapter-4-translation-lookaside-buffer-tlb---deep-dive">Chapter
 4: Translation Lookaside Buffer (TLB) - Deep Dive</h1>
-<h2 id="introduction-the-most-critical-cache-youve-never-heard-of">4.1
+<h2 id="section-4.1">4.1
 Introduction: The Most Critical Cache You've Never Heard Of</h2>
 <p>In Chapter 1, we introduced the Translation Lookaside Buffer (TLB) as
 a specialized cache that stores recent virtual-to-physical address
@@ -1108,7 +810,7 @@ advanced topics</p>
 the TLB does, but <em>how</em> it works, <em>why</em> it's designed as
 it is, and <em>how</em> to write TLB-efficient software.</p>
 <hr />
-<h2 id="tlb-architecture-and-organization">4.2 TLB Architecture and
+<h2 id="section-4.2">4.2 TLB Architecture and
 Organization</h2>
 <h3 id="the-tlb-hierarchy-why-multiple-levels">4.2.1 The TLB Hierarchy:
 Why Multiple Levels?</h3>
@@ -1569,7 +1271,7 @@ victim entry 4. Insert new translation</p>
 comparator count manageable (only 12 parallel comparisons per lookup
 instead of 1536).</p>
 <hr />
-<h2 id="tlb-management-hardware-vs-software">4.3 TLB Management:
+<h2 id="section-4.3">4.3 TLB Management:
 Hardware vs Software</h2>
 <p>One of the most fundamental design decisions in TLB architecture is
 who manages TLB misses: hardware or software? This choice has profound
@@ -1955,7 +1657,7 @@ mechanisms - Security monitoring</p>
 <p>The <code>CR3</code> register can be read by software, and page
 tables are in normal memory (though often write-protected by OS).</p>
 <hr />
-<h2 id="address-space-identifiers-asid-pcid-and-vmid">4.4 Address Space
+<h2 id="section-4.4">4.4 Address Space
 Identifiers: ASID, PCID, and VMID</h2>
 <p>Context switches—changing which process is running on a CPU—are
 extremely common in modern systems. A typical desktop or server
@@ -2524,7 +2226,7 @@ Cost: 500-1,000 cycles</code></pre>
 <p><strong>Improvement:</strong> 2-5× faster VM switches, critical for
 cloud workloads with many VMs per host.</p>
 <hr />
-<h2 id="tlb-operations-and-instructions">4.5 TLB Operations and
+<h2 id="section-4.5">4.5 TLB Operations and
 Instructions</h2>
 <p>Processors provide explicit instructions to manage TLB state.
 Understanding these operations is essential for OS developers
@@ -2857,7 +2559,7 @@ optimized by hardware)</p>
 <p><strong>Tradeoff:</strong> Potential for stale translations vs. IPI
 overhead</p>
 <hr />
-<h2 id="large-pages-and-tlb-coverage">4.6 Large Pages and TLB
+<h2 id="section-4.6">4.6 Large Pages and TLB
 Coverage</h2>
 <p>One of the most powerful TLB optimizations is using <strong>large
 pages</strong> (also called huge pages or superpages). By mapping larger
@@ -2868,8 +2570,9 @@ TLB.</p>
 <p><strong>TLB Coverage</strong> is the total amount of memory that can
 be addressed by all TLB entries:</p>
 
-<figure id="fig-4-6">
-<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-4-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -2940,7 +2643,8 @@ be addressed by all TLB entries:</p>
   <text x="450" y="510" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">x86-64: L1 TLB 64 entries, L2 TLB 1,536 entries. ARM64: L1 48–128 entries. All benefit equally from larger pages.</text>
   <text x="450" y="530" text-anchor="middle" font-size="11" font-weight="normal" fill="#616161">Linux: echo always > /sys/kernel/mm/transparent_hugepage/enabled   or use madvise(MADV_HUGEPAGE)</text>
 </svg>
-<figcaption><strong>Figure 4.6:</strong> Large pages and TLB coverage: 4 KB pages give only 2 MB reach with a 512-entry TLB; 2 MB pages give 1 GB; 1 GB pages give 512 GB. The 2 MB page size offers the best coverage-to-fragmentation trade-off for AI/ML workloads with terabyte-scale working sets.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 4.6:</strong> Large pages and TLB coverage: 4 KB pages give only 2 MB reach with a 512-entry TLB; 2 MB pages give 1 GB; 1 GB pages give 512 GB. The 2 MB page size offers the best coverage-to-fragmentation trade-off for AI/ML workloads with terabyte-scale working sets.</figcaption>
 </figure>
 
 <pre><code>TLB Coverage = (Number of TLB entries) × (Page size)</code></pre>
@@ -3214,7 +2918,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb75-1"><a href=
   - TLB miss rate: ~15%
   - Performance: 2,800 MB/s (+56×)</code></pre>
 <hr />
-<h2 id="multicore-tlb-coherency">4.7 Multicore TLB Coherency</h2>
+<h2 id="section-4.7">4.7 Multicore TLB Coherency</h2>
 <p>Modern processors have multiple cores, each with its own private TLB.
 When one core modifies a page table entry, other cores' TLBs may contain
 stale translations. Maintaining TLB coherency across cores is essential
@@ -3418,7 +3122,7 @@ Memory barriers have different costs across nodes</p>
 <span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a>    mark_flush_pending<span class="op">(</span>remote_cpus<span class="op">,</span> pte<span class="op">);</span></span>
 <span id="cb88-11"><a href="#cb88-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <hr />
-<h2 id="platform-specific-tlb-implementations">4.8 Platform-Specific TLB
+<h2 id="section-4.8">4.8 Platform-Specific TLB
 Implementations</h2>
 <p>Now we examine real TLB implementations across major processor
 families, understanding the specific design choices, capabilities, and
@@ -3598,7 +3302,7 @@ prefetching</p>
 improvements - Better handling of mixed page sizes - Enhanced coherency
 for heterogeneous cores</p>
 <hr />
-<h2 id="alternative-page-table-structures-and-tlb-implications">4.9
+<h2 id="section-4.9">4.9
 Alternative Page Table Structures and TLB Implications</h2>
 <p>While hierarchical multi-level page tables (covered in Chapter 3) are
 the dominant approach in modern processors, alternative page table
@@ -3849,7 +3553,7 @@ Kernel space (EL1): Uses TTBR1_EL1
   
 TLB must track which granule for each entry</code></pre>
 <hr />
-<h2 id="self-modifying-code-and-instructiondata-coherency">4.10
+<h2 id="section-4.10">4.10
 Self-Modifying Code and Instruction/Data Coherency</h2>
 <p>When a program modifies its own code (writes instructions that will
 later be executed), maintaining coherency between instruction and data
@@ -4188,7 +3892,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb145-1"><a href="#cb1
 bits in page table triggers fault - JIT must use dual-mapping
 technique</p>
 <hr />
-<h2 id="multithreading-and-tlb-sharing">4.11 Multithreading and TLB
+<h2 id="section-4.11">4.11 Multithreading and TLB
 Sharing</h2>
 <p>Modern processors support <strong>Simultaneous Multithreading
 (SMT)</strong>, where multiple hardware threads share a single physical
@@ -4341,7 +4045,7 @@ Total throughput improves even if individual thread slower</p>
 large working sets - TLB thrashing dominates performance - Better to
 disable SMT and run threads on separate cores</p>
 <hr />
-<h2 id="virtualization-with-mismatched-page-sizes">4.12 Virtualization
+<h2 id="section-4.12">4.12 Virtualization
 with Mismatched Page Sizes</h2>
 <p>When running virtual machines, the guest OS and hypervisor may use
 different page sizes at different translation stages. Understanding how
@@ -4515,7 +4219,7 @@ Guest 4KB, EPT 2MB          28,000        8%
 Guest 2MB, EPT 2MB          42,000        3%
 Guest 2MB, EPT 4KB          12,000        35% (thrashing!)</code></pre>
 <hr />
-<h2 id="gpu-and-hardware-accelerator-mmus">4.13 GPU and Hardware
+<h2 id="section-4.13">4.13 GPU and Hardware
 Accelerator MMUs</h2>
 <p>Graphics Processing Units (GPUs) and other hardware accelerators have
 their own Memory Management Units with unique requirements and design
@@ -4525,8 +4229,9 @@ trade-offs compared to CPU MMUs.</p>
 pinned physical memory - OS pins memory pages (prevents swapping) - GPU
 uses physical addresses directly - Simple but inflexible</p>
 
-<figure id="fig-4-8">
-<svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-4-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -4608,7 +4313,8 @@ uses physical addresses directly - Simple but inflexible</p>
   <text x="450" y="541" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">Key: CPU TLB = per-core, tiny, fully coherent.  GPU MMU = shared hierarchy, large reach, but costly on miss.</text>
   <text x="450" y="558" text-anchor="middle" font-size="11" font-weight="normal" fill="#B0BEC5">NVIDIA H100: 132 SMs × 32-entry L1 + shared L2.  AMD MI300X: 228 CUs with similar 2-level hierarchy.</text>
 </svg>
-<figcaption><strong>Figure 4.8:</strong> GPU MMU architecture versus CPU TLB. CPUs use per-core, fully-coherent hardware-managed TLBs with ASID isolation. GPU MMUs use a shared two-level hierarchy (per-SM L1 + shared L2) with hardware broadcast shootdown via NVSwitch, but a TLB miss incurs a full PCIe page fault at 25× CPU miss latency.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 4.8:</strong> GPU MMU architecture versus CPU TLB. CPUs use per-core, fully-coherent hardware-managed TLBs with ASID isolation. GPU MMUs use a shared two-level hierarchy (per-SM L1 + shared L2) with hardware broadcast shootdown via NVSwitch, but a TLB miss incurs a full PCIe page fault at 25× CPU miss latency.</figcaption>
 </figure>
 
 <p><strong>Problems:</strong> - Limits memory oversubscription -
@@ -4852,7 +4558,7 @@ Discrete GPU, with prefetch    45 ms     0
 Integrated GPU (Apple M1)      28 ms     0 (unified memory)</code></pre>
 <hr />
 
-<h2 id="chapter-4-summary">4.14 Chapter Summary</h2>
+<h2 id="section-4.14">4.14 Chapter Summary</h2>
 <p>Chapter 4 explored the Translation Lookaside Buffer as the performance linchpin of every virtual memory system. Unlike caches that store data, the TLB stores virtual-to-physical address translations, allowing the CPU to bypass the multi-level page table walk on every memory reference. A TLB miss forces a hardware page table walk consuming 10–100 or more cycles, and when working sets exceed TLB capacity this penalty can dominate total execution time—making TLB behaviour a first-order performance concern for systems programmers.</p>
 <p>The architectural analysis revealed that modern processors deploy multi-level TLB hierarchies. The L1 TLB (typically 4–128 entries, 1-cycle lookup, fully associative) sits closest to the execution pipeline; the L2 unified STLB (512–4096 entries, 6–12 cycle lookup) provides a larger second-chance buffer. ARM's three-level hierarchy—micro-TLB, main TLB, and Walker Cache—illustrates how the same fundamental design challenge plays out differently across implementation families. Entry structure was dissected in detail: the physical frame number, permission bits (R/W/X), privilege level, dirty and accessed bits, and the critical context-tag fields that distinguish entries across address spaces.</p>
 <p>Three distinct mechanisms for suppressing TLB flush overhead were examined. Intel's PCID (Process Context Identifier, 12 bits) tags all TLB entries with a process identifier, allowing the processor to retain translations across context switches and invalidate selectively via INVLPG. ARM64's ASID (Address Space Identifier, 8 or 16 bits configurable) provides equivalent functionality with its TLBI instruction family. RISC-V supports ASIDs in a broadly compatible manner via the SATP CSR. Without these tags, every context switch flushes the entire TLB—an overhead measured in hundreds of microseconds on busy servers. In virtualised environments, ARM64's VMID extends the tagging scheme to two dimensions, permitting simultaneous retention of guest and hypervisor translations without mutual interference.</p>
@@ -4861,7 +4567,7 @@ Integrated GPU (Apple M1)      28 ms     0 (unified memory)</code></pre>
 <p>GPU and accelerator MMUs were examined as the chapter's final frontier. GPU L1 TLBs are small (64–128 entries per shader multiprocessor) but hundreds of them operate in parallel; a single miss from one warp can serialise the entire multiprocessor if it requires a page table walk. NVIDIA's UVM architecture and the Pichai coalescing mechanism represent the state of the art for GPU address translation at scale.</p>
 <p><strong>Chapter 5</strong> extends this analysis to I/O devices, examining how the IOMMU performs the same address translation function for DMA operations—and why the costs and design choices differ fundamentally when the entity requesting translation cannot tolerate page faults or handle TLB misses in software.</p>
 
-<h2 id="chapter-4-references">References</h2>
+<h2 id="section-4.15">References</h2>
 <h3 id="general-tlb-architecture-and-design">General TLB Architecture and Design</h3>
 <ol type="1">
 <li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures
@@ -5242,66 +4948,22 @@ optimizations]</p></li>
                 "file": "chapter-04-WITH-FIGURES.html",
                 "short": "Translation Lookaside Buffer (TLB) - Deep Dive",
                 "sections": [
-                      {
-                            "text": "4.1 Introduction: The Most Critical Cache You've Never Heard Of",
-                            "id": "introduction-the-most-critical-cache-youve-never-heard-of"
-                      },
-                      {
-                            "text": "4.2 TLB Architecture and Organization",
-                            "id": "tlb-architecture-and-organization"
-                      },
-                      {
-                            "text": "4.3 TLB Management: Hardware vs Software",
-                            "id": "tlb-management-hardware-vs-software"
-                      },
-                      {
-                            "text": "4.4 Address Space Identifiers: ASID, PCID, and VMID",
-                            "id": "address-space-identifiers-asid-pcid-and-vmid"
-                      },
-                      {
-                            "text": "4.5 TLB Operations and Instructions",
-                            "id": "tlb-operations-and-instructions"
-                      },
-                      {
-                            "text": "4.6 Large Pages and TLB Coverage",
-                            "id": "large-pages-and-tlb-coverage"
-                      },
-                      {
-                            "text": "4.7 Multicore TLB Coherency",
-                            "id": "multicore-tlb-coherency"
-                      },
-                      {
-                            "text": "4.8 Platform-Specific TLB Implementations",
-                            "id": "platform-specific-tlb-implementations"
-                      },
-                      {
-                            "text": "4.9 Alternative Page Table Structures and TLB Implications",
-                            "id": "alternative-page-table-structures-and-tlb-implications"
-                      },
-                      {
-                            "text": "4.10 Self-Modifying Code and Instruction/Data Coherency",
-                            "id": "self-modifying-code-and-instructiondata-coherency"
-                      },
-                      {
-                            "text": "4.11 Multithreading and TLB Sharing",
-                            "id": "multithreading-and-tlb-sharing"
-                      },
-                      {
-                            "text": "4.12 Virtualization with Mismatched Page Sizes",
-                            "id": "virtualization-with-mismatched-page-sizes"
-                      },
-                      {
-                            "text": "4.13 GPU and Hardware Accelerator MMUs",
-                            "id": "gpu-and-hardware-accelerator-mmus"
-                      },
-                      {
-                            "text": "4.14 Chapter Summary",
-                            "id": "chapter-4-summary"
-                      },
-                      {
-                            "text": "References",
-                            "id": "chapter-4-references"
-                      }
+                      {"text": "4.1 Introduction: The Most Critical Cache You've Never Heard Of", "id": "section-4.1"},
+                      {"text": "4.2 TLB Architecture and Organization", "id": "section-4.2"},
+                      {"text": "4.3 TLB Management: Hardware vs Software", "id": "section-4.3"},
+                      {"text": "4.4 Address Space Identifiers: ASID, PCID, and VMID", "id": "section-4.4"},
+                      {"text": "4.5 TLB Operations and Instructions", "id": "section-4.5"},
+                      {"text": "4.6 Large Pages and TLB Coverage", "id": "section-4.6"},
+                      {"text": "4.7 Multicore TLB Coherency", "id": "section-4.7"},
+                      {"text": "4.8 Platform-Specific TLB Implementations", "id": "section-4.8"},
+                      {"text": "4.9 Alternative Page Table Structures and TLB Implications", "id": "section-4.9"},
+                      {"text": "4.10 Self-Modifying Code and Instruction/Data Coherency", "id": "section-4.10"},
+                      {"text": "4.11 Multithreading and TLB Sharing", "id": "section-4.11"},
+                      {"text": "4.12 Virtualization with Mismatched Page Sizes", "id": "section-4.12"},
+                      {"text": "4.13 GPU and Hardware Accelerator MMUs", "id": "section-4.13"},
+                      {"text": "4.14 Chapter Summary", "id": "section-4.14"},
+                      {"text": "References", "id": "section-4.15"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

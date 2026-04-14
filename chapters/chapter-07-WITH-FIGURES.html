@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 7: Page Faults and Exception Handling</title>
   <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -152,80 +153,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -773,346 +708,27 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-7-page-faults-and-exception-handling"
-id="toc-chapter-7-page-faults-and-exception-handling">Chapter 7: Page
-Faults and Exception Handling</a>
-<ul>
-<li><a href="#introduction-when-address-translation-fails"
-id="toc-introduction-when-address-translation-fails">7.1 Introduction:
-When Address Translation Fails</a>
-<ul>
-<li><a href="#page-faults-are-the-enforcement-mechanism"
-id="toc-page-faults-are-the-enforcement-mechanism">1. Page Faults Are
-the Enforcement Mechanism</a></li>
-<li><a href="#page-faults-are-on-the-critical-path"
-id="toc-page-faults-are-on-the-critical-path">2. Page Faults Are on the
-Critical Path</a></li>
-<li><a href="#page-faults-are-security-boundaries"
-id="toc-page-faults-are-security-boundaries">3. Page Faults Are Security
-Boundaries</a></li>
-<li><a href="#page-faults-are-debugging-windows"
-id="toc-page-faults-are-debugging-windows">4. Page Faults Are Debugging
-Windows</a></li>
-<li><a href="#what-this-chapter-covers"
-id="toc-what-this-chapter-covers">What This Chapter Covers</a></li>
-<li><a href="#what-we-exclude" id="toc-what-we-exclude">What We
-Exclude</a></li>
-</ul></li>
-<li><a href="#page-fault-fundamentals"
-id="toc-page-fault-fundamentals">7.2 Page Fault Fundamentals</a>
-<ul>
-<li><a href="#what-is-a-page-fault" id="toc-what-is-a-page-fault">7.2.1
-What is a Page Fault?</a></li>
-<li><a href="#page-fault-causes" id="toc-page-fault-causes">7.2.2 Page
-Fault Causes</a></li>
-<li><a href="#page-fault-types" id="toc-page-fault-types">7.2.3 Page
-Fault Types</a></li>
-<li><a href="#hardware-vs-software-components"
-id="toc-hardware-vs-software-components">7.2.4 Hardware vs Software
-Components</a></li>
-<li><a href="#page-fault-in-the-context-of-address-translation"
-id="toc-page-fault-in-the-context-of-address-translation">7.2.5 Page
-Fault in the Context of Address Translation</a></li>
-</ul></li>
-<li><a href="#x86-64-page-faults-pf" id="toc-x86-64-page-faults-pf">7.3
-x86-64 Page Faults (#PF)</a>
-<ul>
-<li><a href="#page-fault-exception-pf-vector-14"
-id="toc-page-fault-exception-pf-vector-14">7.3.1 Page Fault Exception
-(#PF, Vector 14)</a></li>
-<li><a href="#page-fault-error-code"
-id="toc-page-fault-error-code">7.3.2 Page Fault Error Code</a></li>
-<li><a href="#cr2-register-the-faulting-address"
-id="toc-cr2-register-the-faulting-address">7.3.3 CR2 Register: The
-Faulting Address</a></li>
-<li><a href="#page-fault-handler-flow"
-id="toc-page-fault-handler-flow">7.3.4 Page Fault Handler Flow</a></li>
-<li><a href="#common-x86-64-page-fault-scenarios"
-id="toc-common-x86-64-page-fault-scenarios">7.3.5 Common x86-64 Page
-Fault Scenarios</a></li>
-<li><a href="#x86-64-error-code-summary-table"
-id="toc-x86-64-error-code-summary-table">7.3.6 x86-64 Error Code Summary
-Table</a></li>
-</ul></li>
-<li><a href="#arm64-data-and-instruction-aborts"
-id="toc-arm64-data-and-instruction-aborts">7.4 ARM64 Data and
-Instruction Aborts</a>
-<ul>
-<li><a href="#arm64-synchronous-exception-model"
-id="toc-arm64-synchronous-exception-model">7.4.1 ARM64 Synchronous
-Exception Model</a></li>
-<li><a href="#data-abort-vs-instruction-abort"
-id="toc-data-abort-vs-instruction-abort">7.4.2 Data Abort vs Instruction
-Abort</a></li>
-<li><a href="#exception-syndrome-register-esr_el1"
-id="toc-exception-syndrome-register-esr_el1">7.4.3 Exception Syndrome
-Register (ESR_EL1)</a></li>
-<li><a href="#fault-status-codes-dfscifsc"
-id="toc-fault-status-codes-dfscifsc">7.4.4 Fault Status Codes
-(DFSC/IFSC)</a></li>
-<li><a href="#reading-exception-information"
-id="toc-reading-exception-information">7.4.5 Reading Exception
-Information</a></li>
-<li><a href="#arm64-exception-scenarios"
-id="toc-arm64-exception-scenarios">7.4.6 ARM64 Exception
-Scenarios</a></li>
-<li><a href="#pan-privileged-access-never"
-id="toc-pan-privileged-access-never">7.4.7 PAN (Privileged Access
-Never)</a></li>
-<li><a href="#arm-realm-management-extension-rme-faults"
-id="toc-arm-realm-management-extension-rme-faults">7.4.8 ARM Realm
-Management Extension (RME) Faults</a></li>
-</ul></li>
-<li><a href="#risc-v-page-faults" id="toc-risc-v-page-faults">7.5 RISC-V
-Page Faults</a>
-<ul>
-<li><a href="#software-managed-tlb-and-page-faults"
-id="toc-software-managed-tlb-and-page-faults">7.5.1 Software-Managed TLB
-and Page Faults</a></li>
-<li><a href="#risc-v-exception-codes"
-id="toc-risc-v-exception-codes">7.5.2 RISC-V Exception Codes</a></li>
-<li><a href="#risc-v-exception-registers"
-id="toc-risc-v-exception-registers">7.5.3 RISC-V Exception
-Registers</a></li>
-<li><a href="#risc-v-page-table-walk-software-implementation"
-id="toc-risc-v-page-table-walk-software-implementation">7.5.4 RISC-V
-Page Table Walk (Software Implementation)</a></li>
-<li><a href="#risc-v-tlb-management"
-id="toc-risc-v-tlb-management">7.5.5 RISC-V TLB Management</a></li>
-<li><a href="#risc-v-page-fault-handler-flow"
-id="toc-risc-v-page-fault-handler-flow">7.5.6 RISC-V Page Fault Handler
-Flow</a></li>
-<li><a href="#risc-v-page-fault-scenarios"
-id="toc-risc-v-page-fault-scenarios">7.5.7 RISC-V Page Fault
-Scenarios</a></li>
-<li><a href="#risc-v-physical-memory-protection-pmp"
-id="toc-risc-v-physical-memory-protection-pmp">7.5.8 RISC-V Physical
-Memory Protection (PMP)</a></li>
-<li><a href="#risc-v-performance-considerations"
-id="toc-risc-v-performance-considerations">7.5.9 RISC-V Performance
-Considerations</a></li>
-</ul></li>
-<li><a href="#tlb-related-exceptions"
-id="toc-tlb-related-exceptions">7.6 TLB-Related Exceptions</a>
-<ul>
-<li><a href="#tlb-misses-on-software-managed-tlbs"
-id="toc-tlb-misses-on-software-managed-tlbs">7.6.1 TLB Misses on
-Software-Managed TLBs</a></li>
-<li><a href="#tlb-multi-hit-exceptions"
-id="toc-tlb-multi-hit-exceptions">7.6.2 TLB Multi-Hit
-Exceptions</a></li>
-<li><a href="#tlb-shootdown-and-inter-processor-interrupts-ipis"
-id="toc-tlb-shootdown-and-inter-processor-interrupts-ipis">7.6.3 TLB
-Shootdown and Inter-Processor Interrupts (IPIs)</a></li>
-<li><a href="#tlb-maintenance-instructions-and-exceptions"
-id="toc-tlb-maintenance-instructions-and-exceptions">7.6.4 TLB
-Maintenance Instructions and Exceptions</a></li>
-</ul></li>
-<li><a href="#page-table-walk-failures"
-id="toc-page-table-walk-failures">7.7 Page Table Walk Failures</a>
-<ul>
-<li><a href="#multi-level-page-table-failures"
-id="toc-multi-level-page-table-failures">7.7.1 Multi-Level Page Table
-Failures</a></li>
-<li><a href="#invalid-page-table-pointers"
-id="toc-invalid-page-table-pointers">7.7.2 Invalid Page Table
-Pointers</a></li>
-<li><a href="#nested-page-table-failures"
-id="toc-nested-page-table-failures">7.7.3 Nested Page Table
-Failures</a></li>
-<li><a href="#reserved-bits-and-future-proofing"
-id="toc-reserved-bits-and-future-proofing">7.7.4 Reserved Bits and
-Future-Proofing</a></li>
-</ul></li>
-<li><a href="#page-overlapping-and-aliasing-faults"
-id="toc-page-overlapping-and-aliasing-faults">7.8 Page Overlapping and
-Aliasing Faults</a>
-<ul>
-<li><a href="#what-is-page-aliasing"
-id="toc-what-is-page-aliasing">7.8.1 What is Page Aliasing?</a></li>
-<li><a href="#x86-64-pat-page-attribute-table-conflicts"
-id="toc-x86-64-pat-page-attribute-table-conflicts">7.8.2 x86-64 PAT
-(Page Attribute Table) Conflicts</a></li>
-<li><a href="#arm64-memory-attribute-conflicts"
-id="toc-arm64-memory-attribute-conflicts">7.8.3 ARM64 Memory Attribute
-Conflicts</a></li>
-<li><a href="#virtual-cache-aliasing-vipt-caches"
-id="toc-virtual-cache-aliasing-vipt-caches">7.8.4 Virtual Cache Aliasing
-(VIPT Caches)</a></li>
-<li><a href="#detecting-and-preventing-virtual-aliasing"
-id="toc-detecting-and-preventing-virtual-aliasing">7.8.5 Detecting and
-Preventing Virtual Aliasing</a></li>
-<li><a href="#security-rowhammer-and-aliasing-attacks"
-id="toc-security-rowhammer-and-aliasing-attacks">7.8.6 Security:
-Rowhammer and Aliasing Attacks</a></li>
-<li><a href="#shared-memory-and-intentional-aliasing"
-id="toc-shared-memory-and-intentional-aliasing">7.8.7 Shared Memory and
-Intentional Aliasing</a></li>
-</ul></li>
-<li><a href="#permission-violations" id="toc-permission-violations">7.9
-Permission Violations</a>
-<ul>
-<li><a href="#readwriteexecute-permission-faults"
-id="toc-readwriteexecute-permission-faults">7.9.1 Read/Write/Execute
-Permission Faults</a></li>
-<li><a href="#usersupervisor-violations"
-id="toc-usersupervisor-violations">7.9.2 User/Supervisor
-Violations</a></li>
-<li><a href="#smep-supervisor-mode-execution-prevention"
-id="toc-smep-supervisor-mode-execution-prevention">7.9.3 SMEP
-(Supervisor Mode Execution Prevention)</a></li>
-<li><a href="#smap-supervisor-mode-access-prevention"
-id="toc-smap-supervisor-mode-access-prevention">7.9.4 SMAP (Supervisor
-Mode Access Prevention)</a></li>
-<li><a href="#arm-pan-privileged-access-never"
-id="toc-arm-pan-privileged-access-never">7.9.5 ARM PAN (Privileged
-Access Never)</a></li>
-<li><a href="#memory-protection-keys-mpkpku"
-id="toc-memory-protection-keys-mpkpku">7.9.6 Memory Protection Keys
-(MPK/PKU)</a></li>
-</ul></li>
-<li><a href="#page-fault-handling-flow"
-id="toc-page-fault-handling-flow">7.10 Page Fault Handling Flow</a>
-<ul>
-<li><a href="#hardware-steps" id="toc-hardware-steps">7.10.1 Hardware
-Steps</a></li>
-<li><a href="#software-handler-entry"
-id="toc-software-handler-entry">7.10.2 Software Handler Entry</a></li>
-<li><a href="#finding-the-vma-virtual-memory-area"
-id="toc-finding-the-vma-virtual-memory-area">7.10.3 Finding the VMA
-(Virtual Memory Area)</a></li>
-<li><a href="#permission-checking" id="toc-permission-checking">7.10.4
-Permission Checking</a></li>
-<li><a href="#demand-paging-implementation"
-id="toc-demand-paging-implementation">7.10.5 Demand Paging
-Implementation</a></li>
-<li><a href="#copy-on-write-cow-implementation"
-id="toc-copy-on-write-cow-implementation">7.10.6 Copy-on-Write (COW)
-Implementation</a></li>
-<li><a href="#stack-growth-handling"
-id="toc-stack-growth-handling">7.10.7 Stack Growth Handling</a></li>
-<li><a href="#complete-page-fault-handler"
-id="toc-complete-page-fault-handler">7.10.8 Complete Page Fault
-Handler</a></li>
-<li><a href="#swap-handling" id="toc-swap-handling">7.10.9 Swap
-Handling</a></li>
-<li><a href="#returning-from-page-fault"
-id="toc-returning-from-page-fault">7.10.10 Returning from Page
-Fault</a></li>
-<li><a href="#hardware-steps-architecture-independent"
-id="toc-hardware-steps-architecture-independent">7.10.1 Hardware Steps
-(Architecture-Independent)</a></li>
-<li><a href="#software-handler-steps"
-id="toc-software-handler-steps">7.10.2 Software Handler Steps</a></li>
-<li><a href="#demand-paging-implementation-1"
-id="toc-demand-paging-implementation-1">7.10.3 Demand Paging
-Implementation</a></li>
-<li><a href="#copy-on-write-cow-implementation-1"
-id="toc-copy-on-write-cow-implementation-1">7.10.4 Copy-on-Write (COW)
-Implementation</a></li>
-<li><a href="#swap-in-major-page-fault"
-id="toc-swap-in-major-page-fault">7.10.5 Swap-In (Major Page
-Fault)</a></li>
-<li><a href="#stack-growth" id="toc-stack-growth">7.10.6 Stack
-Growth</a></li>
-<li><a href="#invalid-fault-handling"
-id="toc-invalid-fault-handling">7.10.7 Invalid Fault Handling</a></li>
-<li><a href="#complete-page-fault-handler-integrated"
-id="toc-complete-page-fault-handler-integrated">7.10.8 Complete Page
-Fault Handler (Integrated)</a></li>
-</ul></li>
-<li><a href="#performance-implications"
-id="toc-performance-implications">7.11 Performance Implications</a>
-<ul>
-<li><a href="#page-fault-cost-breakdown"
-id="toc-page-fault-cost-breakdown">7.11.1 Page Fault Cost
-Breakdown</a></li>
-<li><a href="#page-fault-rate-impact"
-id="toc-page-fault-rate-impact">7.11.2 Page Fault Rate Impact</a></li>
-<li><a href="#real-world-page-fault-profiling"
-id="toc-real-world-page-fault-profiling">7.11.3 Real-World Page Fault
-Profiling</a></li>
-<li><a href="#reducing-page-faults" id="toc-reducing-page-faults">7.11.4
-Reducing Page Faults</a></li>
-<li><a href="#page-fault-performance-anti-patterns"
-id="toc-page-fault-performance-anti-patterns">7.11.5 Page Fault
-Performance Anti-Patterns</a></li>
-<li><a href="#page-fault-performance-monitoring"
-id="toc-page-fault-performance-monitoring">7.11.6 Page Fault Performance
-Monitoring</a></li>
-</ul></li>
-<li><a href="#historical-architectures-sparc-mips-powerpc"
-id="toc-historical-architectures-sparc-mips-powerpc">7.12 Historical
-Architectures: SPARC, MIPS, PowerPC</a>
-<ul>
-<li><a href="#sparc-architecture-sun-microsystems"
-id="toc-sparc-architecture-sun-microsystems">7.12.1 SPARC Architecture
-(Sun Microsystems)</a></li>
-<li><a href="#mips-architecture" id="toc-mips-architecture">7.12.2 MIPS
-Architecture</a></li>
-<li><a href="#powerpc-architecture-ibmmotorola"
-id="toc-powerpc-architecture-ibmmotorola">7.12.3 PowerPC Architecture
-(IBM/Motorola)</a></li>
-<li><a href="#comparison-table" id="toc-comparison-table">7.12.4
-Comparison Table</a></li>
-<li><a href="#lessons-learned" id="toc-lessons-learned">7.12.5 Lessons
-Learned</a></li>
-</ul></li>
-<li><a href="#architecture-comparison"
-id="toc-architecture-comparison">7.13 Architecture Comparison</a>
-<ul>
-<li><a href="#fault-detection-and-reporting"
-id="toc-fault-detection-and-reporting">7.13.1 Fault Detection and
-Reporting</a></li>
-<li><a href="#hardware-vs-software-responsibility"
-id="toc-hardware-vs-software-responsibility">7.13.2 Hardware vs Software
-Responsibility</a></li>
-<li><a href="#protection-mechanisms"
-id="toc-protection-mechanisms">7.13.3 Protection Mechanisms</a></li>
-<li><a href="#exception-priority" id="toc-exception-priority">7.13.4
-Exception Priority</a></li>
-<li><a href="#performance-characteristics"
-id="toc-performance-characteristics">7.13.5 Performance
-Characteristics</a></li>
-</ul></li>
-<li><a href="#debugging-page-faults" id="toc-debugging-page-faults">7.14
-Debugging Page Faults</a>
-<ul>
-<li><a href="#common-page-fault-patterns"
-id="toc-common-page-fault-patterns">7.14.1 Common Page Fault
-Patterns</a></li>
-<li><a href="#reading-kernel-oops-messages"
-id="toc-reading-kernel-oops-messages">7.14.2 Reading Kernel Oops
-Messages</a></li>
-<li><a href="#gdb-debugging-of-page-faults"
-id="toc-gdb-debugging-of-page-faults">7.14.3 GDB Debugging of Page
-Faults</a></li>
-<li><a href="#using-straceltrace" id="toc-using-straceltrace">7.14.4
-Using strace/ltrace</a></li>
-<li><a href="#performance-debugging"
-id="toc-performance-debugging">7.14.5 Performance Debugging</a></li>
-</ul></li>
-<li><a href="#advanced-topics-and-summary"
-id="toc-advanced-topics-and-summary">7.15 Advanced Topics and
-Summary</a>
-<ul>
-<li><a href="#asynchronous-page-faults-virtualization"
-id="toc-asynchronous-page-faults-virtualization">7.15.1 Asynchronous
-Page Faults (Virtualization)</a></li>
-<li><a href="#user-space-page-fault-handling-userfaultfd"
-id="toc-user-space-page-fault-handling-userfaultfd">7.15.2 User-Space
-Page Fault Handling (userfaultfd)</a></li>
-<li><a href="#memory-error-handling"
-id="toc-memory-error-handling">7.15.3 Memory Error Handling</a></li>
-<li><a href="#summary" id="toc-summary">7.15.4 Summary</a></li>
-<li><a href="#references" id="toc-references">7.15.5 References</a></li>
-</ul></li>
-</ul></li>
+<li><a href="#section-7.1">7.1 Introduction: When Address Translation Fails</a></li>
+<li><a href="#section-7.2">7.2 Page Fault Fundamentals</a></li>
+<li><a href="#section-7.3">7.3 x86-64 Page Faults (#PF)</a></li>
+<li><a href="#section-7.4">7.4 ARM64 Data and Instruction Aborts</a></li>
+<li><a href="#section-7.5">7.5 RISC-V Page Faults</a></li>
+<li><a href="#section-7.6">7.6 TLB-Related Exceptions</a></li>
+<li><a href="#section-7.7">7.7 Page Table Walk Failures</a></li>
+<li><a href="#section-7.8">7.8 Page Overlapping and Aliasing Faults</a></li>
+<li><a href="#section-7.9">7.9 Permission Violations</a></li>
+<li><a href="#section-7.10">7.10 Page Fault Handling Flow</a></li>
+<li><a href="#section-7.11">7.11 Performance Implications</a></li>
+<li><a href="#section-7.12">7.12 Historical Architectures: SPARC, MIPS, PowerPC</a></li>
+<li><a href="#section-7.13">7.13 Architecture Comparison</a></li>
+<li><a href="#section-7.14">7.14 Debugging Page Faults</a></li>
+<li><a href="#section-7.15">7.15 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 <h1 id="chapter-7-page-faults-and-exception-handling">Chapter 7: Page
 Faults and Exception Handling</h1>
-<h2 id="introduction-when-address-translation-fails">7.1 Introduction:
+<h2 id="section-7.1">7.1 Introduction:
 When Address Translation Fails</h2>
 <p><strong>Building on Previous Chapters:</strong></p>
 <p>In Chapter 3 (Page Tables), we explored how page table structures map
@@ -1322,7 +938,7 @@ chapters—page tables, TLBs, IOMMUs, and protection—into a cohesive
 system where hardware and software cooperate to provide secure,
 flexible, and performant virtual memory.</p>
 <hr />
-<h2 id="page-fault-fundamentals">7.2 Page Fault Fundamentals</h2>
+<h2 id="section-7.2">7.2 Page Fault Fundamentals</h2>
 <figure id="fig-7-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
 <marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#5E81AC"/></marker>
@@ -1680,14 +1296,15 @@ They're a communication mechanism between hardware (which detects
 anomalies during translation) and software (which has the policy to
 handle them).</p>
 <hr />
-<h2 id="x86-64-page-faults-pf">7.3 x86-64 Page Faults (#PF)</h2>
+<h2 id="section-7.3">7.3 x86-64 Page Faults (#PF)</h2>
 <p>The x86-64 architecture has one of the most sophisticated page fault
 mechanisms, refined over decades from the original 80386. Understanding
 x86-64 page faults in detail provides a reference point for comparing
 other architectures.</p>
 
-<figure id="fig-7-2" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<figure id="fig-7-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
 <defs>
   <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
   <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -1839,7 +1456,8 @@ other architectures.</p>
 <text x="66" y="512" style="font-size:12px;fill:#444;">• Swap: read from swap device, map</text>
 <text x="66" y="527" style="font-size:12px;fill:#444;">• File-backed: read from VFS, map</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.2:</strong> The x86-64 page fault error code bit field and decision tree. Bit 0 (P) distinguishes not-present faults from protection violations; bits 1–4 encode write/read, user/supervisor, reserved-bit, and instruction-fetch faults.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.2:</strong> The x86-64 page fault error code bit field and decision tree. Bit 0 (P) distinguishes not-present faults from protection violations; bits 1–4 encode write/read, user/supervisor, reserved-bit, and instruction-fetch faults.</figcaption>
 </figure>
 
 
@@ -2431,7 +2049,7 @@ Table</h3>
 </tbody>
 </table>
 <hr />
-<h2 id="arm64-data-and-instruction-aborts">7.4 ARM64 Data and
+<h2 id="section-7.4">7.4 ARM64 Data and
 Instruction Aborts</h2>
 <p>ARM64 uses a different exception model than x86-64. Instead of a
 single "page fault" exception, ARM64 has separate exception types for
@@ -2959,7 +2577,7 @@ workloads</li>
 </tbody>
 </table>
 <hr />
-<h2 id="risc-v-page-faults">7.5 RISC-V Page Faults</h2>
+<h2 id="section-7.5">7.5 RISC-V Page Faults</h2>
 <p>RISC-V takes a fundamentally different approach to page faults than
 x86-64 or ARM64. While x86-64 and ARM64 have hardware page table walkers
 that automatically traverse page table hierarchies, RISC-V delegates
@@ -3422,7 +3040,7 @@ Large working sets, many TLB misses - <strong>Databases:</strong> Random
 access patterns, poor TLB hit rates - <strong>Virtualization:</strong>
 Nested page tables amplify TLB miss cost</p>
 <hr />
-<h2 id="tlb-related-exceptions">7.6 TLB-Related Exceptions</h2>
+<h2 id="section-7.6">7.6 TLB-Related Exceptions</h2>
 <p>While most page faults relate to page table entries or permissions,
 some exceptions arise specifically from TLB behavior. These TLB-related
 exceptions reveal the interaction between the TLB cache and the page
@@ -3433,8 +3051,9 @@ Software-Managed TLBs</h3>
 fault exception because there's no hardware walker. This design choice
 has interesting implications:</p>
 
-<figure id="fig-7-3">
-<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-7-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -3529,7 +3148,8 @@ has interesting implications:</p>
   <text x="635" y="432" text-anchor="start" font-size="12" font-weight="normal" fill="#212121">Often indicates kernel bug</text>
   <text x="450" y="496" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">x86-64 reports all via #PF (error code distinguishes).  ARM64: Data Abort / Instruction Abort.  RISC-V: 3 separate cause codes (12/13/15).</text>
 </svg>
-<figcaption><strong>Figure 7.3:</strong> TLB-related exception taxonomy. Address translation failures fall into three categories: TLB miss (handled transparently in hardware for x86-64/ARM64, by OS trap in RISC-V), page fault (OS must intervene), and walk failure (often fatal). Each category requires a different OS handler response.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.3:</strong> TLB-related exception taxonomy. Address translation failures fall into three categories: TLB miss (handled transparently in hardware for x86-64/ARM64, by OS trap in RISC-V), page fault (OS must intervene), and walk failure (often fatal). Each category requires a different OS handler response.</figcaption>
 </figure>
 
 <p><strong>Fast Path TLB Miss Handler:</strong></p>
@@ -3765,7 +3385,7 @@ sfence.vma x5, x6  ; x5=VA, x6=ASID
 <span id="cb74-26"><a href="#cb74-26" aria-hidden="true" tabindex="-1"></a>    flush_tlb_mm_range<span class="op">(</span>current<span class="op">-&gt;</span>mm<span class="op">,</span> va<span class="op">,</span> va <span class="op">+</span> PAGE_SIZE<span class="op">);</span></span>
 <span id="cb74-27"><a href="#cb74-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <hr />
-<h2 id="page-table-walk-failures">7.7 Page Table Walk Failures</h2>
+<h2 id="section-7.7">7.7 Page Table Walk Failures</h2>
 <p>Page faults can occur at any level of the page table hierarchy.
 Understanding where the walk failed helps diagnose the problem.</p>
 <h3 id="multi-level-page-table-failures">7.7.1 Multi-Level Page Table
@@ -3992,7 +3612,7 @@ If any reserved bit (51:M) is set to 1:
 <span id="cb84-13"><a href="#cb84-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb84-14"><a href="#cb84-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <hr />
-<h2 id="page-overlapping-and-aliasing-faults">7.8 Page Overlapping and
+<h2 id="section-7.8">7.8 Page Overlapping and
 Aliasing Faults</h2>
 <p>Page overlapping occurs when multiple virtual addresses map to the
 same physical page. While this is sometimes intentional (shared memory,
@@ -4319,7 +3939,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb100-1"><a href="#cb1
 (cached/uncached) - Same permissions (both writable, or both read-only)
 - If VIPT cache: VAs must not alias in cache</p>
 <hr />
-<h2 id="permission-violations">7.9 Permission Violations</h2>
+<h2 id="section-7.9">7.9 Permission Violations</h2>
 <p>Permission violations are page faults caused by accessing memory in a
 way that violates the protection bits in the page table entry. These
 faults enforce the security boundaries we studied in Chapter 6.</p>
@@ -4635,14 +4255,15 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb115-1"><a href="#cb1
 <span id="cb115-13"><a href="#cb115-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb115-14"><a href="#cb115-14" aria-hidden="true" tabindex="-1"></a><span class="co">// This makes MPK ideal for frequent permission changes</span></span></code></pre></div>
 <hr />
-<h2 id="page-fault-handling-flow">7.10 Page Fault Handling Flow</h2>
+<h2 id="section-7.10">7.10 Page Fault Handling Flow</h2>
 <p>Now that we've covered the different types of faults and exceptions,
 let's examine how operating systems actually handle page faults from
 start to finish. Understanding this flow ties together all the concepts
 from previous sections.</p>
 
-<figure id="fig-7-4" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
+<figure id="fig-7-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="580" viewBox="0 0 900 580">
 <defs>
   <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
   <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -4784,7 +4405,8 @@ from previous sections.</p>
 <text x="30" y="516" style="font-size:12px;fill:#444;">Pages are shared read-only at fork time; private copies are created lazily only when a process actually writes.</text>
 <text x="30" y="532" style="font-size:12px;fill:#444;">exec() immediately discards the mapping, so COW work is skipped entirely in the common fork+exec pattern.</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.4:</strong> Copy-on-Write fork sequence. Phase 1: fork() marks all pages read-only in both parent and child. Phase 2: a write triggers error code 0x0007 and enters do_wp_page(). Phase 3: a private copy is allocated and the child PTE is upgraded to read-write.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.4:</strong> Copy-on-Write fork sequence. Phase 1: fork() marks all pages read-only in both parent and child. Phase 2: a write triggers error code 0x0007 and enters do_wp_page(). Phase 3: a private copy is allocated and the child PTE is upgraded to read-write.</figcaption>
 </figure>
 
 
@@ -5769,13 +5391,14 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb142-1"><a href="#cb1
 <span id="cb142-76"><a href="#cb142-76" aria-hidden="true" tabindex="-1"></a><span class="co">/* Conceptual integration of Linux kernel page fault handler</span></span>
 <span id="cb142-77"><a href="#cb142-77" aria-hidden="true" tabindex="-1"></a><span class="co">   Reference: Linux kernel arch/x86/mm/fault.c, mm/memory.c */</span></span></code></pre></div>
 <hr />
-<h2 id="performance-implications">7.11 Performance Implications</h2>
+<h2 id="section-7.11">7.11 Performance Implications</h2>
 <p>Page faults are expensive. Understanding their performance impact is
 crucial for writing efficient systems software and diagnosing
 performance problems.</p>
 
-<figure id="fig-7-5" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-7-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs>
   <style>text{font-family:Arial,Helvetica,sans-serif;}</style>
   <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -5906,7 +5529,8 @@ performance problems.</p>
 <text x="630" y="528" style="font-size:12px;fill:#BF616A;text-anchor:middle;">Yes</text>
 <text x="800" y="528" style="font-size:12px;fill:#212121;text-anchor:middle;">rotational media read</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.5:</strong> Minor versus major page fault cost comparison. Minor faults resolve in 0.5–10 µs without I/O; major faults require a blocking device read and take 100 µs (SSD) to 15 ms (HDD), during which the faulting task is descheduled.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.5:</strong> Minor versus major page fault cost comparison. Minor faults resolve in 0.5–10 µs without I/O; major faults require a blocking device read and take 100 µs (SSD) to 15 ms (HDD), during which the faulting task is descheduled.</figcaption>
 </figure>
 
 
@@ -6257,7 +5881,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb158-1"><a href
 <span id="cb158-17"><a href="#cb158-17" aria-hidden="true" tabindex="-1"></a>                                            <span class="ex">^^^</span> High wait % ^^^</span>
 <span id="cb158-18"><a href="#cb158-18" aria-hidden="true" tabindex="-1"></a><span class="co"># System is thrashing!</span></span></code></pre></div>
 <hr />
-<h2 id="historical-architectures-sparc-mips-powerpc">7.12 Historical
+<h2 id="section-7.12">7.12 Historical
 Architectures: SPARC, MIPS, PowerPC</h2>
 <p>Understanding how historical architectures handled page faults
 provides valuable context for modern designs. These architectures
@@ -6708,13 +6332,14 @@ workloads
 </ul></li>
 </ol>
 <hr />
-<h2 id="architecture-comparison">7.13 Architecture Comparison</h2>
+<h2 id="section-7.13">7.13 Architecture Comparison</h2>
 <p>Having examined page faults across x86-64, ARM64, RISC-V, and
 historical architectures, let's compare their approaches
 systematically.</p>
 
-<figure id="fig-7-6">
-<svg width="900" height="530" viewBox="0 0 900 530" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-7-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="530" viewBox="0 0 900 530" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -6786,7 +6411,8 @@ systematically.</p>
   <rect x="20" y="466" width="860" height="26" rx="0" fill="#34495E"/>
   <text x="450" y="483" text-anchor="middle" font-size="12" font-weight="normal" fill="#FFFFFF">x86-64: single #PF, rich error code, PCID for ASID, KPTI post-Meltdown.  ARM64: separate Aborts, native EL2 hypervisor.  RISC-V: 3 codes, SW TLB fill.</text>
 </svg>
-<figcaption><strong>Figure 7.6:</strong> Page fault handling comparison: x86-64 vs ARM64 vs RISC-V. Key differences include exception name, fault address register (CR2 / FAR_EL1 / stval), error information encoding, TLB management approach, privilege level mechanism, and virtualisation fault handling.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 7.6:</strong> Page fault handling comparison: x86-64 vs ARM64 vs RISC-V. Key differences include exception name, fault address register (CR2 / FAR_EL1 / stval), error information encoding, TLB management approach, privilege level mechanism, and virtualisation fault handling.</figcaption>
 </figure>
 
 <h3 id="fault-detection-and-reporting">7.13.1 Fault Detection and
@@ -7135,7 +6761,7 @@ elsewhere
 </ul></li>
 </ol>
 <hr />
-<h2 id="debugging-page-faults">7.14 Debugging Page Faults</h2>
+<h2 id="section-7.14">7.14 Debugging Page Faults</h2>
 <p>Page faults are common sources of crashes and performance problems.
 Knowing how to diagnose them is essential.</p>
 <h3 id="common-page-fault-patterns">7.14.1 Common Page Fault
@@ -7327,7 +6953,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb189-1"><a href
 <span id="cb189-15"><a href="#cb189-15" aria-hidden="true" tabindex="-1"></a><span class="co"># → Likely initializing large arrays</span></span>
 <span id="cb189-16"><a href="#cb189-16" aria-hidden="true" tabindex="-1"></a><span class="co"># → Consider using calloc() or mmap(MAP_ANONYMOUS) to avoid faults</span></span></code></pre></div>
 <hr />
-<h2 id="advanced-topics-and-summary">7.15 Chapter Summary</h2>
+<h2 id="section-7.15">7.15 Chapter Summary</h2>
 <h3 id="asynchronous-page-faults-virtualization">7.15.1 Asynchronous
 Page Faults (Virtualization)</h3>
 <p>In virtualized environments, guest page faults can be made
@@ -7806,70 +7432,22 @@ performance issues related to page faults.</p></li>
                 "file": "chapter-07-WITH-FIGURES.html",
                 "short": "Page Faults and Exception Handling",
                 "sections": [
-                      {
-                            "text": "7.1 Introduction: When Address Translation Fails",
-                            "id": "introduction-when-address-translation-fails"
-                      },
-                      {
-                            "text": "7.2 Page Fault Fundamentals",
-                            "id": "page-fault-fundamentals"
-                      },
-                      {
-                            "text": "7.3 x86-64 Page Faults (#PF)",
-                            "id": "x86-64-page-faults-pf"
-                      },
-                      {
-                            "text": "7.4 ARM64 Data and Instruction Aborts",
-                            "id": "arm64-data-and-instruction-aborts"
-                      },
-                      {
-                            "text": "7.5 RISC-V Page Faults",
-                            "id": "risc-v-page-faults"
-                      },
-                      {
-                            "text": "7.6 TLB-Related Exceptions",
-                            "id": "tlb-related-exceptions"
-                      },
-                      {
-                            "text": "7.7 Page Table Walk Failures",
-                            "id": "page-table-walk-failures"
-                      },
-                      {
-                            "text": "7.8 Page Overlapping and Aliasing Faults",
-                            "id": "page-overlapping-and-aliasing-faults"
-                      },
-                      {
-                            "text": "7.9 Permission Violations",
-                            "id": "permission-violations"
-                      },
-                      {
-                            "text": "7.10 Page Fault Handling Flow",
-                            "id": "page-fault-handling-flow"
-                      },
-                      {
-                            "text": "7.11 Performance Implications",
-                            "id": "performance-implications"
-                      },
-                      {
-                            "text": "7.12 Historical Architectures: SPARC, MIPS, PowerPC",
-                            "id": "historical-architectures-sparc-mips-powerpc"
-                      },
-                      {
-                            "text": "7.13 Architecture Comparison",
-                            "id": "architecture-comparison"
-                      },
-                      {
-                            "text": "7.14 Debugging Page Faults",
-                            "id": "debugging-page-faults"
-                      },
-                      {
-                            "text": "7.15 Chapter Summary",
-                            "id": "advanced-topics-and-summary"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "7.1 Introduction: When Address Translation Fails", "id": "section-7.1"},
+                      {"text": "7.2 Page Fault Fundamentals", "id": "section-7.2"},
+                      {"text": "7.3 x86-64 Page Faults (#PF)", "id": "section-7.3"},
+                      {"text": "7.4 ARM64 Data and Instruction Aborts", "id": "section-7.4"},
+                      {"text": "7.5 RISC-V Page Faults", "id": "section-7.5"},
+                      {"text": "7.6 TLB-Related Exceptions", "id": "section-7.6"},
+                      {"text": "7.7 Page Table Walk Failures", "id": "section-7.7"},
+                      {"text": "7.8 Page Overlapping and Aliasing Faults", "id": "section-7.8"},
+                      {"text": "7.9 Permission Violations", "id": "section-7.9"},
+                      {"text": "7.10 Page Fault Handling Flow", "id": "section-7.10"},
+                      {"text": "7.11 Performance Implications", "id": "section-7.11"},
+                      {"text": "7.12 Historical Architectures: SPARC, MIPS, PowerPC", "id": "section-7.12"},
+                      {"text": "7.13 Architecture Comparison", "id": "section-7.13"},
+                      {"text": "7.14 Debugging Page Faults", "id": "section-7.14"},
+                      {"text": "7.15 Chapter Summary", "id": "section-7.15"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

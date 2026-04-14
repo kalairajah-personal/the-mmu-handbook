@@ -6,153 +6,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 6: Memory Protection and Access Control</title>
   <style>
-html {
-  color: #1a1a1a;
-  background-color: #fdfdfd;
-}
-body {
-  margin: 0 auto;
-  max-width: 36em;
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-top: 50px;
-  padding-bottom: 50px;
-  hyphens: auto;
-  overflow-wrap: break-word;
-  text-rendering: optimizeLegibility;
-  font-kerning: normal;
-}
-@media (max-width: 600px) {
-  body {
-    font-size: 0.9em;
-    padding: 12px;
-  }
-  h1 {
-    font-size: 1.8em;
-  }
-}
-@media print {
-  html {
-    background-color: white;
-  }
-  body {
-    background-color: transparent;
-    color: black;
-    font-size: 12pt;
-  }
-  p, h2, h3 {
-    orphans: 3;
-    widows: 3;
-  }
-  h2, h3, h4 {
-    page-break-after: avoid;
-  }
-}
-p {
-  margin: 1em 0;
-}
-a {
-  color: #1a1a1a;
-}
-a:visited {
-  color: #1a1a1a;
-}
-img {
-  max-width: 100%;
-}
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 1.4em;
-}
-h5, h6 {
-  font-size: 1em;
-  font-style: italic;
-}
-h6 {
-  font-weight: normal;
-}
-ol, ul {
-  padding-left: 1.7em;
-  margin-top: 1em;
-}
-li > ol, li > ul {
-  margin-top: 0;
-}
-blockquote {
-  margin: 1em 0 1em 1.7em;
-  padding-left: 1em;
-  border-left: 2px solid #e6e6e6;
-  color: #606060;
-}
-code {
-  font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-  font-size: 85%;
-  margin: 0;
-  hyphens: manual;
-}
-pre {
-  margin: 1em 0;
-  overflow: auto;
-}
-pre code {
-  padding: 0;
-  overflow: visible;
-  overflow-wrap: normal;
-}
-.sourceCode {
- background-color: transparent;
- overflow: visible;
-}
-hr {
-  background-color: #1a1a1a;
-  border: none;
-  height: 1px;
-  margin: 1em 0;
-}
-table {
-  margin: 1em 0;
-  border-collapse: collapse;
-  width: 100%;
-  overflow-x: auto;
-  display: block;
-  font-variant-numeric: lining-nums tabular-nums;
-}
-table caption {
-  margin-bottom: 0.75em;
-}
-tbody {
-  margin-top: 0.5em;
-  border-top: 1px solid #1a1a1a;
-  border-bottom: 1px solid #1a1a1a;
-}
-th {
-  border-top: 1px solid #1a1a1a;
-  padding: 0.25em 0.5em 0.25em 0.5em;
-}
-td {
-  padding: 0.125em 0.5em 0.25em 0.5em;
-}
-header {
-  margin-bottom: 4em;
-  text-align: center;
-}
-#TOC li {
-  list-style: none;
-}
-#TOC ul {
-  padding-left: 1.3em;
-}
-#TOC > ul {
-  padding-left: 0;
-}
-#TOC a:not(:hover) {
-  text-decoration: none;
-}
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -694,282 +702,34 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<h1 id="chapter-6-memory-protection-and-access-control">Chapter 6: Memory Protection and Access Control</h1>
+<header id="title-block-header">
+<h1 class="title">Chapter 6: Memory Protection and Access Control</h1>
+</header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-6-memory-protection-and-access-control" id="toc-chapter-6-memory-protection-and-access-control">Chapter 6: Memory Protection and Access Control</a>
-<ul>
-<li><a href="#6.1-introduction-memory-protection-fundamentals" id="toc-6.1-introduction-memory-protection-fundamentals">6.1 Introduction: Memory Protection Fundamentals</a>
-<ul>
-<li><a href="#why-this-chapter-is-critical" id="toc-why-this-chapter-is-critical">Why This Chapter is Critical</a>
-</li>
-<li><a href="#the-security-problem" id="toc-the-security-problem">The Security Problem</a>
-</li>
-<li><a href="#what-memory-protection-provides" id="toc-what-memory-protection-provides">What Memory Protection Provides</a>
-</li>
-<li><a href="#connecting-to-previous-chapters" id="toc-connecting-to-previous-chapters">Connecting to Previous Chapters</a>
-</li>
-<li><a href="#real-world-impact-the-cost-of-getting-it-wrong" id="toc-real-world-impact-the-cost-of-getting-it-wrong">Real-World Impact: The Cost of Getting It Wrong</a>
-</li>
-<li><a href="#what-this-chapter-covers" id="toc-what-this-chapter-covers">What This Chapter Covers</a>
-</li>
-<li><a href="#why-this-chapter-matters-more-than-you-think" id="toc-why-this-chapter-matters-more-than-you-think">Why This Chapter Matters More Than You Think</a>
-</li>
-<li><a href="#the-security-problem-1" id="toc-the-security-problem-1">The Security Problem</a>
-</li>
-<li><a href="#what-memory-protection-provides-1" id="toc-what-memory-protection-provides-1">What Memory Protection Provides</a>
-</li>
-<li><a href="#real-world-attack-examples" id="toc-real-world-attack-examples">Real-World Attack Examples</a>
-</li>
-<li><a href="#security-vs-performance-trade-offs" id="toc-security-vs-performance-trade-offs">Security vs Performance Trade-offs</a>
-</li>
-<li><a href="#what-this-chapter-covers-1" id="toc-what-this-chapter-covers-1">What This Chapter Covers</a>
-</li>
-<li><a href="#cross-platform-perspective" id="toc-cross-platform-perspective">Cross-Platform Perspective</a>
-</li>
-<li><a href="#key-questions-well-answer" id="toc-key-questions-well-answer">Key Questions We'll Answer</a>
-</ul></li>
-<li><a href="#6.2-page-level-protection-bits" id="toc-6.2-page-level-protection-bits">6.2 Page-Level Protection Bits</a>
-<ul>
-<li><a href="#basic-permission-bits" id="toc-basic-permission-bits">Basic Permission Bits</a>
-</li>
-<li><a href="#x86-64-permission-encoding" id="toc-x86-64-permission-encoding">x86-64 Permission Encoding</a>
-</li>
-<li><a href="#arm64-permission-encoding" id="toc-arm64-permission-encoding">ARM64 Permission Encoding</a>
-</li>
-<li><a href="#risc-v-permission-encoding" id="toc-risc-v-permission-encoding">RISC-V Permission Encoding</a>
-</li>
-<li><a href="#cross-architecture-comparison" id="toc-cross-architecture-comparison">Cross-Architecture Comparison</a>
-</li>
-<li><a href="#present-bit-and-page-faults" id="toc-present-bit-and-page-faults">Present Bit and Page Faults</a>
-</li>
-<li><a href="#accessed-and-dirty-bits" id="toc-accessed-and-dirty-bits">Accessed and Dirty Bits</a>
-</li>
-<li><a href="#usersupervisor-bit" id="toc-usersupervisor-bit">User/Supervisor Bit</a>
-</li>
-<li><a href="#code-examples-setting-permission-bits" id="toc-code-examples-setting-permission-bits">Code Examples: Setting Permission Bits</a>
-</li>
-<li><a href="#permission-checking-algorithm" id="toc-permission-checking-algorithm">Permission Checking Algorithm</a>
-</li>
-<li><a href="#performance-implications" id="toc-performance-implications">Performance Implications</a>
-</ul></li>
-<li><a href="#6.3-the-no-execute-nx-bit" id="toc-6.3-the-no-execute-nx-bit">6.3 The No-Execute (NX) Bit</a>
-<ul>
-<li><a href="#the-code-injection-problem" id="toc-the-code-injection-problem">The Code Injection Problem</a>
-</li>
-<li><a href="#nx-bit-implementation" id="toc-nx-bit-implementation">NX Bit Implementation</a>
-</li>
-<li><a href="#real-world-impact-attack-prevention" id="toc-real-world-impact-attack-prevention">Real-World Impact: Attack Prevention</a>
-</li>
-<li><a href="#wx-policy-write-xor-execute" id="toc-wx-policy-write-xor-execute">W^X Policy (Write XOR Execute)</a>
-</li>
-<li><a href="#evading-nx-return-oriented-programming-rop" id="toc-evading-nx-return-oriented-programming-rop">Evading NX: Return-Oriented Programming (ROP)</a>
-</li>
-<li><a href="#setting-nx-bit-in-page-tables" id="toc-setting-nx-bit-in-page-tables">Setting NX Bit in Page Tables</a>
-</li>
-<li><a href="#os-level-nx-enforcement" id="toc-os-level-nx-enforcement">OS-Level NX Enforcement</a>
-</li>
-<li><a href="#performance-impact-of-nx" id="toc-performance-impact-of-nx">Performance Impact of NX</a>
-</li>
-<li><a href="#security-benefits-quantified" id="toc-security-benefits-quantified">Security Benefits: Quantified</a>
-</ul></li>
-<li><a href="#6.4-privilege-levels-and-protection-rings" id="toc-6.4-privilege-levels-and-protection-rings">6.4 Privilege Levels and Protection Rings</a>
-<ul>
-<li><a href="#x86-64-protection-rings" id="toc-x86-64-protection-rings">x86-64 Protection Rings</a>
-</li>
-<li><a href="#arm64-exception-levels" id="toc-arm64-exception-levels">ARM64 Exception Levels</a>
-</li>
-<li><a href="#risc-v-privilege-modes" id="toc-risc-v-privilege-modes">RISC-V Privilege Modes</a>
-</li>
-<li><a href="#cross-architecture-comparison-1" id="toc-cross-architecture-comparison-1">Cross-Architecture Comparison</a>
-</li>
-<li><a href="#privilege-checking-in-action" id="toc-privilege-checking-in-action">Privilege Checking in Action</a>
-</li>
-<li><a href="#performance-privilege-transitions" id="toc-performance-privilege-transitions">Performance: Privilege Transitions</a>
-</ul></li>
-<li><a href="#6.5-user-vs-supervisor-pages" id="toc-6.5-user-vs-supervisor-pages">6.5 User vs Supervisor Pages</a>
-<ul>
-<li><a href="#the-us-bit-mechanism" id="toc-the-us-bit-mechanism">The U/S Bit Mechanism</a>
-</li>
-<li><a href="#page-table-hierarchy-and-us-propagation" id="toc-page-table-hierarchy-and-us-propagation">Page Table Hierarchy and U/S Propagation</a>
-</li>
-<li><a href="#kernel-vs-user-address-space-separation" id="toc-kernel-vs-user-address-space-separation">Kernel vs User Address Space Separation</a>
-</li>
-<li><a href="#kernel-page-table-isolation-kpti" id="toc-kernel-page-table-isolation-kpti">Kernel Page-Table Isolation (KPTI)</a>
-</li>
-<li><a href="#user-access-to-kernel-memory-when-is-it-allowed" id="toc-user-access-to-kernel-memory-when-is-it-allowed">User Access to Kernel Memory: When is it Allowed?</a>
-</ul></li>
-<li><a href="#6.6-advanced-protection-features" id="toc-6.6-advanced-protection-features">6.6 Advanced Protection Features</a>
-<ul>
-<li><a href="#x86-64-smep-supervisor-mode-execution-prevention" id="toc-x86-64-smep-supervisor-mode-execution-prevention">x86-64: SMEP (Supervisor Mode Execution Prevention)</a>
-</li>
-<li><a href="#x86-64-smap-supervisor-mode-access-prevention" id="toc-x86-64-smap-supervisor-mode-access-prevention">x86-64: SMAP (Supervisor Mode Access Prevention)</a>
-</li>
-<li><a href="#arm64-mte-memory-tagging-extension" id="toc-arm64-mte-memory-tagging-extension">ARM64: MTE (Memory Tagging Extension)</a>
-</li>
-<li><a href="#arm64-bti-branch-target-identification" id="toc-arm64-bti-branch-target-identification">ARM64: BTI (Branch Target Identification)</a>
-</ul></li>
-<li><a href="#6.7-protection-keys-and-domains" id="toc-6.7-protection-keys-and-domains">6.7 Protection Keys and Domains</a>
-</li>
-<li><a href="#6.8-trusted-execution-environments-tee-deep-dive" id="toc-6.8-trusted-execution-environments-tee-deep-dive">6.8 Trusted Execution Environments (TEE) - Deep Dive</a>
-<ul>
-<li><a href="#what-is-a-trusted-execution-environment" id="toc-what-is-a-trusted-execution-environment">What is a Trusted Execution Environment?</a>
-</li>
-<li><a href="#arm-trustzone-the-dominant-mobile-tee" id="toc-arm-trustzone-the-dominant-mobile-tee">ARM TrustZone: The Dominant Mobile TEE</a>
-</li>
-<li><a href="#intel-sgx-enclave-based-tee" id="toc-intel-sgx-enclave-based-tee">Intel SGX: Enclave-Based TEE</a>
-</li>
-<li><a href="#comparison-trustzone-vs-sgx" id="toc-comparison-trustzone-vs-sgx">Comparison: TrustZone vs SGX</a>
-</li>
-<li><a href="#gpu-tees-graviton" id="toc-gpu-tees-graviton">GPU TEEs: Graviton</a>
-</li>
-<li><a href="#other-tee-implementations" id="toc-other-tee-implementations">Other TEE Implementations</a>
-</li>
-<li><a href="#tee-security-challenges" id="toc-tee-security-challenges">TEE Security Challenges</a>
-</li>
-<li><a href="#tee-use-cases-in-production" id="toc-tee-use-cases-in-production">TEE Use Cases in Production</a>
-</li>
-<li><a href="#future-of-tee-technology" id="toc-future-of-tee-technology">Future of TEE Technology</a>
-</ul></li>
-<li><a href="#6.9-copy-on-write-cow" id="toc-6.9-copy-on-write-cow">6.9 Copy-On-Write (COW)</a>
-<ul>
-<li><a href="#the-cow-concept" id="toc-the-cow-concept">The COW Concept</a>
-</li>
-<li><a href="#cow-implementation" id="toc-cow-implementation">COW Implementation</a>
-</li>
-<li><a href="#cow-benefits" id="toc-cow-benefits">COW Benefits</a>
-</li>
-<li><a href="#zero-pages-and-cow" id="toc-zero-pages-and-cow">Zero Pages and COW</a>
-</li>
-<li><a href="#cow-and-mmap" id="toc-cow-and-mmap">COW and mmap()</a>
-</li>
-<li><a href="#performance-analysis" id="toc-performance-analysis">Performance Analysis</a>
-</ul></li>
-<li><a href="#6.10-memory-access-ordering-and-protection" id="toc-6.10-memory-access-ordering-and-protection">6.10 Memory Access Ordering and Protection</a>
-<ul>
-<li><a href="#memory-ordering-basics" id="toc-memory-ordering-basics">Memory Ordering Basics</a>
-</li>
-<li><a href="#security-implications" id="toc-security-implications">Security Implications</a>
-</li>
-<li><a href="#memory-barriers" id="toc-memory-barriers">Memory Barriers</a>
-</li>
-<li><a href="#security-critical-memory-ordering" id="toc-security-critical-memory-ordering">Security-Critical Memory Ordering</a>
-</ul></li>
-<li><a href="#6.11-confidential-computing-hardware-based-vm-isolation" id="toc-6.11-confidential-computing-hardware-based-vm-isolation">6.11 Confidential Computing: Hardware-Based VM Isolation</a>
-<ul>
-<li><a href="#amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging" id="toc-amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging">AMD SEV-SNP (Secure Encrypted Virtualization - Secure Nested Paging)</a>
-</li>
-<li><a href="#intel-tdx-trust-domain-extensions" id="toc-intel-tdx-trust-domain-extensions">Intel TDX (Trust Domain Extensions)</a>
-</li>
-<li><a href="#arm-cca-confidential-compute-architecture" id="toc-arm-cca-confidential-compute-architecture">ARM CCA (Confidential Compute Architecture)</a>
-</ul></li>
-<li><a href="#6.12-amd-memory-guard-and-memory-encryption" id="toc-6.12-amd-memory-guard-and-memory-encryption">6.12 AMD Memory Guard and Memory Encryption</a>
-<ul>
-<li><a href="#the-physical-memory-attack-problem" id="toc-the-physical-memory-attack-problem">The Physical Memory Attack Problem</a>
-</li>
-<li><a href="#sme-secure-memory-encryption" id="toc-sme-secure-memory-encryption">SME (Secure Memory Encryption)</a>
-</li>
-<li><a href="#sev-secure-encrypted-virtualization" id="toc-sev-secure-encrypted-virtualization">SEV (Secure Encrypted Virtualization)</a>
-</li>
-<li><a href="#tsme-transparent-sme" id="toc-tsme-transparent-sme">TSME (Transparent SME)</a>
-</li>
-<li><a href="#performance-analysis-1" id="toc-performance-analysis-1">Performance Analysis</a>
-</li>
-<li><a href="#security-properties" id="toc-security-properties">Security Properties</a>
-</li>
-<li><a href="#practical-deployment" id="toc-practical-deployment">Practical Deployment</a>
-</li>
-<li><a href="#comparison-with-intel-tme" id="toc-comparison-with-intel-tme">Comparison with Intel TME</a>
-</ul></li>
-<li><a href="#6.13-risc-v-security-extensions" id="toc-6.13-risc-v-security-extensions">6.13 RISC-V Security Extensions</a>
-<ul>
-<li><a href="#risc-v-security-philosophy" id="toc-risc-v-security-philosophy">RISC-V Security Philosophy</a>
-</li>
-<li><a href="#pmp-physical-memory-protection" id="toc-pmp-physical-memory-protection">PMP (Physical Memory Protection)</a>
-</li>
-<li><a href="#epmp-enhanced-pmp" id="toc-epmp-enhanced-pmp">ePMP (Enhanced PMP)</a>
-</li>
-<li><a href="#keystone-open-source-risc-v-tee" id="toc-keystone-open-source-risc-v-tee">Keystone: Open-Source RISC-V TEE</a>
-</li>
-<li><a href="#risc-v-cryptography-extensions-zk" id="toc-risc-v-cryptography-extensions-zk">RISC-V Cryptography Extensions (Zk*)</a>
-</li>
-<li><a href="#risc-v-vs-x86arm-security-comparison" id="toc-risc-v-vs-x86arm-security-comparison">RISC-V vs x86/ARM Security Comparison</a>
-</li>
-<li><a href="#future-risc-v-security-features" id="toc-future-risc-v-security-features">Future RISC-V Security Features</a>
-</ul></li>
-<li><a href="#6.14-gpu-and-accelerator-security" id="toc-6.14-gpu-and-accelerator-security">6.14 GPU and Accelerator Security</a>
-<ul>
-<li><a href="#the-accelerator-security-problem" id="toc-the-accelerator-security-problem">The Accelerator Security Problem</a>
-</li>
-<li><a href="#gpu-memory-architecture" id="toc-gpu-memory-architecture">GPU Memory Architecture</a>
-</li>
-<li><a href="#nvidia-confidential-computing-hopper-h100" id="toc-nvidia-confidential-computing-hopper-h100">NVIDIA Confidential Computing (Hopper H100)</a>
-</li>
-<li><a href="#amd-gpus-and-rocm-security" id="toc-amd-gpus-and-rocm-security">AMD GPUs and ROCm Security</a>
-</li>
-<li><a href="#apple-silicon-gpu-security" id="toc-apple-silicon-gpu-security">Apple Silicon GPU Security</a>
-</li>
-<li><a href="#performance-vs-security-trade-offs" id="toc-performance-vs-security-trade-offs">Performance vs Security Trade-offs</a>
-</ul></li>
-<li><a href="#6.15-heterogeneous-computing-security" id="toc-6.15-heterogeneous-computing-security">6.15 Heterogeneous Computing Security</a>
-<ul>
-<li><a href="#the-heterogeneous-challenge" id="toc-the-heterogeneous-challenge">The Heterogeneous Challenge</a>
-</li>
-<li><a href="#cache-coherent-interconnects" id="toc-cache-coherent-interconnects">Cache-Coherent Interconnects</a>
-</li>
-<li><a href="#amd-mi300a-apu" id="toc-amd-mi300a-apu">AMD MI300A APU</a>
-</li>
-<li><a href="#apple-unified-memory-architecture-uma" id="toc-apple-unified-memory-architecture-uma">Apple Unified Memory Architecture (UMA)</a>
-</li>
-<li><a href="#best-practices-for-heterogeneous-security" id="toc-best-practices-for-heterogeneous-security">Best Practices for Heterogeneous Security</a>
-</ul></li>
-<li><a href="#6.16-performance-vs-security-trade-offs" id="toc-6.16-performance-vs-security-trade-offs">6.16 Performance vs Security Trade-offs</a>
-<ul>
-<li><a href="#security-feature-performance-matrix" id="toc-security-feature-performance-matrix">Security Feature Performance Matrix</a>
-</li>
-<li><a href="#detailed-cost-analysis" id="toc-detailed-cost-analysis">Detailed Cost Analysis</a>
-</li>
-<li><a href="#cumulative-overhead" id="toc-cumulative-overhead">Cumulative Overhead</a>
-</ul></li>
-<li><a href="#6.17-best-practices-and-guidelines" id="toc-6.17-best-practices-and-guidelines">6.17 Best Practices and Guidelines</a>
-<ul>
-<li><a href="#defense-in-depth" id="toc-defense-in-depth">Defense in Depth</a>
-</li>
-<li><a href="#minimize-trusted-code" id="toc-minimize-trusted-code">Minimize Trusted Code</a>
-</li>
-<li><a href="#fail-securely" id="toc-fail-securely">Fail Securely</a>
-</li>
-<li><a href="#verify-security-properties" id="toc-verify-security-properties">Verify Security Properties</a>
-</li>
-<li><a href="#keep-security-features-enabled" id="toc-keep-security-features-enabled">Keep Security Features Enabled</a>
-</li>
-<li><a href="#monitor-and-audit" id="toc-monitor-and-audit">Monitor and Audit</a>
-</ul></li>
-<li><a href="#6.18-common-pitfalls-and-how-to-avoid-them" id="toc-6.18-common-pitfalls-and-how-to-avoid-them">6.18 Common Pitfalls and How to Avoid Them</a>
-<ul>
-<li><a href="#pitfall-1-assuming-page-tables-are-sufficient" id="toc-pitfall-1-assuming-page-tables-are-sufficient">Pitfall 1: Assuming Page Tables Are Sufficient</a>
-</li>
-<li><a href="#pitfall-2-forgetting-tlb-flushes" id="toc-pitfall-2-forgetting-tlb-flushes">Pitfall 2: Forgetting TLB Flushes</a>
-</li>
-<li><a href="#pitfall-3-mixing-security-domains-without-isolation" id="toc-pitfall-3-mixing-security-domains-without-isolation">Pitfall 3: Mixing Security Domains Without Isolation</a>
-</li>
-<li><a href="#pitfall-4-trusting-user-provided-pointers" id="toc-pitfall-4-trusting-user-provided-pointers">Pitfall 4: Trusting User-Provided Pointers</a>
-</li>
-<li><a href="#pitfall-5-ignoring-side-channels" id="toc-pitfall-5-ignoring-side-channels">Pitfall 5: Ignoring Side Channels</a>
-</ul></li>
-<li><a href="#6.19-summary-and-future-directions" id="toc-6.19-summary-and-future-directions">6.19 Summary and Future Directions</a>
-<ul>
-<li><a href="#key-takeaways" id="toc-key-takeaways">Key Takeaways</a>
-</li>
-<li><a href="#future-trends" id="toc-future-trends">Future Trends</a>
-</li>
-<li><a href="#closing-thoughts" id="toc-closing-thoughts">Closing Thoughts</a>
-</ul></li>
-<li><a href="#chapter-6-references" id="toc-chapter-6-references">Chapter 6: References</a>
-</li></ul>
-</li></ul>
+<li><a href="#section-6.1">6.1 Introduction: Memory Protection Fundamentals</a></li>
+<li><a href="#section-6.2">6.2 Page-Level Protection Bits</a></li>
+<li><a href="#section-6.3">6.3 The No-Execute (NX) Bit</a></li>
+<li><a href="#section-6.4">6.4 Privilege Levels and Protection Rings</a></li>
+<li><a href="#section-6.5">6.5 User vs Supervisor Pages</a></li>
+<li><a href="#section-6.6">6.6 Advanced Protection Features</a></li>
+<li><a href="#section-6.7">6.7 Protection Keys and Domains</a></li>
+<li><a href="#section-6.8">6.8 Trusted Execution Environments (TEE) - Deep Dive</a></li>
+<li><a href="#section-6.9">6.9 Copy-On-Write (COW)</a></li>
+<li><a href="#section-6.10">6.10 Memory Access Ordering and Protection</a></li>
+<li><a href="#section-6.11">6.11 Confidential Computing: Hardware-Based VM Isolation</a></li>
+<li><a href="#section-6.12">6.12 AMD Memory Guard and Memory Encryption</a></li>
+<li><a href="#section-6.13">6.13 RISC-V Security Extensions</a></li>
+<li><a href="#section-6.14">6.14 GPU and Accelerator Security</a></li>
+<li><a href="#section-6.15">6.15 Heterogeneous Computing Security</a></li>
+<li><a href="#section-6.16">6.16 Performance vs Security Trade-offs</a></li>
+<li><a href="#section-6.17">6.17 Best Practices and Guidelines</a></li>
+<li><a href="#section-6.18">6.18 Common Pitfalls and How to Avoid Them</a></li>
+<li><a href="#section-6.19">6.19 Chapter Summary</a></li>
+<li><a href="#section-6.20">References</a></li>
+</ul>
 </nav>
-<h2 id="6.1-introduction-memory-protection-fundamentals">6.1 Introduction: Memory Protection Fundamentals</h2>
+<h2 id="section-6.1">6.1 Introduction: Memory Protection Fundamentals</h2>
 <p>In Chapters 3, 4, and 5, we explored the <strong>mechanisms</strong> of virtual memory: how page tables translate addresses (Chapter 3), how TLBs accelerate those translations (Chapter 4), and how IOMMUs extend protection to devices (Chapter 5). We've seen the intricate hardware structures, the multi-level translation hierarchies, and the performance optimizations that make modern virtual memory work. But we've largely treated memory protection as a footnote—a few bits in the page table entries that enable or disable certain accesses.</p>
 <p><strong>This chapter reveals why those bits matter more than everything else combined.</strong></p>
 <p>Without the protection mechanisms we'll explore here, all the sophisticated virtual memory infrastructure we've studied would be nothing more than an elaborate address mapping system. The four-level page tables? Just an overcomplicated way to map virtual to physical addresses. The TLB? A cache that makes the mapping faster. The IOMMU? Hardware that does the same mapping for devices. None of it would provide any <strong>security</strong> without the protection bits and enforcement mechanisms that are the focus of this chapter.</p>
@@ -1299,7 +1059,7 @@ mov rbx, [rax * 4096]         ; Uses data to access different cache line
 </ul>
 <p>By the end of this chapter, you'll understand how modern systems enforce memory protection, from simple permission bits to encrypted confidential computing.</p>
 <hr>
-<h2 id="6.2-page-level-protection-bits">6.2 Page-Level Protection Bits</h2>
+<h2 id="section-6.2">6.2 Page-Level Protection Bits</h2>
 <p>Every page table entry (PTE) contains permission bits that control how memory can be accessed. These bits are checked by the MMU on every memory access, making them the first line of defense in system security.</p>
 <h3 id="basic-permission-bits">Basic Permission Bits</h3>
 <p>Modern architectures provide three fundamental permissions:</p>
@@ -1851,13 +1611,14 @@ uint64_t make_execute_only_pte(uint64_t phys_addr) {
 <p><strong>TLB Hit:</strong> Permissions cached with translation (0 cycles overhead) <strong>TLB Miss, PWC Hit:</strong> Permission check during walk (~10-30 cycles) <strong>TLB Miss, Full Walk:</strong> Permission check at each level (~50-200 cycles)</p>
 <p><strong>Key Insight:</strong> High TLB hit rates (>99%) make permission checking essentially free!</p>
 <hr>
-<h2 id="6.3-the-no-execute-nx-bit">6.3 The No-Execute (NX) Bit</h2>
+<h2 id="section-6.3">6.3 The No-Execute (NX) Bit</h2>
 <p>The No-Execute bit is one of the most important security features in modern processors. By preventing code execution from data pages, it defeats entire classes of exploits that have plagued computer security for decades.</p>
 <h3 id="the-code-injection-problem">The Code Injection Problem</h3>
 <p>Before the NX bit, all writable memory was also executable. This created a fundamental vulnerability:</p>
 
-<figure id="fig-6-1">
-<svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-6-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -1924,7 +1685,8 @@ uint64_t make_execute_only_pte(uint64_t phys_addr) {
   <text x="35" y="481" text-anchor="start" font-size="12" font-weight="bold" fill="#34495E">SMAP/PAN</text>
   <text x="35" y="496" text-anchor="start" font-size="11" font-weight="normal" fill="#212121">x86-64 CR4.SMAP, ARM64 PAN, RISC-V SUM</text>
 </svg>
-<figcaption><strong>Figure 6.1:</strong> NX/SMEP/SMAP/PAN enforcement decision flow. The CPU checks these three hardware protection mechanisms on every memory access, before consulting the TLB. Any failure raises a hardware fault. All checks run in parallel with PTE permission bit evaluation.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 6.1:</strong> NX/SMEP/SMAP/PAN enforcement decision flow. The CPU checks these three hardware protection mechanisms on every memory access, before consulting the TLB. Any failure raises a hardware fault. All checks run in parallel with PTE permission bit evaluation.</figcaption>
 </figure>
 
 <p><strong>Classic Buffer Overflow Exploit:</strong></p>
@@ -2294,7 +2056,7 @@ void benchmark_nx_overhead(void) {
 </ul>
 <p><strong>Bottom Line:</strong> NX/XD/XN is the <strong>single most effective hardware security feature</strong> ever added to processors. Every modern system should have it enabled—and nearly all do by default.</p>
 <hr>
-<h2 id="6.4-privilege-levels-and-protection-rings">6.4 Privilege Levels and Protection Rings</h2>
+<h2 id="section-6.4">6.4 Privilege Levels and Protection Rings</h2>
 <figure id="fig-6-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
@@ -2876,7 +2638,7 @@ void fast_time_access(void) {
 // Result: 10-30× faster for common operations!
 </code></pre>
 <hr>
-<h2 id="6.5-user-vs-supervisor-pages">6.5 User vs Supervisor Pages</h2>
+<h2 id="section-6.5">6.5 User vs Supervisor Pages</h2>
 <p>The User/Supervisor (U/S) bit in page table entries is the primary mechanism for enforcing privilege-based memory protection. This simple bit—present in every page table entry—prevents user-mode code from accessing kernel memory.</p>
 <h3 id="the-us-bit-mechanism">The U/S Bit Mechanism</h3>
 <p><strong>x86-64 U/S Bit:</strong></p>
@@ -3282,7 +3044,7 @@ unsigned long copy_from_user_smap(void *to, const void __user *from, unsigned lo
 </code></pre>
 <p><strong>Performance:</strong> SMAP overhead is <strong>negligible</strong> (<1%) because STAC/CLAC are very fast (1-2 cycles).</p>
 <hr>
-<h2 id="6.6-advanced-protection-features">6.6 Advanced Protection Features</h2>
+<h2 id="section-6.6">6.6 Advanced Protection Features</h2>
 <p>Modern processors provide sophisticated protection mechanisms beyond basic permission bits. These features implement <strong>defense-in-depth</strong>: even if attackers bypass one layer, additional protections prevent exploitation.</p>
 <h3 id="x86-64-smep-supervisor-mode-execution-prevention">x86-64: SMEP (Supervisor Mode Execution Prevention)</h3>
 <p><strong>The Problem:</strong></p>
@@ -3383,12 +3145,13 @@ END IF
 <p><strong>Control-flow integrity</strong> against ROP/JOP attacks.</p>
 <p><strong>Performance:</strong> BTI overhead is <strong><1%</strong> (check happens in parallel with branch).</p>
 <hr>
-<h2 id="6.7-protection-keys-and-domains">6.7 Protection Keys and Domains</h2>
+<h2 id="section-6.7">6.7 Protection Keys and Domains</h2>
 <p>Protection keys enable <strong>fast, fine-grained memory isolation</strong> within a single address space. Unlike page table permissions (which require expensive TLB flushes to change), protection keys can be modified in just a few cycles.</p>
 <p>[This section covers Intel MPK in detail, including domain-based isolation, cross-domain communication, and performance comparisons showing 50-100× speedup over traditional mprotect.]</p>
 
-<figure id="fig-6-4">
-<svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-6-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -3487,11 +3250,12 @@ END IF
   <text x="680" y="496" text-anchor="middle" font-size="12" font-weight="bold" fill="#212121">PKU WRPKRU instruction</text>
   <text x="680" y="512" text-anchor="middle" font-size="12" font-weight="normal" fill="#5E81AC">~3 cycles — 333× faster</text>
 </svg>
-<figcaption><strong>Figure 6.4:</strong> Memory Protection Keys (PKU) mechanism. Each PTE encodes a 4-bit key (0–15) in bits 62:59. The 32-bit PKRU register holds per-key Access Disable (AD) and Write Disable (WD) bits. User-space switches domain permissions via WRPKRU (~3 cycles) — 333× faster than mprotect().</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 6.4:</strong> Memory Protection Keys (PKU) mechanism. Each PTE encodes a 4-bit key (0–15) in bits 62:59. The 32-bit PKRU register holds per-key Access Disable (AD) and Write Disable (WD) bits. User-space switches domain permissions via WRPKRU (~3 cycles) — 333× faster than mprotect().</figcaption>
 </figure>
 
 <hr>
-<h2 id="6.8-trusted-execution-environments-tee-deep-dive">6.8 Trusted Execution Environments (TEE) - Deep Dive</h2>
+<h2 id="section-6.8">6.8 Trusted Execution Environments (TEE) - Deep Dive</h2>
 <p>Trusted Execution Environments represent a fundamental shift in how we approach system security: rather than trying to secure an entire operating system (which may contain millions of lines of code), we create small, hardware-isolated compartments for executing security-critical code. This section explores the major TEE implementations and their role in modern memory protection.</p>
 <h3 id="what-is-a-trusted-execution-environment">What is a Trusted Execution Environment?</h3>
 <p>A Trusted Execution Environment (TEE) is a <strong>secure area within a main processor</strong> that guarantees:</p>
@@ -4231,7 +3995,7 @@ Return to client
 <li>Optimized attestation protocols</li>
 </ul>
 <hr>
-<h2 id="6.9-copy-on-write-cow">6.9 Copy-On-Write (COW)</h2>
+<h2 id="section-6.9">6.9 Copy-On-Write (COW)</h2>
 <p>Copy-On-Write is a memory optimization that leverages page-level protection to defer expensive memory copies until absolutely necessary. It's fundamental to efficient process creation and memory management.</p>
 <h3 id="the-cow-concept">The COW Concept</h3>
 <p><strong>Without COW:</strong></p>
@@ -4463,7 +4227,7 @@ munmap(addr, 4096);
 // - fork() + write few:     Huge win (only copy what&#x27;s needed)
 </code></pre>
 <hr>
-<h2 id="6.10-memory-access-ordering-and-protection">6.10 Memory Access Ordering and Protection</h2>
+<h2 id="section-6.10">6.10 Memory Access Ordering and Protection</h2>
 <p>Memory ordering isn't just about performance—weak memory models can create security vulnerabilities if not properly understood and managed.</p>
 <h3 id="memory-ordering-basics">Memory Ordering Basics</h3>
 <p>Different architectures provide different memory ordering guarantees:</p>
@@ -4649,7 +4413,7 @@ void clear_secret_barrier(char *secret, size_t len) {
 #endif
 </code></pre>
 <hr>
-<h2 id="6.11-confidential-computing-hardware-based-vm-isolation">6.11 Confidential Computing: Hardware-Based VM Isolation</h2>
+<h2 id="section-6.11">6.11 Confidential Computing: Hardware-Based VM Isolation</h2>
 <p>Confidential computing extends TEE concepts to entire virtual machines, providing strong isolation even in untrusted cloud environments.</p>
 <h3 id="amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging">AMD SEV-SNP (Secure Encrypted Virtualization - Secure Nested Paging)</h3>
 <figure id="fig-6-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -4848,7 +4612,7 @@ enum gpt_state {
 // - Root manages all granules
 </code></pre>
 <hr>
-<h2 id="6.12-amd-memory-guard-and-memory-encryption">6.12 AMD Memory Guard and Memory Encryption</h2>
+<h2 id="section-6.12">6.12 AMD Memory Guard and Memory Encryption</h2>
 <p>AMD's memory encryption technologies protect data at rest in DRAM, defending against physical memory attacks like cold boot attacks and DMA attacks from malicious hardware.</p>
 <h3 id="the-physical-memory-attack-problem">The Physical Memory Attack Problem</h3>
 <p><strong>Traditional Threat Model:</strong></p>
@@ -5194,7 +4958,7 @@ void *dma_alloc_coherent(struct device *dev, size_t size) {
 </tbody>
 </table>
 <hr>
-<h2 id="6.13-risc-v-security-extensions">6.13 RISC-V Security Extensions</h2>
+<h2 id="section-6.13">6.13 RISC-V Security Extensions</h2>
 <p>RISC-V provides flexible, modular security features through its extensible ISA design. Unlike x86 and ARM which evolved security features over decades, RISC-V was designed from the ground up with security modularity in mind.</p>
 <h3 id="risc-v-security-philosophy">RISC-V Security Philosophy</h3>
 <p><strong>Modular Design:</strong></p>
@@ -5607,7 +5371,7 @@ void riscv_aes_encrypt(uint8_t *plaintext, uint8_t *key, uint8_t *ciphertext) {
 <hr>
 <p>[Sections 6.14-6.19 to continue...]</p>
 <hr>
-<h2 id="6.14-gpu-and-accelerator-security">6.14 GPU and Accelerator Security</h2>
+<h2 id="section-6.14">6.14 GPU and Accelerator Security</h2>
 <p>Modern computing increasingly relies on <strong>specialized accelerators</strong>—GPUs, TPUs, FPGAs, and custom ASICs—to achieve performance far beyond what general-purpose CPUs can provide. However, these accelerators introduce new security challenges that extend beyond traditional CPU memory protection.</p>
 <h3 id="the-accelerator-security-problem">The Accelerator Security Problem</h3>
 <p><strong>Why GPUs Need Special Attention:</strong></p>
@@ -5931,7 +5695,7 @@ void benchmark_confidential_gpu(void) {
 <li>Legacy GPUs without support</li>
 </ul>
 <hr>
-<h2 id="6.15-heterogeneous-computing-security">6.15 Heterogeneous Computing Security</h2>
+<h2 id="section-6.15">6.15 Heterogeneous Computing Security</h2>
 <p>Modern systems combine multiple processor types—CPUs, GPUs, FPGAs, TPUs, NPUs—in complex heterogeneous architectures. Securing these systems requires coordinating protection across fundamentally different processor designs.</p>
 <h3 id="the-heterogeneous-challenge">The Heterogeneous Challenge</h3>
 <p><strong>Multiple Processors, Multiple Security Models:</strong></p>
@@ -6134,7 +5898,7 @@ bool attest_heterogeneous_system(struct system_attestation *attest) {
 }
 </code></pre>
 <hr>
-<h2 id="6.16-performance-vs-security-trade-offs">6.16 Performance vs Security Trade-offs</h2>
+<h2 id="section-6.16">6.16 Performance vs Security Trade-offs</h2>
 <p>Every security feature has a cost. Understanding these trade-offs is essential for making informed decisions about which protections to enable in production systems.</p>
 <h3 id="security-feature-performance-matrix">Security Feature Performance Matrix</h3>
 <table>
@@ -6384,7 +6148,7 @@ void batch_security_operations(void) {
 }
 </code></pre>
 <hr>
-<h2 id="6.17-best-practices-and-guidelines">6.17 Best Practices and Guidelines</h2>
+<h2 id="section-6.17">6.17 Best Practices and Guidelines</h2>
 <p>Based on decades of security research and real-world deployments, here are proven best practices for memory protection.</p>
 <h3 id="defense-in-depth">Defense in Depth</h3>
 <p><strong>Layer Multiple Protections:</strong></p>
@@ -6530,7 +6294,7 @@ void audit_security_violations(void) {
 }
 </code></pre>
 <hr>
-<h2 id="6.18-common-pitfalls-and-how-to-avoid-them">6.18 Common Pitfalls and How to Avoid Them</h2>
+<h2 id="section-6.18">6.18 Common Pitfalls and How to Avoid Them</h2>
 <p>Learn from others' mistakes. Here are common memory protection failures and how to prevent them.</p>
 <h3 id="pitfall-1-assuming-page-tables-are-sufficient">Pitfall 1: Assuming Page Tables Are Sufficient</h3>
 <p><strong>Problem:</strong> Relying only on page tables for security.</p>
@@ -6670,7 +6434,7 @@ bool password_check_correct(const char *input, const char *correct) {
 }
 </code></pre>
 <hr>
-<h2 id="6.19-summary-and-future-directions">6.19 Chapter Summary</h2>
+<h2 id="section-6.19">6.19 Chapter Summary</h2>
 <h3 id="key-takeaways">Key Takeaways</h3>
 <p>Memory protection is the <strong>foundation of system security</strong>. Everything we've covered builds on this core principle: <strong>isolate, protect, and verify access to memory</strong>.</p>
 <p><strong>Essential Mechanisms:</strong></p>
@@ -6762,7 +6526,7 @@ if (prove_secure(security_monitor)) {
 </ul>
 <p>The future of memory protection looks promising: hardware memory safety, universal encryption, formal verification. But the principles remain timeless: <strong>isolate, protect, verify</strong>.</p>
 <hr>
-<h2 id="chapter-6-references">References</h2>
+<h2 id="section-6.20">References</h2>
 <h3 id="memory-protection-and-access-control-fundamentals">Memory Protection and Access Control Fundamentals</h3>
 <ol type="1">
 <li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: "Paging" and Section 4.6: "Access Rights." 2024.</p></li>
@@ -7171,86 +6935,27 @@ if (prove_secure(security_monitor)) {
                 "file": "chapter-06-WITH-FIGURES.html",
                 "short": "Memory Protection and Access Control",
                 "sections": [
-                      {
-                            "text": "6.1 Introduction: Memory Protection Fundamentals",
-                            "id": "6.1-introduction-memory-protection-fundamentals"
-                      },
-                      {
-                            "text": "6.2 Page-Level Protection Bits",
-                            "id": "6.2-page-level-protection-bits"
-                      },
-                      {
-                            "text": "6.3 The No-Execute (NX) Bit",
-                            "id": "6.3-the-no-execute-nx-bit"
-                      },
-                      {
-                            "text": "6.4 Privilege Levels and Protection Rings",
-                            "id": "6.4-privilege-levels-and-protection-rings"
-                      },
-                      {
-                            "text": "6.5 User vs Supervisor Pages",
-                            "id": "6.5-user-vs-supervisor-pages"
-                      },
-                      {
-                            "text": "6.6 Advanced Protection Features",
-                            "id": "6.6-advanced-protection-features"
-                      },
-                      {
-                            "text": "6.7 Protection Keys and Domains",
-                            "id": "6.7-protection-keys-and-domains"
-                      },
-                      {
-                            "text": "6.8 Trusted Execution Environments (TEE) - Deep Dive",
-                            "id": "6.8-trusted-execution-environments-tee-deep-dive"
-                      },
-                      {
-                            "text": "6.9 Copy-On-Write (COW)",
-                            "id": "6.9-copy-on-write-cow"
-                      },
-                      {
-                            "text": "6.10 Memory Access Ordering and Protection",
-                            "id": "6.10-memory-access-ordering-and-protection"
-                      },
-                      {
-                            "text": "6.11 Confidential Computing: Hardware-Based VM Isolation",
-                            "id": "6.11-confidential-computing-hardware-based-vm-isolation"
-                      },
-                      {
-                            "text": "6.12 AMD Memory Guard and Memory Encryption",
-                            "id": "6.12-amd-memory-guard-and-memory-encryption"
-                      },
-                      {
-                            "text": "6.13 RISC-V Security Extensions",
-                            "id": "6.13-risc-v-security-extensions"
-                      },
-                      {
-                            "text": "6.14 GPU and Accelerator Security",
-                            "id": "6.14-gpu-and-accelerator-security"
-                      },
-                      {
-                            "text": "6.15 Heterogeneous Computing Security",
-                            "id": "6.15-heterogeneous-computing-security"
-                      },
-                      {
-                            "text": "6.16 Performance vs Security Trade-offs",
-                            "id": "6.16-performance-vs-security-trade-offs"
-                      },
-                      {
-                            "text": "6.17 Best Practices and Guidelines",
-                            "id": "6.17-best-practices-and-guidelines"
-                      },
-                      {
-                            "text": "6.18 Common Pitfalls and How to Avoid Them",
-                            "id": "6.18-common-pitfalls-and-how-to-avoid-them"
-                      },
-                      {
-                            "text": "6.19 Chapter Summary",
-                            "id": "6.19-summary-and-future-directions"
-                      },
-                      {
-                            "text": "References",
-                            "id": "chapter-6-references"
-                      }
+                      {"text": "6.1 Introduction: Memory Protection Fundamentals", "id": "section-6.1"},
+                      {"text": "6.2 Page-Level Protection Bits", "id": "section-6.2"},
+                      {"text": "6.3 The No-Execute (NX) Bit", "id": "section-6.3"},
+                      {"text": "6.4 Privilege Levels and Protection Rings", "id": "section-6.4"},
+                      {"text": "6.5 User vs Supervisor Pages", "id": "section-6.5"},
+                      {"text": "6.6 Advanced Protection Features", "id": "section-6.6"},
+                      {"text": "6.7 Protection Keys and Domains", "id": "section-6.7"},
+                      {"text": "6.8 Trusted Execution Environments (TEE) - Deep Dive", "id": "section-6.8"},
+                      {"text": "6.9 Copy-On-Write (COW)", "id": "section-6.9"},
+                      {"text": "6.10 Memory Access Ordering and Protection", "id": "section-6.10"},
+                      {"text": "6.11 Confidential Computing: Hardware-Based VM Isolation", "id": "section-6.11"},
+                      {"text": "6.12 AMD Memory Guard and Memory Encryption", "id": "section-6.12"},
+                      {"text": "6.13 RISC-V Security Extensions", "id": "section-6.13"},
+                      {"text": "6.14 GPU and Accelerator Security", "id": "section-6.14"},
+                      {"text": "6.15 Heterogeneous Computing Security", "id": "section-6.15"},
+                      {"text": "6.16 Performance vs Security Trade-offs", "id": "section-6.16"},
+                      {"text": "6.17 Best Practices and Guidelines", "id": "section-6.17"},
+                      {"text": "6.18 Common Pitfalls and How to Avoid Them", "id": "section-6.18"},
+                      {"text": "6.19 Chapter Summary", "id": "section-6.19"},
+                      {"text": "References", "id": "section-6.20"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

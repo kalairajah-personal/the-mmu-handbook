@@ -153,9 +153,8 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
@@ -698,41 +697,10 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#section-15.1">15.1 Introduction</a></li>
-<li><a href="#section-15.2">15.2 Network-Level Translation</a>
-  <ul>
-  <li><a href="#mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</a></li>
-  <li><a href="#pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</a></li>
-  <li><a href="#network-translation-implications">15.2.3 Network Translation: Implications and Limitations</a></li>
-  </ul>
-</li>
-<li><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a>
-  <ul>
-  <li><a href="#motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</a></li>
-  <li><a href="#vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</a></li>
-  <li><a href="#imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</a></li>
-  <li><a href="#emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</a></li>
-  <li><a href="#pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</a></li>
-  </ul>
-</li>
-<li><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a>
-  <ul>
-  <li><a href="#motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</a></li>
-  <li><a href="#utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</a></li>
-  <li><a href="#performance-evaluation">15.4.3 Performance Evaluation</a></li>
-  <li><a href="#implementation-challenges">15.4.4 Implementation Challenges</a></li>
-  <li><a href="#relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</a></li>
-  <li><a href="#deployment-outlook">15.4.6 Deployment Outlook</a></li>
-  </ul>
-</li>
-<li><a href="#section-15.5">15.5 Comparative Analysis</a>
-  <ul>
-  <li><a href="#architectural-comparison">15.5.1 Architectural Comparison</a></li>
-  <li><a href="#workload-suitability">15.5.2 Workload Suitability</a></li>
-  <li><a href="#deployment-considerations">15.5.3 Deployment Considerations</a></li>
-  <li><a href="#coexistence-and-combination">15.5.4 Coexistence and Combination</a></li>
-  <li><a href="#relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</a></li>
-  </ul>
-</li>
+<li><a href="#section-15.2">15.2 Network-Level Translation</a></li>
+<li><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a></li>
+<li><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a></li>
+<li><a href="#section-15.5">15.5 Comparative Analysis</a></li>
 <li><a href="#section-15.6">15.6 Chapter Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
@@ -2496,34 +2464,13 @@ Workloads:
                 "file": "chapter-15-WITH-FIGURES.html",
                 "short": "Beyond Traditional MMU - Alternative Translation Architectures",
                 "sections": [
-                      {
-                            "text": "15.1 Introduction",
-                            "id": "section-15.1"
-                      },
-                      {
-                            "text": "15.2 Network-Level Translation",
-                            "id": "section-15.2"
-                      },
-                      {
-                            "text": "15.3 Processing-in-Memory Translation (PIM-TLB)",
-                            "id": "section-15.3"
-                      },
-                      {
-                            "text": "15.4 Utopia: Hybrid Radix-Segments Architecture",
-                            "id": "section-15.4"
-                      },
-                      {
-                            "text": "15.5 Comparative Analysis",
-                            "id": "section-15.5"
-                      },
-                      {
-                            "text": "15.6 Chapter Summary",
-                            "id": "section-15.6"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "15.1 Introduction", "id": "section-15.1"},
+                      {"text": "15.2 Network-Level Translation", "id": "section-15.2"},
+                      {"text": "15.3 Processing-in-Memory Translation (PIM-TLB)", "id": "section-15.3"},
+                      {"text": "15.4 Utopia: Hybrid Radix-Segments Architecture", "id": "section-15.4"},
+                      {"text": "15.5 Comparative Analysis", "id": "section-15.5"},
+                      {"text": "15.6 Chapter Summary", "id": "section-15.6"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

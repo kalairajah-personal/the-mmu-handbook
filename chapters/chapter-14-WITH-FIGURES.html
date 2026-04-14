@@ -153,79 +153,13 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {  background-color: #f8f8f8; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ef2929; } /* Alert */
-    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #204a87; } /* Attribute */
-    code span.bn { color: #0000cf; } /* BaseN */
-    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4e9a06; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #8f5902; font-style: italic; } /* Comment */
-    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-    code span.dt { color: #204a87; } /* DataType */
-    code span.dv { color: #0000cf; } /* DecVal */
-    code span.er { color: #a40000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #0000cf; } /* Float */
-    code span.fu { color: #204a87; font-weight: bold; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-    code span.ot { color: #8f5902; } /* Other */
-    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
-    code span.ss { color: #4e9a06; } /* SpecialString */
-    code span.st { color: #4e9a06; } /* String */
-    code span.va { color: #000000; } /* Variable */
-    code span.vs { color: #4e9a06; } /* VerbatimString */
-    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
   
   
     figure{page-break-inside:avoid;}
@@ -762,62 +696,12 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a>
-  <ul>
-  <li><a href="#section-14.1.1">14.1.1 The Design Assumptions of Virtual Memory</a></li>
-  <li><a href="#section-14.1.2">14.1.2 LLM Memory Requirements: A Fundamental Mismatch</a></li>
-  <li><a href="#section-14.1.3">14.1.3 The TLB Reach Crisis</a></li>
-  <li><a href="#section-14.1.4">14.1.4 Memory Fragmentation in LLM Serving</a></li>
-  <li><a href="#section-14.1.5">14.1.5 Why Traditional Solutions Fall Short</a></li>
-  <li><a href="#section-14.1.6">14.1.6 The Software-Managed Memory Hypothesis</a></li>
-  <li><a href="#section-14.1.7">14.1.7 Translation-Bypass Mechanisms</a></li>
-  <li><a href="#section-14.1.8">14.1.8 Chapter Organization and Scope</a></li>
-  </ul>
-</li>
-<li><a href="#section-14.2">14.2 Memory Management Failure Modes</a>
-  <ul>
-  <li><a href="#section-14.2.1">14.2.1 Fragmentation in Pre-Allocation Systems</a></li>
-  <li><a href="#section-14.2.2">14.2.2 Page Granularity Mismatch</a></li>
-  <li><a href="#section-14.2.3">14.2.3 Traditional Workloads vs. LLM Access Patterns</a></li>
-  </ul>
-</li>
-<li><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a>
-  <ul>
-  <li><a href="#section-14.3.1">14.3.1 The PagedAttention Algorithm</a></li>
-  <li><a href="#section-14.3.2">14.3.2 Memory Management Architecture</a></li>
-  <li><a href="#section-14.3.3">14.3.3 Copy-on-Write and Memory Sharing</a></li>
-  <li><a href="#section-14.3.4">14.3.4 Experimental Evaluation</a></li>
-  <li><a href="#section-14.3.5">14.3.5 Implementation Details and Overhead Analysis</a></li>
-  <li><a href="#section-14.3.6">14.3.6 Emerging Work: Proactive Memory Scheduling (MSched)</a></li>
-  </ul>
-</li>
-<li><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a>
-  <ul>
-  <li><a href="#section-14.4.1">14.4.1 Motivation and Design Principles</a></li>
-  <li><a href="#section-14.4.2">14.4.2 Integration with Existing Virtual Memory</a></li>
-  <li><a href="#section-14.4.3">14.4.3 Experimental Evaluation on Graph Analytics</a></li>
-  <li><a href="#section-14.4.4">14.4.4 Potential Application to LLM Workloads</a></li>
-  <li><a href="#section-14.4.5">14.4.5 Comparison with vLLM and Complementary Approaches</a></li>
-  </ul>
-</li>
-<li><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a>
-  <ul>
-  <li><a href="#section-14.5.1">14.5.1 Design Space Taxonomy</a></li>
-  <li><a href="#section-14.5.2">14.5.2 Performance Characteristics from Published Results</a></li>
-  <li><a href="#section-14.5.3">14.5.3 Trade-off Analysis</a></li>
-  <li><a href="#section-14.5.4">14.5.4 When to Use Each Approach</a></li>
-  <li><a href="#section-14.5.5">14.5.5 Limitations and Unresolved Challenges</a></li>
-  </ul>
-</li>
-<li><a href="#section-14.6">14.6 Future Research Directions</a>
-  <ul>
-  <li><a href="#section-14.6.1">14.6.1 Open Problems from vLLM</a></li>
-  <li><a href="#section-14.6.2">14.6.2 Open Problems from Direct Segments</a></li>
-  <li><a href="#section-14.6.3">14.6.3 Research Gaps Not Addressed by Existing Work</a></li>
-  <li><a href="#section-14.6.4">14.6.4 Methodological Gaps</a></li>
-  <li><a href="#section-14.6.5">14.6.5 Long-Term Research Questions</a></li>
-  </ul>
-</li>
+<li><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a></li>
+<li><a href="#section-14.2">14.2 Memory Management Failure Modes</a></li>
+<li><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a></li>
+<li><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a></li>
+<li><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a></li>
+<li><a href="#section-14.6">14.6 Future Research Directions</a></li>
 <li><a href="#section-14.7">14.7 Chapter Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
@@ -3800,38 +3684,14 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
                 "file": "chapter-14-WITH-FIGURES.html",
                 "short": "Software-Managed Memory for AI Workloads",
                 "sections": [
-                      {
-                            "text": "14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving",
-                            "id": "section-14.1"
-                      },
-                      {
-                            "text": "14.2 Memory Management Failure Modes",
-                            "id": "section-14.2"
-                      },
-                      {
-                            "text": "14.3 Software-Managed Memory: The vLLM System",
-                            "id": "section-14.3"
-                      },
-                      {
-                            "text": "14.4 Translation-Bypass Mechanisms: Direct Segment Addressing",
-                            "id": "section-14.4"
-                      },
-                      {
-                            "text": "14.5 Comparative Analysis and Design Trade-offs",
-                            "id": "section-14.5"
-                      },
-                      {
-                            "text": "14.6 Future Research Directions",
-                            "id": "section-14.6"
-                      },
-                      {
-                            "text": "14.7 Chapter Summary",
-                            "id": "section-14.7"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving", "id": "section-14.1"},
+                      {"text": "14.2 Memory Management Failure Modes", "id": "section-14.2"},
+                      {"text": "14.3 Software-Managed Memory: The vLLM System", "id": "section-14.3"},
+                      {"text": "14.4 Translation-Bypass Mechanisms: Direct Segment Addressing", "id": "section-14.4"},
+                      {"text": "14.5 Comparative Analysis and Design Trade-offs", "id": "section-14.5"},
+                      {"text": "14.6 Future Research Directions", "id": "section-14.6"},
+                      {"text": "14.7 Chapter Summary", "id": "section-14.7"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Chapter 9: Advanced Page Table Optimizations</title>
   <style>
+
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -152,80 +153,14 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
   
     figure{page-break-inside:avoid;}
     figure svg{max-width:100%;height:auto;}
@@ -772,184 +707,22 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#chapter-9-advanced-page-table-optimizations"
-id="toc-chapter-9-advanced-page-table-optimizations">Chapter 9: Advanced
-Page Table Optimizations</a>
-<ul>
-<li><a href="#introduction-the-container-crisis"
-id="toc-introduction-the-container-crisis">9.1 Introduction: The
-Container Crisis</a>
-<ul>
-<li><a href="#what-this-chapter-covers"
-id="toc-what-this-chapter-covers">What This Chapter Covers</a></li>
-<li><a href="#why-these-optimizations-matter"
-id="toc-why-these-optimizations-matter">Why These Optimizations
-Matter</a></li>
-<li><a href="#relationship-to-previous-chapters"
-id="toc-relationship-to-previous-chapters">Relationship to Previous
-Chapters</a></li>
-</ul></li>
-<li><a href="#memory-deduplication-kernel-samepage-merging"
-id="toc-memory-deduplication-kernel-samepage-merging">9.2 Memory
-Deduplication: Kernel Samepage Merging</a>
-<ul>
-<li><a href="#the-problem-redundancy-everywhere"
-id="toc-the-problem-redundancy-everywhere">The Problem: Redundancy
-Everywhere</a></li>
-<li><a href="#how-ksm-works-the-three-phase-algorithm"
-id="toc-how-ksm-works-the-three-phase-algorithm">How KSM Works: The
-Three-Phase Algorithm</a></li>
-<li><a href="#page-table-implications"
-id="toc-page-table-implications">Page Table Implications</a></li>
-<li><a href="#performance-characteristics"
-id="toc-performance-characteristics">Performance
-Characteristics</a></li>
-<li><a href="#real-world-case-study-cloud-vm-consolidation"
-id="toc-real-world-case-study-cloud-vm-consolidation">Real-World Case
-Study: Cloud VM Consolidation</a></li>
-<li><a href="#when-ksm-helps-vs.-when-it-hurts"
-id="toc-when-ksm-helps-vs.-when-it-hurts">When KSM Helps vs. When It
-Hurts</a></li>
-<li><a href="#security-considerations-deduplication-side-channels"
-id="toc-security-considerations-deduplication-side-channels">Security
-Considerations: Deduplication Side Channels</a></li>
-</ul></li>
-<li><a href="#page-table-locking-and-concurrency"
-id="toc-page-table-locking-and-concurrency">9.3 Page Table Locking and
-Concurrency</a>
-<ul>
-<li><a href="#the-challenge-128-threads-one-mm_struct"
-id="toc-the-challenge-128-threads-one-mm_struct">The Challenge: 128
-Threads, One mm_struct</a></li>
-<li><a href="#page-table-locking-hierarchy"
-id="toc-page-table-locking-hierarchy">Page Table Locking
-Hierarchy</a></li>
-<li><a href="#locking-strategy-for-page-fault-handling"
-id="toc-locking-strategy-for-page-fault-handling">Locking Strategy for
-Page Fault Handling</a></li>
-<li><a href="#the-major-fault-complication"
-id="toc-the-major-fault-complication">The Major Fault
-Complication</a></li>
-<li><a href="#batched-tlb-shootdown-optimization"
-id="toc-batched-tlb-shootdown-optimization">Batched TLB Shootdown
-Optimization</a></li>
-<li><a href="#contention-measurement-and-analysis"
-id="toc-contention-measurement-and-analysis">Contention Measurement and
-Analysis</a></li>
-<li><a href="#case-study-database-fork-contention"
-id="toc-case-study-database-fork-contention">Case Study: Database Fork
-Contention</a></li>
-</ul></li>
-<li><a href="#numa-aware-page-table-management"
-id="toc-numa-aware-page-table-management">9.4 NUMA-Aware Page Table
-Management</a>
-<ul>
-<li><a href="#numa-topology-primer" id="toc-numa-topology-primer">NUMA
-Topology Primer</a></li>
-<li><a href="#the-page-table-placement-problem"
-id="toc-the-page-table-placement-problem">The Page Table Placement
-Problem</a></li>
-<li><a href="#linux-page-table-allocation-policy"
-id="toc-linux-page-table-allocation-policy">Linux Page Table Allocation
-Policy</a></li>
-<li><a href="#measuring-numa-page-table-locality"
-id="toc-measuring-numa-page-table-locality">Measuring NUMA Page Table
-Locality</a></li>
-<li><a href="#optimization-1-explicit-numa-binding"
-id="toc-optimization-1-explicit-numa-binding">Optimization 1: Explicit
-NUMA Binding</a></li>
-<li><a href="#optimization-2-page-table-migration"
-id="toc-optimization-2-page-table-migration">Optimization 2: Page Table
-Migration</a></li>
-<li><a href="#optimization-3-interleaved-allocation"
-id="toc-optimization-3-interleaved-allocation">Optimization 3:
-Interleaved Allocation</a></li>
-</ul></li>
-<li><a href="#advanced-huge-page-strategies"
-id="toc-advanced-huge-page-strategies">9.5 Advanced Huge Page
-Strategies</a>
-<ul>
-<li><a href="#the-fragmentation-problem"
-id="toc-the-fragmentation-problem">The Fragmentation Problem</a></li>
-<li><a href="#memory-compaction-fighting-fragmentation"
-id="toc-memory-compaction-fighting-fragmentation">Memory Compaction:
-Fighting Fragmentation</a></li>
-<li><a href="#production-tuning-database-workload-case-study"
-id="toc-production-tuning-database-workload-case-study">Production
-Tuning: Database Workload Case Study</a></li>
-<li><a href="#hugetlb-vs.-thp-choosing-the-right-tool"
-id="toc-hugetlb-vs.-thp-choosing-the-right-tool">HugeTLB vs. THP:
-Choosing the Right Tool</a></li>
-<li><a href="#huge-page-migration" id="toc-huge-page-migration">Huge
-Page Migration</a></li>
-</ul></li>
-<li><a href="#page-table-compaction-and-sharing"
-id="toc-page-table-compaction-and-sharing">9.6 Page Table Compaction and
-Sharing</a>
-<ul>
-<li><a href="#identifying-sparse-page-tables"
-id="toc-identifying-sparse-page-tables">Identifying Sparse Page
-Tables</a></li>
-<li><a href="#page-table-sharing-for-read-only-mappings"
-id="toc-page-table-sharing-for-read-only-mappings">Page Table Sharing
-for Read-Only Mappings</a></li>
-<li><a href="#page-table-entry-compression"
-id="toc-page-table-entry-compression">Page Table Entry
-Compression</a></li>
-</ul></li>
-<li><a href="#parallel-page-table-operations"
-id="toc-parallel-page-table-operations">9.7 Parallel Page Table
-Operations</a>
-<ul>
-<li><a href="#parallel-page-fault-handling"
-id="toc-parallel-page-fault-handling">Parallel Page Fault
-Handling</a></li>
-<li><a href="#lock-free-page-table-walks-get_user_pages_fast"
-id="toc-lock-free-page-table-walks-get_user_pages_fast">Lock-Free Page
-Table Walks (get_user_pages_fast)</a></li>
-</ul></li>
-<li><a href="#memory-compression-integration"
-id="toc-memory-compression-integration">9.8 Memory Compression
-Integration</a>
-<ul>
-<li><a href="#zswap-architecture" id="toc-zswap-architecture">zswap
-Architecture</a></li>
-<li><a href="#compression-algorithms-and-trade-offs"
-id="toc-compression-algorithms-and-trade-offs">Compression Algorithms
-and Trade-offs</a></li>
-<li><a href="#page-fault-path-with-zswap"
-id="toc-page-fault-path-with-zswap">Page Fault Path with zswap</a></li>
-<li><a href="#configuration-and-tuning"
-id="toc-configuration-and-tuning">Configuration and Tuning</a></li>
-<li><a href="#case-study-container-host-with-zswap"
-id="toc-case-study-container-host-with-zswap">Case Study: Container Host
-with zswap</a></li>
-</ul></li>
-<li><a href="#production-case-study-cloud-provider-memory-optimization-stack"
-id="toc-production-case-study-cloud-provider-memory-optimization-stack">9.9
-Production Case Study: Cloud Provider Memory Optimization Stack</a></li>
-<li><a href="#summary-and-best-practices"
-id="toc-summary-and-best-practices">9.10 Summary and Best Practices</a>
-<ul>
-<li><a href="#key-techniques-recap" id="toc-key-techniques-recap">Key
-Techniques Recap</a></li>
-<li><a href="#choosing-optimizations-for-your-workload"
-id="toc-choosing-optimizations-for-your-workload">Choosing Optimizations
-for Your Workload</a></li>
-<li><a href="#common-pitfalls-to-avoid"
-id="toc-common-pitfalls-to-avoid">Common Pitfalls to Avoid</a></li>
-<li><a href="#measurement-and-monitoring"
-id="toc-measurement-and-monitoring">Measurement and Monitoring</a></li>
-<li><a href="#looking-forward" id="toc-looking-forward">Looking
-Forward</a></li>
-<li><a href="#references" id="toc-references">References</a></li>
-</ul></li>
-</ul></li>
+<li><a href="#section-9.1">9.1 Introduction: The Container Crisis</a></li>
+<li><a href="#section-9.2">9.2 Memory Deduplication: Kernel Samepage Merging</a></li>
+<li><a href="#section-9.3">9.3 Page Table Locking and Concurrency</a></li>
+<li><a href="#section-9.4">9.4 NUMA-Aware Page Table Management</a></li>
+<li><a href="#section-9.5">9.5 Advanced Huge Page Strategies</a></li>
+<li><a href="#section-9.6">9.6 Page Table Compaction and Sharing</a></li>
+<li><a href="#section-9.7">9.7 Parallel Page Table Operations</a></li>
+<li><a href="#section-9.8">9.8 Memory Compression Integration</a></li>
+<li><a href="#section-9.9">9.9 Production Case Study: Cloud Provider Memory Optimization Stack</a></li>
+<li><a href="#section-9.10">9.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 <h1 id="chapter-9-advanced-page-table-optimizations">Chapter 9: Advanced
 Page Table Optimizations</h1>
-<h2 id="introduction-the-container-crisis">9.1 Introduction: The
+<h2 id="section-9.1">9.1 Introduction: The
 Container Crisis</h2>
 <p>On a Tuesday morning in early 2021, a major cloud provider's
 infrastructure team discovered a problem that would reshape how they
@@ -1073,7 +846,7 @@ boundaries of what's possible with these structures.</p>
 <p>Let's begin with one of the most powerful optimization techniques
 available: Kernel Samepage Merging.</p>
 <hr />
-<h2 id="memory-deduplication-kernel-samepage-merging">9.2 Memory
+<h2 id="section-9.2">9.2 Memory
 Deduplication: Kernel Samepage Merging</h2>
 <figure id="fig-9-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;"><div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;"><svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
 <defs><filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.18"/></filter>
@@ -1573,7 +1346,7 @@ targeted row refresh) that help, but they don't eliminate the risk
 entirely. For maximum security, combining KSM disablement with other
 Rowhammer protections provides defense in depth.</p>
 <hr />
-<h2 id="page-table-locking-and-concurrency">9.3 Page Table Locking and
+<h2 id="section-9.3">9.3 Page Table Locking and
 Concurrency</h2>
 <p>In 2019, AMD released the EPYC 7742—a 64-core, 128-thread processor
 targeted at cloud infrastructure and high-performance computing. Intel
@@ -1583,8 +1356,9 @@ a fundamental challenge in kernel design: how do you safely modify
 shared data structures when hundreds of threads might be accessing them
 simultaneously?</p>
 
-<figure id="fig-9-2" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-9-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs><style>text{font-family:Arial,Helvetica,sans-width:sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -1688,7 +1462,8 @@ simultaneously?</p>
 <text x="590" y="500" style="font-size:12px;fill:#444;">• THP collapse blocks all faults:</text>
 <text x="600" y="516" style="font-size:12px;fill:#BF616A;">  → mmap_lock write starvation</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.2:</strong> Linux page table locking hierarchy. mmap_lock (rwsem) is the outermost lock protecting VMA tree modifications. The per-PTE-page spinlock (pte_lock) is the innermost lock used during fault handling and reclaim. THP operations additionally hold pmd_lock. Locks must always be acquired in outer-to-inner order.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.2:</strong> Linux page table locking hierarchy. mmap_lock (rwsem) is the outermost lock protecting VMA tree modifications. The per-PTE-page spinlock (pte_lock) is the innermost lock used during fault handling and reclaim. THP operations additionally hold pmd_lock. Locks must always be acquired in outer-to-inner order.</figcaption>
 </figure>
 
 
@@ -2199,7 +1974,7 @@ model created unsustainable lock contention at scale. Connection
 pooling—an application-level solution—resolved what appeared to be a
 kernel bottleneck.</p>
 <hr />
-<h2 id="numa-aware-page-table-management">9.4 NUMA-Aware Page Table
+<h2 id="section-9.4">9.4 NUMA-Aware Page Table
 Management</h2>
 <p>Modern servers increasingly feature multiple CPU sockets, each with
 its own directly-attached memory. This Non-Uniform Memory Access (NUMA)
@@ -2207,8 +1982,9 @@ architecture provides aggregate memory bandwidth that scales with socket
 count, but it introduces a critical asymmetry: local memory accesses are
 fast, while remote memory accesses are slow.</p>
 
-<figure id="fig-9-3" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<figure id="fig-9-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2322,7 +2098,8 @@ fast, while remote memory accesses are slow.</p>
 <text x="50" y="496" style="font-size:13px;fill:#3A5070;">sysctl:</text><text x="110" y="496" style="font-size:12px;fill:#444;">kernel.numa_balancing=1 enables AutoNUMA</text>
 <text x="50" y="514" style="font-size:13px;fill:#3A5070;">numactl:</text><text x="130" y="514" style="font-size:12px;fill:#444;">numactl --cpunodebind=0 --membind=0 ./app — pins process to node 0</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.3:</strong> Linux AutoNUMA balancing flow. The kernel periodically unmaps pages (PROT_NONE) to detect cross-node access patterns, records NUMA fault statistics, and migrates hot pages to the accessing CPU's local NUMA node to reduce remote memory latency.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.3:</strong> Linux AutoNUMA balancing flow. The kernel periodically unmaps pages (PROT_NONE) to detect cross-node access patterns, records NUMA fault statistics, and migrates hot pages to the accessing CPU's local NUMA node to reduce remote memory latency.</figcaption>
 </figure>
 
 
@@ -2553,7 +2330,7 @@ Interleaved (50/50 on 2-socket): 125 ns average access</code></pre>
 <p>Interleaving is a hedge—it prevents worst-case scenarios but also
 caps best-case performance.</p>
 <hr />
-<h2 id="advanced-huge-page-strategies">9.5 Advanced Huge Page
+<h2 id="section-9.5">9.5 Advanced Huge Page
 Strategies</h2>
 <p>Chapter 4 introduced Transparent Huge Pages (THP) and showed how 2 MB
 pages dramatically reduce TLB pressure. We saw benchmark results
@@ -2562,8 +2339,9 @@ on database workloads. But those benchmarks shared a common
 characteristic: they were freshly started systems with ample free
 memory.</p>
 
-<figure id="fig-9-4" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<figure id="fig-9-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -2651,7 +2429,8 @@ memory.</p>
 <rect x="20" y="532" width="860" height="22" rx="4" style="fill:#EAF2F8;stroke:#4A7BAC;stroke-width:1;"/>
 <text x="450" y="547" style="font-size:13px;fill:#1E3A5A;text-anchor:middle;font-weight:bold;">Rule of thumb: Use THP for general workloads; HugeTLBfs for latency-critical (databases, DPDK, JVM heap &gt;8 GB)</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.4:</strong> Transparent Huge Pages versus HugeTLBfs. THP automatically collapses 512 × 4 KB pages into a 2 MB mapping via khugepaged; HugeTLBfs requires explicit reservation at boot and mmap(MAP_HUGETLB) opt-in but guarantees availability and eliminates compaction overhead.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.4:</strong> Transparent Huge Pages versus HugeTLBfs. THP automatically collapses 512 × 4 KB pages into a 2 MB mapping via khugepaged; HugeTLBfs requires explicit reservation at boot and mmap(MAP_HUGETLB) opt-in but guarantees availability and eliminates compaction overhead.</figcaption>
 </figure>
 
 
@@ -2980,14 +2759,15 @@ pages, migrating 2 MB pages is expensive:</p>
 <p>The split-migrate-merge approach adds complexity but can reduce
 latency when done incrementally.</p>
 <hr />
-<h2 id="page-table-compaction-and-sharing">9.6 Page Table Compaction and
+<h2 id="section-9.6">9.6 Page Table Compaction and
 Sharing</h2>
 <p>We've optimized the pages themselves with KSM and huge pages, and
 we've optimized page table locking for concurrency. But what about the
 page table structures themselves? Can we reduce their overhead?</p>
 
-<figure id="fig-9-5" style="text-align:center;margin:2em auto;">
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<figure id="fig-9-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
 <defs><style>text{font-family:Arial,Helvetica,sans-serif;}</style>
 <filter id="sh"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.13"/></filter>
 <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" style="fill:#5E81AC;"/></marker>
@@ -3099,7 +2879,8 @@ page table structures themselves? Can we reduce their overhead?</p>
 <text x="50" y="486" style="font-size:12px;fill:#444;">• Each page migration: unmap source PTE, copy 4KB, map destination PTE, TLB flush</text>
 <text x="50" y="502" style="font-size:12px;fill:#444;">• Latency: 1–100 ms depending on zone size; disruptive for latency-sensitive workloads</text>
 </svg>
-<figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.5:</strong> Linux memory compaction. Before compaction, movable and unmovable pages are interleaved, preventing huge page allocation. Two scanners (free and migration) move toward each other: the migration scanner relocates movable pages toward high addresses, creating a contiguous free block suitable for a 2 MB THP allocation.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.5:</strong> Linux memory compaction. Before compaction, movable and unmovable pages are interleaved, preventing huge page allocation. Two scanners (free and migration) move toward each other: the migration scanner relocates movable pages toward high addresses, creating a contiguous free block suitable for a 2 MB THP allocation.</figcaption>
 </figure>
 
 
@@ -3305,7 +3086,7 @@ increases TLB coverage by 16×.</p>
 in PMD entries serves a similar purpose by replacing 512 PTEs with a
 single 2 MB entry.</p>
 <hr />
-<h2 id="parallel-page-table-operations">9.7 Parallel Page Table
+<h2 id="section-9.7">9.7 Parallel Page Table
 Operations</h2>
 <p>On a 128-core system, serializing page table operations destroys
 scalability. Modern kernels employ several strategies to parallelize
@@ -3313,8 +3094,9 @@ operations that traditionally required global synchronization.</p>
 <h3 id="parallel-page-fault-handling">Parallel Page Fault Handling</h3>
 <p>Traditional approach serializes all faults on the mmap_lock:</p>
 
-<figure id="fig-9-6">
-<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-9-6" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -3422,7 +3204,8 @@ operations that traditionally required global synchronization.</p>
   <text x="814" y="441" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">(after PTE clear)</text>
   <text x="450" y="480" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">Rule: never acquire inner lock in write mode while holding outer lock in read mode — strict ordering prevents deadlock.</text>
 </svg>
-<figcaption><strong>Figure 9.6:</strong> Parallel page table operations via Linux fine-grained lock hierarchy. Naive single global lock serialises all CPUs (1× throughput). Linux uses mmap_lock in read mode shared by all CPUs, plus per-PTE-page spinlocks, allowing concurrent modification of independent VMAs (4× throughput). Five-level hierarchy: mmap_lock → anon_vma → page_table_lock → PTE cmpxchg → TLB IPI.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.6:</strong> Parallel page table operations via Linux fine-grained lock hierarchy. Naive single global lock serialises all CPUs (1× throughput). Linux uses mmap_lock in read mode shared by all CPUs, plus per-PTE-page spinlocks, allowing concurrent modification of independent VMAs (4× throughput). Five-level hierarchy: mmap_lock → anon_vma → page_table_lock → PTE cmpxchg → TLB IPI.</figcaption>
 </figure>
 
 <div class="sourceCode" id="cb100"><pre
@@ -3583,7 +3366,7 @@ Speedup: 7×</code></pre>
 full CPU parallelism (lockless walks can proceed on multiple CPUs
 simultaneously).</p>
 <hr />
-<h2 id="memory-compression-integration">9.8 Memory Compression
+<h2 id="section-9.8">9.8 Memory Compression
 Integration</h2>
 <p>When physical memory fills up, traditional systems swap to
 disk—writing pages to storage at ~100 MB/s for SSD, ~50 MB/s for HDD.
@@ -3593,8 +3376,9 @@ of CPU cycles.</p>
 <p>Linux's zswap provides a compressed cache layer between RAM and
 swap:</p>
 
-<figure id="fig-9-7">
-<svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<figure id="fig-9-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+  <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="540" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
   <defs>
     <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0,10 3.5,0 7" fill="#212121"/>
@@ -3676,7 +3460,8 @@ swap:</p>
   <text x="800" y="457" text-anchor="middle" font-size="12" font-weight="bold" fill="#BF616A">~10 ms</text>
   <text x="450" y="476" text-anchor="middle" font-size="12" font-weight="normal" fill="#616161">zRAM: no disk, best latency. zswap: RAM cache + disk fallback. Both use swap PTE P=0 mechanism.</text>
 </svg>
-<figcaption><strong>Figure 9.7:</strong> Memory compression pipeline: zRAM and zswap. zRAM creates a compressed in-RAM block device — page eviction compresses 4 KB to ~1–2 KB in ~5 µs; fault recovery decompresses in ~100 µs. zswap adds a compressed RAM cache in front of block swap, falling back to disk (10 ms) only when the pool fills.</figcaption>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 9.7:</strong> Memory compression pipeline: zRAM and zswap. zRAM creates a compressed in-RAM block device — page eviction compresses 4 KB to ~1–2 KB in ~5 µs; fault recovery decompresses in ~100 µs. zswap adds a compressed RAM cache in front of block swap, falling back to disk (10 ms) only when the pool fills.</figcaption>
 </figure>
 
 <pre><code>Application
@@ -3950,7 +3735,7 @@ Trade-off analysis:
   Benefit: 34% more usable memory
   Result: Worth it (CPU abundant, memory constrained)</code></pre>
 <hr />
-<h2 id="production-case-study-cloud-provider-memory-optimization-stack">9.9
+<h2 id="section-9.9">9.9
 Production Case Study: Cloud Provider Memory Optimization Stack</h2>
 <p>To illustrate how these techniques combine in practice, let's examine
 a real-world optimization project at a cloud hosting provider. This case
@@ -4086,7 +3871,7 @@ memory accounting (via /proc/meminfo, cgroup stats, etc.), the team
 wouldn't have identified page tables as the bottleneck.</p></li>
 </ol>
 <hr />
-<h2 id="summary-and-best-practices">9.10 Chapter Summary</h2>
+<h2 id="section-9.10">9.10 Chapter Summary</h2>
 <p>This chapter explored advanced page table optimizations that go well
 beyond the basic mechanisms covered in earlier chapters. We've seen how
 modern operating systems employ sophisticated techniques to reduce
@@ -4735,50 +4520,17 @@ virtual memory at scale.</p><script>
                 "file": "chapter-09-WITH-FIGURES.html",
                 "short": "Advanced Page Table Optimizations",
                 "sections": [
-                      {
-                            "text": "9.1 Introduction: The Container Crisis",
-                            "id": "introduction-the-container-crisis"
-                      },
-                      {
-                            "text": "9.2 Memory Deduplication: Kernel Samepage Merging",
-                            "id": "memory-deduplication-kernel-samepage-merging"
-                      },
-                      {
-                            "text": "9.3 Page Table Locking and Concurrency",
-                            "id": "page-table-locking-and-concurrency"
-                      },
-                      {
-                            "text": "9.4 NUMA-Aware Page Table Management",
-                            "id": "numa-aware-page-table-management"
-                      },
-                      {
-                            "text": "9.5 Advanced Huge Page Strategies",
-                            "id": "advanced-huge-page-strategies"
-                      },
-                      {
-                            "text": "9.6 Page Table Compaction and Sharing",
-                            "id": "page-table-compaction-and-sharing"
-                      },
-                      {
-                            "text": "9.7 Parallel Page Table Operations",
-                            "id": "parallel-page-table-operations"
-                      },
-                      {
-                            "text": "9.8 Memory Compression Integration",
-                            "id": "memory-compression-integration"
-                      },
-                      {
-                            "text": "9.9 Production Case Study: Cloud Provider Memory Optimization Stack",
-                            "id": "production-case-study-cloud-provider-memory-optimization-stack"
-                      },
-                      {
-                            "text": "9.10 Chapter Summary",
-                            "id": "summary-and-best-practices"
-                      },
-                      {
-                            "text": "References",
-                            "id": "references"
-                      }
+                      {"text": "9.1 Introduction: The Container Crisis", "id": "section-9.1"},
+                      {"text": "9.2 Memory Deduplication: Kernel Samepage Merging", "id": "section-9.2"},
+                      {"text": "9.3 Page Table Locking and Concurrency", "id": "section-9.3"},
+                      {"text": "9.4 NUMA-Aware Page Table Management", "id": "section-9.4"},
+                      {"text": "9.5 Advanced Huge Page Strategies", "id": "section-9.5"},
+                      {"text": "9.6 Page Table Compaction and Sharing", "id": "section-9.6"},
+                      {"text": "9.7 Parallel Page Table Operations", "id": "section-9.7"},
+                      {"text": "9.8 Memory Compression Integration", "id": "section-9.8"},
+                      {"text": "9.9 Production Case Study: Cloud Provider Memory Optimization Stack", "id": "section-9.9"},
+                      {"text": "9.10 Chapter Summary", "id": "section-9.10"},
+                      {"text": "References", "id": "references"}
                 ]
           },
           {
