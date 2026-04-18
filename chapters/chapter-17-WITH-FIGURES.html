@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 17: Page Table Walker Microarchitecture</title>
+  <style>
+
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  
+  
+    figure{page-break-inside:avoid;}
+    figure svg{max-width:100%;height:auto;}
+    @media print{figure{page-break-inside:avoid;margin:1.5em 0;}figcaption{font-size:9pt;}}
+  
+
+/* ── Sidebar (injected) ── */
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION — MMU Handbook (v2)
+══════════════════════════════════════════════════════════ */
+:root {
+  --sidebar-w: 280px;
+  --sidebar-bg: #1E2533;
+  --sidebar-border: #2E3A4E;
+  --sidebar-text: #CBD8E8;
+  --sidebar-muted: #7B92B0;
+  --sidebar-accent: #5E81AC;
+  --sidebar-hover-bg: #28324A;
+  --sidebar-active-bg: #2E3A4E;
+  --sidebar-active-text: #DDEAF5;
+  --toc-indent: #4A8A99;
+}
+
+/* Override Pandoc base body constraints */
+body {
+  margin: 0 !important;
+  margin-left: calc(var(--sidebar-w) + 40px) !important;
+  margin-right: 40px !important;
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 40px !important;
+  transition: margin-left 0.28s cubic-bezier(.4,0,.2,1);
+  box-sizing: border-box;
+}
+body.sidebar-collapsed {
+  margin-left: 56px !important;
+}
+
+/* Scroll offset so headings aren't cut off */
+h1, h2, h3, h4, h5, h6 {
+  scroll-margin-top: 24px;
+}
+
+/* ── Sidebar shell ── */
+#mmu-sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  transition: width 0.28s cubic-bezier(.4,0,.2,1);
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13.5px;
+}
+#mmu-sidebar.collapsed { width: 44px; }
+
+/* CRITICAL: override Pandoc a/a:visited inside sidebar */
+#mmu-sidebar a,
+#mmu-sidebar a:visited,
+#mmu-sidebar a:active,
+#mmu-sidebar a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* ── Header ── */
+#sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+  min-height: 52px;
+}
+#sidebar-logo { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; }
+#sidebar-logo-icon {
+  width: 28px; height: 28px;
+  background: var(--sidebar-accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+#sidebar-logo-text {
+  color: var(--sidebar-active-text);
+  font-size: 11.5px; font-weight: 600;
+  line-height: 1.3; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 1; transition: opacity 0.2s;
+}
+#mmu-sidebar.collapsed #sidebar-logo-text { opacity: 0; pointer-events: none; }
+
+#sidebar-toggle {
+  background: none; border: none; cursor: pointer;
+  padding: 5px; border-radius: 4px;
+  color: var(--sidebar-muted);
+  display: flex; align-items: center; flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+#sidebar-toggle:hover { color: var(--sidebar-active-text); background: var(--sidebar-hover-bg); }
+#sidebar-toggle svg { width: 18px; height: 18px; }
+
+/* ── Scroll area ── */
+#sidebar-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+}
+#sidebar-scroll::-webkit-scrollbar { width: 4px; }
+#sidebar-scroll::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 2px; }
+#mmu-sidebar.collapsed #sidebar-scroll { overflow: hidden; }
+
+/* ── Chapter item ── */
+.ch-item { border-bottom: 1px solid var(--sidebar-border); }
+
+.ch-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px;
+  cursor: pointer; user-select: none;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+.ch-header:hover { background: var(--sidebar-hover-bg); }
+.ch-item.active > .ch-header { background: var(--sidebar-active-bg); }
+
+.ch-num {
+  font-size: 10px; font-weight: 700;
+  color: var(--sidebar-accent);
+  background: rgba(94,129,172,0.15);
+  border-radius: 3px; padding: 1px 5px;
+  flex-shrink: 0; letter-spacing: 0.04em;
+  min-width: 26px; text-align: center;
+}
+.ch-item.active .ch-num { background: var(--sidebar-accent); color: #fff; }
+
+.ch-title-link {
+  color: var(--sidebar-text) !important;
+  flex: 1; font-size: 12.5px; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.12s;
+}
+.ch-header:hover .ch-title-link { color: var(--sidebar-active-text) !important; }
+.ch-item.active .ch-title-link { color: var(--sidebar-active-text) !important; font-weight: 500; }
+
+.ch-arrow {
+  margin-left: auto; flex-shrink: 0;
+  color: var(--sidebar-muted);
+  transition: transform 0.22s, color 0.12s;
+  width: 14px; height: 14px;
+}
+.ch-item.open .ch-arrow { transform: rotate(90deg); color: var(--sidebar-accent); }
+
+/* ── TOC list ── */
+.ch-toc {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(.4,0,.2,1);
+  background: rgba(0,0,0,0.12);
+}
+.ch-item.open .ch-toc { max-height: 2000px; }
+#mmu-sidebar.collapsed .ch-toc { max-height: 0 !important; }
+
+.toc-entry {
+  display: block;
+  padding: 5px 14px 5px 28px;
+  color: var(--sidebar-muted) !important;
+  font-size: 11.5px; line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: color 0.1s, border-color 0.1s, background 0.1s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+}
+.toc-entry:hover {
+  color: var(--sidebar-active-text) !important;
+  background: var(--sidebar-hover-bg);
+  border-left-color: var(--toc-indent);
+}
+.toc-entry.active-section {
+  color: #8BBFD4 !important;
+  border-left-color: var(--toc-indent);
+  background: rgba(74,138,153,0.12);
+  font-weight: 500;
+}
+
+/* ── Collapsed ── */
+#mmu-sidebar.collapsed .ch-header { justify-content: center; padding: 9px 0; }
+#mmu-sidebar.collapsed .ch-title-link,
+#mmu-sidebar.collapsed .ch-arrow { display: none; }
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 260px; }
+  body { margin-left: 52px !important; }
+  #mmu-sidebar { width: 44px; }
+  #mmu-sidebar.mobile-open { width: var(--sidebar-w); }
+}
+@media print {
+  #mmu-sidebar { display: none !important; }
+  body { margin-left: 0 !important; }
+}
+
+
+/* ═══ Sidebar v3 ═══ */
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION — MMU Handbook v3
+   Uses Pandoc IDs for reliable anchor navigation
+══════════════════════════════════════════════════════════ */
+:root {
+  --sb-w: 280px;
+  --sb-bg: #F5F7FA;
+  --sb-border: #DDE4EE;
+  --sb-text: #3A5070;
+  --sb-muted: #7A92AA;
+  --sb-accent: #4A7BAC;
+  --sb-hover-bg: #EAF0F8;
+  --sb-active-bg: #DDE8F4;
+  --sb-active-text: #1E3A5A;
+  --sb-toc-active: #B05A00;
+  --sb-toc-inactive: #5A7A9C;
+}
+
+/* ── Reset Pandoc body constraints ── */
+body {
+  margin: 0 !important;
+  margin-left: calc(var(--sb-w) + 36px) !important;
+  margin-right: 40px !important;
+  max-width: none !important;
+  width: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 36px !important;
+  transition: margin-left 0.26s cubic-bezier(.4,0,.2,1);
+  box-sizing: border-box;
+}
+body.sb-collapsed { margin-left: 52px !important; }
+
+/* Heading scroll offset */
+h1,h2,h3,h4 { scroll-margin-top: 20px; }
+
+/* ── Sidebar shell ── */
+#sb {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sb-w);
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex; flex-direction: column;
+  z-index: 1000; overflow: hidden;
+  transition: width 0.26s cubic-bezier(.4,0,.2,1);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+#sb.collapsed { width: 44px; }
+
+/* ── Override ALL link colours inside sidebar ── */
+#sb a,
+#sb a:link,
+#sb a:visited,
+#sb a:hover,
+#sb a:active,
+#sb a:focus {
+  color: inherit !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+/* ── Header ── */
+#sb-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 12px; border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0; min-height: 50px;
+}
+#sb-logo { display: flex; align-items: center; gap: 9px; overflow: hidden; }
+#sb-icon {
+  width: 28px; height: 28px; background: var(--sb-accent);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
+}
+#sb-wordmark {
+  color: #4A6882; font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; line-height: 1.3; white-space: nowrap;
+  opacity: 1; transition: opacity 0.2s;
+}
+#sb.collapsed #sb-wordmark { opacity: 0; pointer-events: none; }
+
+#sb-btn {
+  background: none; border: none; cursor: pointer; padding: 5px;
+  border-radius: 4px; color: #8AADCC; flex-shrink: 0;
+  display: flex; align-items: center;
+  transition: color 0.14s, background 0.14s;
+}
+#sb-btn:hover { color: var(--sb-active-text); background: var(--sb-hover-bg); }
+#sb-btn svg { width: 17px; height: 17px; }
+
+/* ── Scroll area ── */
+#sb-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden; padding: 6px 0 20px;
+  scrollbar-width: thin; scrollbar-color: var(--sb-border) transparent;
+}
+#sb-scroll::-webkit-scrollbar { width: 4px; }
+#sb-scroll::-webkit-scrollbar-thumb { background: var(--sb-border); border-radius: 2px; }
+#sb.collapsed #sb-scroll { overflow: hidden; }
+
+/* ── Chapter row ── */
+.sb-ch { border-bottom: 1px solid var(--sb-border); }
+
+.sb-ch-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; cursor: pointer; user-select: none;
+  transition: background 0.12s; white-space: nowrap;
+}
+.sb-ch-head:hover { background: var(--sb-hover-bg); }
+.sb-ch.active > .sb-ch-head { background: var(--sb-active-bg); }
+
+.sb-num {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+  color: #4A7BAC; background: rgba(74,123,172,0.1);
+  border-radius: 3px; padding: 1px 5px; flex-shrink: 0;
+  min-width: 24px; text-align: center;
+}
+.sb-ch.active .sb-num { background: var(--sb-accent); color: #fff; }
+
+.sb-ch-link {
+  color: var(--sb-text) !important;
+  flex: 1; font-size: 12.5px; line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.12s;
+}
+.sb-ch-head:hover .sb-ch-link { color: var(--sb-active-text) !important; }
+.sb-ch.active .sb-ch-link { color: var(--sb-active-text) !important; font-weight: 500; }
+
+.sb-arrow {
+  margin-left: auto; flex-shrink: 0; color: #4E6B8C;
+  transition: transform 0.2s, color 0.12s; width: 13px; height: 13px;
+}
+.sb-ch.open .sb-arrow { transform: rotate(90deg); color: var(--sb-accent); }
+
+/* ── TOC ── */
+.sb-toc {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(.4,0,.2,1);
+  background: rgba(0,0,0,0.03);
+}
+.sb-ch.open .sb-toc { max-height: 2400px; }
+#sb.collapsed .sb-toc { max-height: 0 !important; }
+
+.sb-sec {
+  display: block; padding: 5px 12px 5px 26px;
+  color: var(--sb-toc-inactive) !important;
+  font-size: 11.5px; line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: color 0.1s, background 0.1s, border-color 0.1s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sb-sec:hover {
+  color: var(--sb-active-text) !important;
+  background: rgba(74,123,172,0.1);
+  border-left-color: var(--sb-accent);
+}
+.sb-sec.here {
+  color: var(--sb-toc-active) !important;
+  border-left-color: var(--sb-toc-active);
+  background: rgba(176,90,0,0.08);
+  font-weight: 500;
+}
+
+
+/* ── Home link ── */
+#sb-home-link {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; cursor: pointer;
+  border-bottom: 1px solid var(--sb-border);
+  white-space: nowrap; color: var(--sb-text) !important;
+  font-size: 12px; font-weight: 500;
+  transition: background 0.12s;
+}
+#sb-home-link:hover { background: var(--sb-hover-bg); color: var(--sb-active-text) !important; }
+#sb.collapsed #sb-home-link span { display: none; }
+#sb.collapsed #sb-home-link { justify-content: center; padding: 9px 0; }
+
+/* ── Collapsed mode ── */
+#sb.collapsed .sb-ch-head { justify-content: center; padding: 8px 0; }
+#sb.collapsed .sb-ch-link,
+#sb.collapsed .sb-arrow { display: none; }
+
+/* ── Mobile / print ── */
+@media (max-width: 860px) {
+  :root { --sb-w: 250px; }
+  body { margin-left: 50px !important; }
+  #sb { width: 44px; }
+  #sb.mob-open { width: var(--sb-w); }
+}
+@media print {
+  #sb { display: none !important; }
+  body { margin-left: 0 !important; }
+}
+
+</style>
+  <style>
+
+      body {
+          max-width: 900px;
+          margin: 40px auto;
+          padding: 20px;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background-color: #f5f5f5;
+      }
+      .container {
+          background: white;
+          padding: 40px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      h1 {
+          color: #2c3e50;
+          border-bottom: 3px solid #3498db;
+          padding-bottom: 10px;
+      }
+      h2 {
+          color: #34495e;
+          border-bottom: 2px solid #e0e0e0;
+          padding-bottom: 8px;
+          margin-top: 40px;
+      }
+      h3 {
+          color: #555;
+          margin-top: 30px;
+      }
+      code {
+          background-color: #f4f4f4;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-family: 'Courier New', Courier, monospace;
+          font-size: 0.9em;
+      }
+      pre {
+          background-color: #f8f8f8;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          padding: 15px;
+          overflow-x: auto;
+      }
+      pre code {
+          background-color: transparent;
+          padding: 0;
+      }
+      blockquote {
+          border-left: 4px solid #3498db;
+          padding-left: 20px;
+          margin-left: 0;
+          color: #555;
+          font-style: italic;
+          background-color: #f9f9f9;
+          padding: 15px 20px;
+          border-radius: 4px;
+      }
+      table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 20px 0;
+      }
+      th, td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+      }
+      th {
+          background-color: #3498db;
+          color: white;
+      }
+      tr:nth-child(even) {
+          background-color: #f9f9f9;
+      }
+      #TOC {
+          background-color: #f0f7ff;
+          border: 1px solid #3498db;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 40px;
+      }
+      #TOC ul {
+          list-style-type: none;
+          padding-left: 20px;
+      }
+      #TOC > ul {
+          padding-left: 0;
+      }
+      #TOC a {
+          color: #2980b9;
+          text-decoration: none;
+      }
+      #TOC a:hover {
+          text-decoration: underline;
+      }
+  
+  </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Chapter 17: Page Table Walker Microarchitecture</h1>
+</header>
+
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</a></li>
+<li><a href="#section-17.2">17.2 PTW Pipeline Stages and Latency</a></li>
+<li><a href="#section-17.3">17.3 Page Walk Caches</a></li>
+<li><a href="#section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</a></li>
+<li><a href="#section-17.5">17.5 Speculative Page Table Walks</a></li>
+<li><a href="#section-17.6">17.6 PTW Parallelism and Throughput</a></li>
+<li><a href="#section-17.7">17.7 x86-64 PTW Microarchitecture</a></li>
+<li><a href="#section-17.8">17.8 ARM64 Translation Table Walk</a></li>
+<li><a href="#section-17.9">17.9 RISC-V Software-Managed PTW</a></li>
+<li><a href="#section-17.10">17.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+
+<h2 id="section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</h2>
+
+<p>Every TLB miss sets a hardware machine in motion. That machine — the page table walker (PTW) — traverses a multi-level radix tree stored in physical memory, extracts the physical frame number and permission bits from the leaf entry, and installs the result into the TLB. From the software perspective this happens invisibly and automatically. From the microarchitecture perspective, it is one of the most performance-critical circuits on a modern processor. A single cold page table walk on a DDR5 system can consume 720 to 1,000 cycles — equivalent to stalling a 4 GHz core for a quarter of a microsecond while waiting for four sequential DRAM fetches. On a workload with a TLB miss rate of one miss per hundred instructions executing at four instructions per cycle, the PTW consumes twelve percent of all available cycles. That is a worse performance tax than the L2 cache miss rate of most production server workloads.</p>
+
+<p>Chapters 3 and 4 of this book explain what the page table walker <em>does</em>: which bits of the virtual address index each level of the page table tree, how page walk caches (PWC) eliminate redundant upper-level fetches, and what the resulting latency looks like from the software perspective. This chapter asks a fundamentally different question: how is the PTW physically implemented in hardware, and what are the microarchitectural properties that determine its throughput, its vulnerability surface, and the performance cliffs that application developers need to understand?</p>
+
+<p>The answer matters across three dimensions. First, the number of Miss-Status Holding Registers (MSHRs) dedicated to concurrent page table walks sets a hard ceiling on PTW throughput that no software tuning can exceed — a fact that explains the catastrophic TLB miss penalties observed in large-memory AI/ML workloads and in-memory databases examined in Chapters 11 and 14. Second, the speculative execution properties of the PTW — specifically, whether the walker follows a P=0 (not-present) PTE speculatively before the permission check fires — are the root cause of the Foreshadow and L1 Terminal Fault (L1TF) vulnerabilities that required urgent microcode patches across the entire Intel installed base in 2018, and continue to influence SGX deployment decisions. Third, the design split between x86-64's microcode-assisted finite-state machine and ARM64's pure-hardware translation table walker has practical implications for how security patches are deployed: Intel can distribute mitigation through a microcode update; ARM implementors require either hardware revision or software workaround.</p>
+
+<p>Understanding the PTW at this level of detail has become more urgent as memory footprints have grown faster than TLB capacity. In the x86-64 architecture, the DTLB grew from 64 entries in the original Pentium 4 to 64 entries in Nehalem (2008), 64 entries in Haswell (2013), and 96 to 128 entries in current Raptor Lake (2023) — a factor of approximately 2× over 20 years. In the same period, DRAM capacity per server socket grew from 4 GB to 6 TB — a factor of 1,500×. TLB coverage, measured as the fraction of a workload's working set that can be mapped in the TLB simultaneously, has therefore collapsed by three orders of magnitude for large-memory workloads. The consequence is that the PTW, which once handled a rare exception case, is now in the critical path for a substantial fraction of all memory accesses in cloud and AI/ML workloads. This shift has driven the addition of four-walker designs (AMD Zen 4), larger STLB (second-level TLB) arrays, and dedicated Page Walk Cache capacity in every major server processor family introduced since 2020.</p>
+
+<p>The performance stakes are asymmetric across workload classes. Web services and application servers, which operate predominantly within their TLB reach, rarely see PTW-related overhead above two percent. Databases operating at the boundary of TLB reach — a common condition for in-memory databases on servers with 384 GB to 2 TB of RAM — can see PTW overhead of 10 to 20 percent, consistent with the 15 to 25 percent overhead reduction observed by Basu et al. when switching from 4 KB to 2 MB pages on graph analytics workloads. Large language model inference with batch sizes that require materialiing multi-hundred-gigabyte KV caches represents the most extreme case: the address translation overhead for a 70-billion parameter model can exceed 30 percent of wall clock time on systems without huge page support, a finding that has driven the adoption of HugePagesTHP_always kernel settings in production LLM inference clusters.</p>
+
+<p>This chapter is structured as follows. Section 17.2 dissects the PTW pipeline stages for an x86-64 four-level walk, establishing a concrete latency model for each stage. Section 17.3 covers page walk caches — the structures that eliminate upper-level fetches and are the single largest performance lever available to the PTW. Section 17.4 analyses Miss-Status Holding Registers and the concurrent walker design, including the coalescing behaviour that allows multiple TLB misses to the same page to share a single walk. Section 17.5 examines speculative page table walks and their security implications in depth. Section 17.6 extends the analysis to PTW parallelism and throughput limits under workload pressure. Sections 17.7, 17.8, and 17.9 cover the x86-64, ARM64, and RISC-V implementations respectively, highlighting the design choices that distinguish them. Section 17.10 concludes with a synthesis and forward pointer to Chapter 18's coverage of Foreshadow and its broader implications for trusted execution environments.</p>
+
+<h2 id="section-17.2">17.2 PTW Pipeline Stages and Latency</h2>
+
+<p>A hardware page table walk for a 4-level x86-64 virtual address proceeds through a fixed sequence of stages. Each stage issues a memory read to fetch one level of the page table tree, checks the resulting entry for validity and permission bits, and computes the physical base address for the next level. The full pipeline, shown in Figure 17.1, has six distinct stages.</p>
+
+<h3>Stage 0 — TLB miss detection</h3>
+<p>The load or instruction fetch unit detects that the virtual address has no matching entry in the TLB. In an out-of-order processor the TLB is accessed speculatively during the issue stage, so the miss may be detected before the load reaches the head of the retirement queue. The pipeline marks dependent instructions as blocked and raises an internal miss signal to the page table walker logic. Detection consumes one to four cycles depending on pipeline depth and whether the miss is in the instruction TLB (ITLB) or data TLB (DTLB).</p>
+
+<h3>Stage 1 — CR3 load</h3>
+<p>The walker reads CR3 (Control Register 3), which holds the physical base address of the PML4 table for the current address space. On x86-64, CR3 also carries the PCID (Process-Context Identifier) in bits 11:0 when CR4.PCIDE is set. The PML4 base address is computed as <code>CR3[51:12] &lt;&lt; 12</code>. Because CR3 changes only on context switches, processors maintain a microarchitectural buffer that caches the current CR3 value and the current PML4 base, eliminating the latency of a register read in the common case.</p>
+
+<h3>Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</h3>
+<p>Each of the four page table levels requires exactly one 8-byte aligned load from physical memory. The physical address of each entry is computed by combining the base address from the previous level with the appropriate 9-bit index extracted from the virtual address. The four index fields are VA[47:39] for PML4, VA[38:30] for PDPT, VA[29:21] for PD, and VA[20:12] for PT. Each fetch is a cache-coherent read that traverses the full L1D/L2/LLC/DRAM hierarchy. Stages proceed sequentially within a single walk — the walker cannot issue the PDPTE fetch until it has the physical address from the PML4E fetch.</p>
+
+<p>After each fetch, the walker checks the Present bit (bit 0). If P=0, the walk terminates with a page fault. If the Reserved bits are non-zero, the walker generates a #PF with error code bit 3 set. The Accessed bit (bit 5) in non-leaf entries must be set by the walker if it is clear — this requires a locked read-modify-write cycle that introduces additional latency on the first access to a new mapping.</p>
+
+<h3>Stage 6 — TLB fill</h3>
+<p>Once the leaf PTE is validated, the walker installs the physical frame number and combined permission bits (U/S, R/W, NX, global) into the TLB. On Intel processors, the TLB fill takes one to two cycles. On AMD, the fill is similarly fast but may interlock with concurrent SFENCE.VMA instructions from other threads sharing the same physical core.</p>
+
+<figure id="fig-17-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34495E"/></marker></defs>
+  <!-- Stage boxes top row -->
+  <rect x="15" y="50" width="110" height="56" rx="5" fill="#BF616A"/><text x="70" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">TLB Miss</text><text x="70" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">1–4 cycles</text>
+  <line x1="125" y1="78" x2="147" y2="78" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="148" y="50" width="110" height="56" rx="5" fill="#5E81AC"/><text x="203" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">CR3 Load</text><text x="203" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">PML4 base PA</text>
+  <line x1="258" y1="78" x2="280" y2="78" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="281" y="50" width="110" height="56" rx="5" fill="#5E81AC"/><text x="336" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">PML4E</text><text x="336" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">VA[47:39]</text>
+  <line x1="391" y1="78" x2="413" y2="78" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="414" y="50" width="110" height="56" rx="5" fill="#4A8A99"/><text x="469" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">PDPTE</text><text x="469" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">VA[38:30]</text>
+  <line x1="524" y1="78" x2="546" y2="78" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="547" y="50" width="110" height="56" rx="5" fill="#4A8A99"/><text x="602" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">PDE</text><text x="602" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">VA[29:21]</text>
+  <line x1="657" y1="78" x2="679" y2="78" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="680" y="50" width="110" height="56" rx="5" fill="#34495E"/><text x="735" y="74" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">PTE</text><text x="735" y="92" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">VA[20:12]</text>
+  <line x1="735" y1="106" x2="735" y2="136" stroke="#34495E" stroke-width="2" marker-end="url(#a1)"/>
+  <rect x="680" y="137" width="110" height="42" rx="5" fill="#34495E"/><text x="735" y="162" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">TLB Fill</text>
+  <!-- PWC shortcuts -->
+  <path d="M 281 50 Q 281 30 469 30 L 469 50" stroke="#BF616A" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+  <text x="375" y="24" font-family="Arial,sans-serif" font-size="10" fill="#BF616A" text-anchor="middle">PWC L2 hit: skip PML4E+PDPTE</text>
+  <!-- Latency table -->
+  <rect x="15" y="200" width="870" height="175" rx="5" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  <text x="30" y="222" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#34495E">Per-stage latency — x86-64 (4 GHz, DDR5)</text>
+  <!-- Headers -->
+  <text x="30" y="248" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#424242">Stage</text>
+  <text x="220" y="248" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#424242">L1D hit</text>
+  <text x="340" y="248" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#424242">LLC hit</text>
+  <text x="460" y="248" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#424242">DRAM miss</text>
+  <text x="610" y="248" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#424242">Notes</text>
+  <line x1="15" y1="253" x2="885" y2="253" stroke="#9E9E9E" stroke-width="1"/>
+  <!-- Rows -->
+  <text x="30" y="272" font-family="Arial,sans-serif" font-size="11" fill="#212121">CR3 load</text><text x="220" y="272" font-family="Arial,sans-serif" font-size="11" fill="#212121">3–4 c</text><text x="340" y="272" font-family="Arial,sans-serif" font-size="11" fill="#212121">30–50 c</text><text x="460" y="272" font-family="Arial,sans-serif" font-size="11" fill="#212121">180–200 c</text><text x="610" y="272" font-family="Arial,sans-serif" font-size="11" fill="#616161">Buffered in µarch; rarely full latency</text>
+  <text x="30" y="292" font-family="Arial,sans-serif" font-size="11" fill="#212121">Each PxE fetch ×4</text><text x="220" y="292" font-family="Arial,sans-serif" font-size="11" fill="#212121">4–5 c</text><text x="340" y="292" font-family="Arial,sans-serif" font-size="11" fill="#212121">30–50 c</text><text x="460" y="292" font-family="Arial,sans-serif" font-size="11" fill="#212121">180–250 c</text><text x="610" y="292" font-family="Arial,sans-serif" font-size="11" fill="#616161">Sequential; stage N+1 waits on N</text>
+  <text x="30" y="312" font-family="Arial,sans-serif" font-size="11" fill="#212121">Full cold walk (4 DRAM)</text><text x="220" y="312" font-family="Arial,sans-serif" font-size="11" fill="#212121">~20 c</text><text x="340" y="312" font-family="Arial,sans-serif" font-size="11" fill="#212121">~150 c</text><text x="460" y="312" font-family="Arial,sans-serif" font-size="11" fill="#212121">720–1000 c</text><text x="610" y="312" font-family="Arial,sans-serif" font-size="11" fill="#616161">Worst case; all 4 PxEs miss LLC</text>
+  <text x="30" y="332" font-family="Arial,sans-serif" font-size="11" fill="#212121">PWC warm (PTE only)</text><text x="220" y="332" font-family="Arial,sans-serif" font-size="11" fill="#212121">4–5 c</text><text x="340" y="332" font-family="Arial,sans-serif" font-size="11" fill="#212121">30–50 c</text><text x="460" y="332" font-family="Arial,sans-serif" font-size="11" fill="#212121">180–250 c</text><text x="610" y="332" font-family="Arial,sans-serif" font-size="11" fill="#616161">Common case for hot page tables</text>
+  <text x="30" y="352" font-family="Arial,sans-serif" font-size="11" fill="#212121">2 MB huge page (3 levels)</text><text x="220" y="352" font-family="Arial,sans-serif" font-size="11" fill="#212121">~15 c</text><text x="340" y="352" font-family="Arial,sans-serif" font-size="11" fill="#212121">~110 c</text><text x="460" y="352" font-family="Arial,sans-serif" font-size="11" fill="#212121">540–750 c</text><text x="610" y="352" font-family="Arial,sans-serif" font-size="11" fill="#616161">One fewer PxE fetch vs 4 KB walk</text>
+  <text x="30" y="372" font-family="Arial,sans-serif" font-size="11" fill="#212121">TLB fill</text><text x="220" y="372" font-family="Arial,sans-serif" font-size="11" fill="#212121">1–2 c</text><text x="340" y="372" font-family="Arial,sans-serif" font-size="11" fill="#212121">1–2 c</text><text x="460" y="372" font-family="Arial,sans-serif" font-size="11" fill="#212121">1–2 c</text><text x="610" y="372" font-family="Arial,sans-serif" font-size="11" fill="#616161">Always fast — internal TLB array write</text>
+  <!-- Legend -->
+  <rect x="15" y="390" width="870" height="40" rx="4" fill="#EAF2F8"/>
+  <rect x="25" y="402" width="14" height="14" rx="2" fill="#BF616A"/><text x="44" y="413" font-family="Arial,sans-serif" font-size="11" fill="#212121">Miss trigger</text>
+  <rect x="160" y="402" width="14" height="14" rx="2" fill="#5E81AC"/><text x="179" y="413" font-family="Arial,sans-serif" font-size="11" fill="#212121">Upper levels (often PWC-hit)</text>
+  <rect x="380" y="402" width="14" height="14" rx="2" fill="#4A8A99"/><text x="399" y="413" font-family="Arial,sans-serif" font-size="11" fill="#212121">Lower levels (PDE/PTE)</text>
+  <rect x="560" y="402" width="14" height="14" rx="2" fill="#34495E"/><text x="579" y="413" font-family="Arial,sans-serif" font-size="11" fill="#212121">TLB fill</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.1:</strong> x86-64 hardware PTW pipeline stages and per-stage latency table. Dashed red arrow shows the PWC shortcut path that skips upper-level fetches when page walk cache entries are present. All cycle counts at 4 GHz with DDR5 memory.</figcaption>
+</figure>
+
+<h3>Latency model and huge page impact</h3>
+<p>The dominant cost of a TLB miss is the sum of cache hierarchy latencies across all four PxE fetches. Table 1 in Figure 17.1 shows representative cycle counts. The best case — all four PxEs resident in L1D — takes approximately 20 cycles. The worst case — all four PxEs missing the LLC — takes 720 to 1,000 cycles, entirely determined by DRAM access latency. The typical production case falls between: L2/LLC-hot page tables yielding 150 to 200 cycles.</p>
+
+<p>Huge pages (2 MB pages in x86-64 terminology) reduce the walk to three stages by terminating at the PDE level. This eliminates the PTE fetch, saving one cache access. Under DRAM-miss conditions this saves 180 to 250 cycles per walk — a 25% reduction in worst-case latency. The PWC interaction with huge pages is analysed in Section 17.3.</p>
+
+<p>The five-level paging extension (PML5, enabling 57-bit virtual addresses) adds a fifth fetch stage for the PML5E lookup. This increases worst-case cold walk latency by a further 180 to 250 cycles, making the decision to enable LA57 a non-trivial performance trade-off for applications with large virtual address spaces but modest working sets. Intel documents LA57 support from Ice Lake (10th generation Core) onwards; AMD supports LA57 from Zen 4.</p>
+
+<h3>Measuring walk latency in practice</h3>
+<p>PTW latency can be measured directly on x86-64 using hardware performance counters. Intel's <code>DTLB_LOAD_MISSES.WALK_DURATION</code> counter accumulates the total number of cycles spent in active page table walks for the DTLB, and <code>DTLB_LOAD_MISSES.MISS_CAUSES_A_WALK</code> counts the number of completed walks. Dividing the former by the latter gives the average walk latency in cycles, which can be compared against the model in Figure 17.1 to estimate the proportion of walks that are LLC-resident versus DRAM-resident. AMD provides equivalent counters in its Processor Programming Reference. Linux <code>perf stat</code> exposes these through the <code>dTLB-load-misses</code> and <code>iTLB-load-misses</code> events; more detailed walk-stage counters are available as raw PMU events. This empirical measurement is the starting point for any systematic PTW performance investigation and should precede any application-level optimisation attempt.</p>
+
+<h2 id="section-17.3">17.3 Page Walk Caches</h2>
+
+<p>The page walk cache (PWC) is the single most impactful performance optimisation in the PTW. Rather than repeating all four PxE fetches for every TLB miss, the PWC caches the intermediate physical addresses computed during previous walks. A hit in the PWC eliminates one or more PxE fetches, converting a cold walk latency of 720–1,000 cycles into a warm walk latency that may be as low as 180–250 cycles (a single PTE fetch).</p>
+
+<figure id="fig-17-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="380" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34495E"/></marker></defs>
+  <!-- Virtual address decomposition -->
+  <rect x="20" y="20" width="860" height="36" rx="4" fill="#34495E"/>
+  <text x="450" y="43" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">64-bit Virtual Address</text>
+  <!-- VA bit fields -->
+  <rect x="20" y="68" width="100" height="30" rx="3" fill="#9E9E9E"/><text x="70" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">bits[63:48]</text>
+  <rect x="124" y="68" width="110" height="30" rx="3" fill="#5E81AC"/><text x="179" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">PML4 [47:39]</text>
+  <rect x="238" y="68" width="110" height="30" rx="3" fill="#5E81AC"/><text x="293" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">PDPT [38:30]</text>
+  <rect x="352" y="68" width="110" height="30" rx="3" fill="#4A8A99"/><text x="407" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">PD [29:21]</text>
+  <rect x="466" y="68" width="110" height="30" rx="3" fill="#4A8A99"/><text x="521" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">PT [20:12]</text>
+  <rect x="580" y="68" width="300" height="30" rx="3" fill="#BF616A"/><text x="730" y="88" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">Page offset [11:0] — 4 KB</text>
+  <!-- PWC Levels -->
+  <text x="450" y="130" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#34495E" text-anchor="middle">Page Walk Cache (PWC) — Three Levels</text>
+  <!-- L1 PWC -->
+  <rect x="20" y="145" width="260" height="80" rx="5" fill="#F0F4F8" stroke="#5E81AC" stroke-width="2"/>
+  <text x="150" y="168" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#5E81AC" text-anchor="middle">L1 PWC — PML4 cache</text>
+  <text x="150" y="186" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Tags: CR3 + VA[47:39]</text>
+  <text x="150" y="202" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Hit: skip PML4E fetch (~200c saved)</text>
+  <text x="150" y="218" font-family="Arial,sans-serif" font-size="11" fill="#616161" text-anchor="middle">Entries: ~4–8; flushed by CR3 write</text>
+  <!-- L2 PWC -->
+  <rect x="320" y="145" width="260" height="80" rx="5" fill="#F0F8F8" stroke="#4A8A99" stroke-width="2"/>
+  <text x="450" y="168" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#4A8A99" text-anchor="middle">L2 PWC — PDPT cache</text>
+  <text x="450" y="186" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Tags: CR3 + VA[47:30]</text>
+  <text x="450" y="202" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Hit: skip PML4E+PDPTE (~400c)</text>
+  <text x="450" y="218" font-family="Arial,sans-serif" font-size="11" fill="#616161" text-anchor="middle">Entries: ~8–16; ASID/PCID-tagged</text>
+  <!-- L3 PWC -->
+  <rect x="620" y="145" width="260" height="80" rx="5" fill="#F8F4F0" stroke="#BF616A" stroke-width="2"/>
+  <text x="750" y="168" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#BF616A" text-anchor="middle">L3 PWC — PD cache</text>
+  <text x="750" y="186" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Tags: CR3 + VA[47:21]</text>
+  <text x="750" y="202" font-family="Arial,sans-serif" font-size="11" fill="#424242" text-anchor="middle">Hit: skip 3 levels (~600c)</text>
+  <text x="750" y="218" font-family="Arial,sans-serif" font-size="11" fill="#616161" text-anchor="middle">Only PTE fetch remains</text>
+  <!-- Hit rate box -->
+  <rect x="20" y="248" width="860" height="115" rx="5" fill="#EAF2F8" stroke="#5E81AC" stroke-width="1.5"/>
+  <text x="36" y="270" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#5E81AC">PWC hit rates and walk reduction in practice</text>
+  <text x="36" y="294" font-family="Arial,sans-serif" font-size="12" fill="#212121">• Database workload (hot kernel mappings): L1 PWC hit 85–95%, effective walk ≈ 1.2 PxE fetches vs 4.0 baseline (3.3× speedup).</text>
+  <text x="36" y="314" font-family="Arial,sans-serif" font-size="12" fill="#212121">• ML training (large tensor working set): PWC hit rate drops to 20–40% as huge-page directory entries thrash the 8-entry L2 PWC.</text>
+  <text x="36" y="334" font-family="Arial,sans-serif" font-size="12" fill="#212121">• ARM64 TTW PWC: identical 3-level structure, tagged with ASID; TLBI VA/ASIDE instructions selectively invalidate entries without full flush.</text>
+  <text x="36" y="354" font-family="Arial,sans-serif" font-size="12" fill="#212121">• RISC-V (HW walker extensions): SiFive U74 implements a 2-level PWC covering L1+L2; base RISC-V has no PWC (SW handler re-computes).</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.2:</strong> Three-level Page Walk Cache (PWC) structure mapped to the VA bit fields it indexes. Hit rates and walk-reduction factors are representative of server-class workloads; ML training shows lower hit rates due to PDPT-level pressure from large tensor allocations.</figcaption>
+</figure>
+
+<h3>PWC structure and tagging</h3>
+<p>The PWC is typically organised as three independently-addressed arrays, one per non-leaf page table level. The L1 PWC caches PML4E lookups, tagged by CR3 concatenated with VA[47:39]. A hit delivers the PDPT base address, eliminating the PML4E fetch. The L2 PWC caches PDPTE lookups, tagged by CR3 and VA[47:30]. A hit delivers the PD base address, eliminating both the PML4E and PDPTE fetches. The L3 PWC caches PDE lookups, tagged by CR3 and VA[47:21]. A hit delivers the PT base address, leaving only the PTE fetch remaining.</p>
+
+<p>The tag widths reflect a design trade-off between coverage and array size. Including the full CR3 value (52 bits of page table base plus 12 bits of PCID) allows the PWC to hold entries for multiple address spaces simultaneously without invalidation on every context switch. When PCID is in use, context switches that change CR3 but preserve entries in the PWC (the PCID non-flushing path, activated by setting bit 63 of CR3 in the MOV-to-CR3 encoding) avoid invalidating any PWC entries — a significant benefit for short-lived system calls and kernel threads that share large portions of the kernel virtual address space mapping.</p>
+
+<h3>PWC invalidation</h3>
+<p>PWC entries are invalidated by the same operations that flush TLB entries: INVLPG flushes all PWC entries associated with the target virtual address. MOV to CR3 with bit 63 clear (the traditional flush) invalidates all entries in all three PWC levels. MOV to CR3 with bit 63 set (the PCID-preserving path) flushes only the entries tagged with the new CR3's PCID. On ARM64, TLBI VA/ASIDE instructions invalidate the corresponding TTW cache entries; the TTW cache equivalent to the PWC is non-architecturally specified but widely implemented.</p>
+
+<p>INVLPG (and the ARM equivalent TLBI) must invalidate not just the leaf TLB entry for the target VA, but also any PWC entries that contributed to walks for that VA. Processors that fail to do this correctly produce page table walk results that do not reflect the current state of the page table tree — a correctness bug rather than merely a performance issue. Intel and AMD document that their implementations correctly invalidate all three PWC levels on INVLPG.</p>
+
+<h3>PWC hit rates in practice</h3>
+<p>PWC effectiveness varies sharply across workload classes. For database workloads with hot kernel mappings and a moderate working set, L1 PWC hit rates of 85 to 95 percent are typical, reducing the average walk to approximately 1.2 PxE fetches rather than 4.0 — a 3.3× reduction in walk cost. Web servers and network-intensive workloads with moderate context-switch rates show L2 hit rates of 50 to 70 percent.</p>
+
+<p>Machine learning training workloads present a stress case for the PWC. Large tensor allocations backed by huge pages populate the PDE level of the page table; each 1 GB of tensor address space occupies one PDPTE and 512 PDEs. With a 6 to 16 entry L2 PWC, a training loop accessing dozens of distinct tensor objects rapidly thrashes the PDPT cache, driving hit rates below 20 percent and forcing near-full four-level walks for the majority of TLB misses. This is one of the microarchitectural mechanisms behind the higher-than-expected TLB miss penalties observed in large-model training discussed in Chapter 11.</p>
+
+<p>The PWC interacts non-trivially with context switches. On x86-64 with PCID disabled, a context switch invalidates all TLB entries and all PWC entries simultaneously, creating a cold-start penalty for the first dozen to hundred instructions in each new address space. With PCID enabled, the PWC entries for the outgoing address space are retained (tagged with its PCID), and the incoming address space can use its previously-cached PWC entries immediately — effectively eliminating the PTW cold-start overhead for processes that share a physical core in round-robin scheduling. This is one of the two primary motivations for PCID support in Linux (the other being TLB entry retention), and it is why the KPTI patch for Meltdown, which forces CR3 switches on every user/kernel boundary, is a performance regression even on processors with PCID support: the increased CR3 switch rate thrashes the PWC for both the user and kernel page table entries.</p>
+
+<p>The PWC also interacts with transparent huge page promotion in the Linux kernel. When <code>khugepaged</code> promotes a set of 4 KB pages to a 2 MB huge page, it must invalidate the PTE-level TLB entries for all 512 constituent pages using INVLPG. It must also invalidate the PDE-level PWC entry for the 2 MB region, because the newly-promoted PDE (with the PageSize bit set) replaces the former chain of PDE → page table → PTEs with a single leaf PDE. Failure to invalidate the PDE-level PWC entry would allow subsequent walks to use the stale PDE pointer to a now-freed page table, a use-after-free at the hardware level. Linux issues <code>flush_tlb_mm_range</code> on the full 2 MB range after promotion, which on x86-64 translates to INVLPG on every 4 KB page and consequently flushes the PDE PWC entry. This correctness requirement is one reason huge page promotion is conservative in frequency: the full-range INVLPG sequence is expensive and must be executed with the page table lock held, creating a latency spike for threads accessing the promoted region.</p>
+
+<p>RISC-V processors with software-managed TLBs lack a PWC by definition — the software handler re-traverses the full page table tree on every miss. Hardware walker extensions introduced by SiFive (U74 core) and T-Head (XuanTie C910) implement a two-level PWC covering the L1 and L2 levels, bringing their warm walk performance within a factor of two of equivalent ARM64 implementations.</p>
+
+<h2 id="section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</h2>
+
+<p>The PTW does not stall the entire processor on a TLB miss. Instead, like the data cache, it uses Miss-Status Holding Registers (MSHRs) to track outstanding walks and allow independent instructions to continue executing. The number of PTW-MSHR entries is the hard ceiling on PTW throughput: it determines how many TLB misses can be serviced concurrently, and when it is exhausted, every subsequent TLB miss stalls the load queue until a slot is freed.</p>
+
+<figure id="fig-17-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="400" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34495E"/></marker></defs>
+  <!-- Load Queue -->
+  <rect x="15" y="30" width="195" height="195" rx="5" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.5"/>
+  <text x="112" y="52" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#34495E" text-anchor="middle">OOO Load Queue</text>
+  <rect x="30" y="62" width="165" height="34" rx="4" fill="#BF616A"/><text x="112" y="80" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">LD 0x7FFF_A000 → miss</text><text x="112" y="92" font-family="Arial,sans-serif" font-size="10" fill="#ffd" text-anchor="middle">Page 0x7FFF_A → alloc MSHR[0]</text>
+  <rect x="30" y="102" width="165" height="34" rx="4" fill="#5E81AC"/><text x="112" y="120" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">LD 0x7FFF_A020 → coalesce</text><text x="112" y="132" font-family="Arial,sans-serif" font-size="10" fill="#ddf" text-anchor="middle">Same page → join MSHR[0]</text>
+  <rect x="30" y="142" width="165" height="34" rx="4" fill="#4A8A99"/><text x="112" y="160" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">LD 0x8001_B000 → miss</text><text x="112" y="172" font-family="Arial,sans-serif" font-size="10" fill="#dff" text-anchor="middle">New page → alloc MSHR[1]</text>
+  <rect x="30" y="182" width="165" height="36" rx="4" fill="#E0E0E0" stroke="#9E9E9E" stroke-dasharray="4,3"/><text x="112" y="204" font-family="Arial,sans-serif" font-size="11" fill="#757575" text-anchor="middle">LD 0x9000_C000 → STALL</text>
+  <!-- Arrows -->
+  <line x1="210" y1="79" x2="295" y2="100" stroke="#BF616A" stroke-width="2" marker-end="url(#a3)"/>
+  <line x1="210" y1="119" x2="295" y2="108" stroke="#5E81AC" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a3)"/>
+  <line x1="210" y1="159" x2="295" y2="170" stroke="#4A8A99" stroke-width="2" marker-end="url(#a3)"/>
+  <!-- MSHR Table -->
+  <rect x="296" y="30" width="240" height="195" rx="5" fill="#FFF8F0" stroke="#34495E" stroke-width="2"/>
+  <text x="416" y="52" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#34495E" text-anchor="middle">PTW-MSHR Table</text>
+  <rect x="310" y="62" width="212" height="56" rx="4" fill="#BF616A"/>
+  <text x="416" y="80" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">MSHR[0] — ACTIVE</text>
+  <text x="416" y="96" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">Tag: page 0x7FFF_A | Stage: PTE</text>
+  <text x="416" y="110" font-family="Arial,sans-serif" font-size="10" fill="#ffd" text-anchor="middle">Waiters: LD@A000, LD@A020 (coalesced)</text>
+  <rect x="310" y="124" width="212" height="48" rx="4" fill="#4A8A99"/>
+  <text x="416" y="142" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">MSHR[1] — ACTIVE</text>
+  <text x="416" y="158" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle">Tag: page 0x8001_B | Stage: PDE</text>
+  <text x="416" y="170" font-family="Arial,sans-serif" font-size="10" fill="#dff" text-anchor="middle">Waiters: LD@B000</text>
+  <rect x="310" y="178" width="212" height="38" rx="4" fill="#F5F5F5" stroke="#9E9E9E" stroke-dasharray="4,3"/>
+  <text x="416" y="201" font-family="Arial,sans-serif" font-size="11" fill="#9E9E9E" text-anchor="middle">MSHR[2] — FREE (stall point)</text>
+  <!-- Arrows to walkers -->
+  <line x1="536" y1="90" x2="615" y2="90" stroke="#BF616A" stroke-width="2" marker-end="url(#a3)"/>
+  <line x1="536" y1="148" x2="615" y2="148" stroke="#4A8A99" stroke-width="2" marker-end="url(#a3)"/>
+  <!-- PTW Engine -->
+  <rect x="616" y="30" width="265" height="195" rx="5" fill="#F0F8F0" stroke="#5E81AC" stroke-width="2"/>
+  <text x="748" y="52" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#34495E" text-anchor="middle">PTW Engine</text>
+  <rect x="630" y="62" width="237" height="50" rx="4" fill="#BF616A"/>
+  <text x="748" y="83" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">Walker 0 — PTE fetch</text>
+  <text x="748" y="100" font-family="Arial,sans-serif" font-size="11" fill="#ffd" text-anchor="middle">Issued L2 cache read for MSHR[0]</text>
+  <rect x="630" y="118" width="237" height="50" rx="4" fill="#4A8A99"/>
+  <text x="748" y="139" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">Walker 1 — PDE fetch</text>
+  <text x="748" y="156" font-family="Arial,sans-serif" font-size="11" fill="#dff" text-anchor="middle">Issued LLC read for MSHR[1]</text>
+  <rect x="630" y="174" width="237" height="42" rx="4" fill="#E0E0E0" stroke="#9E9E9E" stroke-dasharray="4,3"/>
+  <text x="748" y="196" font-family="Arial,sans-serif" font-size="11" fill="#9E9E9E" text-anchor="middle">Walker 2 — idle (Intel: max 2)</text>
+  <!-- Impact box -->
+  <rect x="15" y="242" width="866" height="140" rx="5" fill="#EAF2F8" stroke="#5E81AC" stroke-width="1.5"/>
+  <text x="30" y="264" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#5E81AC">MSHR coalescing and blocking behaviour</text>
+  <text x="30" y="286" font-family="Arial,sans-serif" font-size="12" fill="#212121">Coalescing: Two loads to the same 4 KB page require exactly one TLB entry and therefore share one MSHR and one walk. The walk installs the PTE once; both loads are woken simultaneously at TLB fill. This is why cache-line access patterns within a page incur only one TLB miss — not one per load.</text>
+  <text x="30" y="308" font-family="Arial,sans-serif" font-size="12" fill="#212121">Parallelism: Walker 0 at PTE stage and Walker 1 at PDE stage execute simultaneously; they access different cache lines and proceed independently through the L1D/L2/LLC hierarchy.</text>
+  <text x="30" y="330" font-family="Arial,sans-serif" font-size="12" fill="#212121">Blocking: When all MSHRs are occupied, new TLB misses stall the load queue until a walk completes and its MSHR is freed. This is the PTW bottleneck on large-working-set workloads (Basu et al., ISCA 2013). AMD Zen 4 raises the ceiling to 4 concurrent walkers, providing 2× the throughput of Intel's 2-walker design under MSHR-bound workloads.</text>
+  <text x="30" y="350" font-family="Arial,sans-serif" font-size="12" fill="#212121">Huge pages: A 2 MB walk terminates at the PDE stage (3 levels, not 4), freeing the MSHR one stage sooner and improving throughput by ~25% under MSHR-bound conditions — independent of the TLB coverage benefit.</text>
+  <text x="30" y="372" font-family="Arial,sans-serif" font-size="12" fill="#616161">Vendor comparison: Intel Haswell–current: 2 walkers. Intel SapphireRapids: 2 walkers + improved coalescing. AMD Zen 4: 4 walkers. ARM Cortex-A710: 2 TTWs. AWS Graviton3: 2 TTWs per core.</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.3:</strong> PTW MSHR coalescing and parallel walker operation. Two loads to the same 4 KB page share MSHR[0] (one walk, one TLB fill). Walker 0 and Walker 1 progress independently on different pages simultaneously. A third miss stalls until a walker slot is freed.</figcaption>
+</figure>
+
+<h3>MSHR allocation and coalescing</h3>
+<p>When a TLB miss occurs, the processor checks whether an MSHR entry already exists for the same 4 KB page (identified by the virtual page number, CR3, and PCID/ASID). If a matching entry exists, the new miss is <em>coalesced</em> onto that entry: it joins the waiter list without triggering a second walk. When the walk completes and the TLB entry is installed, all waiters are woken simultaneously. Coalescing is the reason that a scatter access pattern across N distinct cache lines within a single 4 KB page incurs exactly one TLB miss, not N misses — a fact that has significant implications for data structure layout decisions in systems programming.</p>
+
+<p>If no matching MSHR entry exists, the processor allocates a new PTW-MSHR entry, assigns a hardware walker to begin the walk, and adds the triggering load to the waiter list. If all MSHR entries are occupied, the load and all subsequent loads that miss in the TLB are stalled until one walk completes and its MSHR is freed. This stall is the PTW bottleneck under large working set conditions.</p>
+
+<h3>Concurrent walker capacity by microarchitecture</h3>
+<p>Intel x86-64 processors from Haswell (2013) through current Raptor Lake implement two concurrent PTW-MSHR entries. Intel SapphireRapids (Xeon 4th Gen, 2023) maintains two walkers but improves internal walker pipeline depth, reducing average walk latency by approximately 10 to 15 percent under LLC-hot conditions. AMD Zen 4 (EPYC Genoa, 2022) increases the concurrent walker count to four, providing a 2× improvement in PTW throughput under MSHR-bound workloads compared to Intel's two-walker design. This is a deliberate server-market differentiation: data centre workloads with large memory footprints — in-memory databases, virtualised environments, large-model inference — are far more likely to be PTW-bound than client workloads.</p>
+
+<p>ARM Cortex-A710 (ARMv9, 2021) implements two hardware TTWs per core. AWS Graviton3 (Neoverse V1 core, 2021) implements two TTWs per core; Graviton4 (Neoverse V2, 2023) documents improved TTW throughput without specifying the walker count, consistent with either a deeper pipeline or additional coalescing logic. The ARM Architecture Reference Manual deliberately does not mandate a minimum TTW count, leaving the implementation choice to silicon designers.</p>
+
+<h3>Coalescing window and temporal locality</h3>
+<p>The effectiveness of MSHR coalescing depends on the temporal locality of TLB misses to the same page. Two loads to the same page are coalesced only if the second miss arrives while the first walk's MSHR entry is still active — that is, before the walk completes and the MSHR is freed. In practice, the coalescing window is determined by walk latency: a 200-cycle walk provides a 200-cycle window during which any subsequent miss to the same virtual page is coalesced for free. This temporal requirement has an important implication for data structure layout: sequential access patterns within a page (e.g., iterating a 4 KB array) naturally fall within the coalescing window even at high IPC, while non-sequential scatter-gather patterns that revisit the same page after visiting many other pages may miss the coalescing window and incur multiple walks to the same physical page in succession.</p>
+
+<p>Software prefetch instructions (<code>PREFETCHT0</code>, <code>PREFETCHT1</code>) can trigger TLB lookups that warm the TLB for subsequent accesses. On processors where prefetch instructions cause TLB fills (x86-64 Skylake and later, ARM64 Cortex-A710 and later), a prefetch that TLB-misses will initiate a walk and install the TLB entry before the demand load arrives, converting a TLB-miss penalty into a background operation overlapped with useful computation. This "TLB prefetching" effect is exploited explicitly by some HPC libraries and is a latent benefit of software prefetch intrinsics that is rarely discussed in prefetch tuning guides.</p>
+
+<h3>MSHR starvation and the PTW bottleneck</h3>
+<p>The theoretical analysis of MSHR starvation was formalised by Barr et al. (ISCA 2010). With two walker slots and a cold walk latency of 200 ns (800 cycles at 4 GHz), maximum sustained PTW throughput is 2 ÷ 800 cycles = 0.0025 walks per cycle. At a TLB miss rate of 0.01 misses per instruction and an IPC of 3, the processor needs 0.03 walks per cycle — twelve times more than two concurrent walkers can supply. In this regime, IPC collapses to a fraction of peak: nearly every load that touches a page not in the TLB stalls immediately after issue.</p>
+
+<p>Basu et al. (ISCA 2013) measured this effect empirically using graph analytics workloads on a real system: PTW-bound execution reduced effective IPC from 2.8 to 0.4 — a 7× degradation attributable entirely to TLB miss stalls with no cache miss involvement. Their proposed mitigation, direct segments (large flat virtual-to-physical mappings that bypass the page table tree entirely), is discussed in Chapter 16. A complementary hardware approach — increasing walker count and MSHR depth — is the path taken by AMD Zen 4.</p>
+
+<p>Huge pages interact with MSHR occupancy in a second important way: because a 2 MB walk terminates at the PDE stage (three levels, not four), the walk completes faster, freeing the MSHR sooner and increasing throughput under MSHR-bound conditions by approximately 25 percent independent of the TLB coverage benefit. This second-order effect — faster walk = shorter MSHR occupancy = higher throughput — is separate from and additive to the primary TLB reach benefit of huge pages.</p>
+
+<h2 id="section-17.5">17.5 Speculative Page Table Walks</h2>
+
+<p>Modern out-of-order processors do not wait for a load to reach the head of the retirement queue before initiating a TLB lookup. The TLB is accessed speculatively, during the issue stage, on the basis of an address that may have been computed from instructions that have not yet retired. If the address later turns out to be incorrect — due to a mispredicted branch, a cancelled instruction, or a preceding store that forwards a different value — the TLB lookup result is discarded and the pipeline is redirected. This speculative behaviour is architecturally transparent in the common case.</p>
+
+<figure id="fig-17-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="380" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34495E"/></marker></defs>
+  <!-- Normal speculative walk (P=1) -->
+  <rect x="15" y="20" width="410" height="170" rx="5" fill="#F0F8F0" stroke="#4A8A99" stroke-width="2"/>
+  <text x="220" y="44" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#4A8A99" text-anchor="middle">Normal speculative walk (P=1 PTE)</text>
+  <text x="30" y="68" font-family="Arial,sans-serif" font-size="12" fill="#212121">1. OOO issue: speculative load at VA_X</text>
+  <text x="30" y="88" font-family="Arial,sans-serif" font-size="12" fill="#212121">2. TLB miss → PTW initiates walk speculatively</text>
+  <text x="30" y="108" font-family="Arial,sans-serif" font-size="12" fill="#212121">3. PTE fetched: P=1, permissions valid</text>
+  <text x="30" y="128" font-family="Arial,sans-serif" font-size="12" fill="#212121">4. TLB filled; dependent load resumes</text>
+  <text x="30" y="148" font-family="Arial,sans-serif" font-size="12" fill="#212121">5. Load retires: address confirmed correct</text>
+  <text x="30" y="168" font-family="Arial,sans-serif" font-size="12" fill="#4A8A99">→ Architecturally transparent. Normal case.</text>
+  <!-- L1TF/Foreshadow mechanism (P=0) -->
+  <rect x="475" y="20" width="410" height="170" rx="5" fill="#FFF0F0" stroke="#BF616A" stroke-width="2"/>
+  <text x="680" y="44" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#BF616A" text-anchor="middle">Foreshadow/L1TF (P=0 PTE)</text>
+  <text x="490" y="68" font-family="Arial,sans-serif" font-size="12" fill="#212121">1. OOO issue: speculative load at VA_X</text>
+  <text x="490" y="88" font-family="Arial,sans-serif" font-size="12" fill="#212121">2. TLB miss → PTW initiates walk speculatively</text>
+  <text x="490" y="108" font-family="Arial,sans-serif" font-size="12" fill="#BF616A">3. PTE fetched: P=0 — but PTW reads PA field!</text>
+  <text x="490" y="128" font-family="Arial,sans-serif" font-size="12" fill="#BF616A">4. PA in PTE[51:12] used to speculatively</text>
+  <text x="490" y="142" font-family="Arial,sans-serif" font-size="12" fill="#BF616A">   fetch from L1D cache (cache fill occurs)</text>
+  <text x="490" y="162" font-family="Arial,sans-serif" font-size="12" fill="#BF616A">5. #PF raised at retirement — but data in L1D!</text>
+  <!-- Middle arrow -->
+  <text x="450" y="108" font-family="Arial,sans-serif" font-size="18" fill="#9E9E9E" text-anchor="middle">vs</text>
+  <!-- Cache side-channel -->
+  <rect x="15" y="210" width="870" height="155" rx="5" fill="#FFF8E0" stroke="#BF616A" stroke-width="1.5"/>
+  <text x="30" y="232" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#BF616A">L1 Terminal Fault (L1TF / Foreshadow) — CVE-2018-3615/3620/3646</text>
+  <text x="30" y="256" font-family="Arial,sans-serif" font-size="12" fill="#212121">Root cause: Pre-2018 Intel CPUs speculatively walk P=0 PTEs and issue L1D cache fills using the non-present PTE's physical address field, even though the architecture requires a #PF before the access retires. The cache fill is not rolled back.</text>
+  <text x="30" y="278" font-family="Arial,sans-serif" font-size="12" fill="#212121">Exploit path: An attacker populates L1D with victim data (e.g. SGX enclave secrets), then triggers a speculative walk against a P=0 PTE whose physical address field points to the victim's frame. A Flush+Reload or Prime+Probe side-channel reveals the cache residency.</text>
+  <text x="30" y="300" font-family="Arial,sans-serif" font-size="12" fill="#212121">Hardware mitigations: Intel microcode update (2018) suppresses speculative L1D fills when PTE.P=0. SGX shadow paging (INVEPT-based) clears PTE.P for non-enclave frames, preventing the speculation path.</text>
+  <text x="30" y="322" font-family="Arial,sans-serif" font-size="12" fill="#212121">ARM64: The TTW specification is silent on P=0 speculation; Cortex-A implementations do not document this behaviour. No publicly confirmed equivalent to L1TF has been demonstrated on ARM64 silicon.</text>
+  <text x="30" y="344" font-family="Arial,sans-serif" font-size="12" fill="#212121">RISC-V SW PTW: Structurally immune — the software trap handler explicitly checks the PTE before acting. No speculation pathway exists for P=0 PTEs in the trap path.</text>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.4:</strong> Speculative page table walk paths for P=1 vs P=0 PTEs, and the L1 Terminal Fault (L1TF/Foreshadow) exploit mechanism. Pre-2018 Intel CPUs speculatively fill L1D from the physical address in a not-present PTE, enabling cache side-channel exfiltration.</figcaption>
+</figure>
+
+<h3>The security-critical case: speculative walks on P=0 PTEs</h3>
+<p>The question that becomes security-critical is what happens when a speculative TLB access misses, and the processor speculatively initiates a page table walk for a virtual address that the retiring instruction will never be permitted to access. For a PTE with the Present bit (P) set to 1 and permissions that allow the access, a speculative walk installs a TLB entry that the eventual permission check at retirement may or may not reject. If the check fails, the TLB entry is not used and the #PF is delivered. This is architecturally correct behaviour and has no persistent side-effects beyond the transient TLB entry.</p>
+
+<p>For a PTE with P=0 — a not-present page — the architectural expectation is that the walk terminates immediately with a page-fault exception. The processor is expected to generate the fault and deliver it when the load retires; the physical address field of the PTE (bits 51:12) has no architectural meaning for a not-present entry and should not be acted upon. Pre-2018 Intel processors violated this expectation in a security-critical way: on encountering a P=0 PTE during a speculative walk, the hardware read the physical address from bits 51:12 of the not-present PTE and issued a speculative L1D cache fill for that physical address before the permission check fired.</p>
+
+<h3>L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</h3>
+<p>This behaviour is the root cause of the Foreshadow vulnerability family (Van Bulck et al., 2018), also referred to by Intel as L1 Terminal Fault (L1TF). An attacker who can control the physical address field of a not-present PTE — a capability available to the host hypervisor, a co-resident VM, or in the SGX variant (Foreshadow-SGX, CVE-2018-3615), an untrusted enclave — can cause the speculative walk to fill L1D with data from an arbitrary physical frame. The L1D contents can then be exfiltrated using a Flush+Reload or Prime+Probe side-channel without the speculative load ever retiring.</p>
+
+<p>Three distinct attack surfaces were disclosed simultaneously. CVE-2018-3615 (Foreshadow-SGX) targets Intel SGX enclaves: the hypervisor maps the enclave's memory with P=0, places the target physical address in the PTE, and triggers speculative walks from a co-resident untrusted enclave. CVE-2018-3620 targets OS and System Management Mode (SMM) memory: kernel-mode attackers construct not-present PTEs pointing at protected physical frames. CVE-2018-3646 targets virtual machine memory: a guest VM can cause speculative L1D fills from host physical memory by crafting not-present PTEs in guest page tables, then exfiltrate data through a shared L1D on SMT (Hyper-Threading) cores.</p>
+
+<h3>Mitigations and residual risk</h3>
+<p>Intel's primary mitigation is a microcode update that causes the processor to suppress speculative L1D fills when the PTE.P bit is zero. This is implemented in microcode because the fill-suppression logic requires modifying the PTW's behaviour after the PTE has been fetched but before the speculative memory access is issued — a stage accessible only to microcode on Intel's FSM-plus-microcode architecture. The microcode patch was distributed through operating system firmware updates beginning in August 2018 and is now universally deployed on affected Intel platforms.</p>
+
+<p>For SGX deployments, Intel additionally introduced a hardware-enforced mitigation in newer silicon: the SGX L1D flush on enclave exit ensures that L1D does not contain enclave data when context switches to untrusted code. Hypervisors deploy L1D flush on VM exit as a software mitigation on patched but not hardware-hardened systems.</p>
+
+<p>ARM64's Translation Table Walker is a pure hardware FSM with no microcode involvement. ARM does not publicly document whether its implementations issue speculative fills from P=0 TTEs; no equivalent to L1TF has been publicly demonstrated on any ARM64 silicon. RISC-V software-managed TLB designs are structurally immune: the trap handler is architectural software that explicitly checks the PTE before acting on the physical address field, and no speculation pathway exists for not-present pages in the trap handler's execution context.</p>
+
+<p>The speculative walk interacts with Spectre variant 1 (bounds-check bypass) in a subtle way that is less widely understood than L1TF. A Spectre v1 gadget can speculatively compute an out-of-bounds virtual address and trigger a TLB lookup (and potentially a PTW) for that address before the bounds check retires. If the speculative walk installs a TLB entry for a kernel virtual address (because the kernel mappings are present in the page table during user-mode execution, as was the case before KPTI), the TLB entry's presence can be detected through cache timing. KPTI prevents this by removing kernel mappings from the user-mode page table entirely — ensuring that speculative PTW on kernel addresses fails at the PML4 level rather than installing a usable TLB entry. This interaction between Spectre v1 mitigations and PTW behaviour illustrates why page table isolation must be understood in conjunction with speculative execution, not as an independent design choice.</p>
+
+<p>Chapter 18 examines Foreshadow and the broader class of microarchitectural data sampling (MDS) attacks in detail, including the RIDL, Fallout, and ZombieLoad variants that exploit related speculative execution properties of the store and load buffers.</p>
+
+<h2 id="section-17.6">17.6 PTW Parallelism and Throughput</h2>
+
+<p>The throughput of the page table walker — measured in walks completed per unit time — is determined by the interaction of three factors: the number of concurrent walker slots (MSHR capacity), the latency of each walk (determined by cache hierarchy state), and the degree to which walks can be pipelined. Understanding these interactions is essential for diagnosing performance degradation in large-memory workloads.</p>
+
+<h3>Throughput ceiling analysis</h3>
+<p>Given W concurrent walkers and an average walk latency of L cycles, the maximum PTW throughput is W/L walks per cycle. For Intel's two-walker design with a worst-case cold walk of 800 cycles, the ceiling is 0.0025 walks per cycle. For AMD Zen 4's four-walker design with the same latency, the ceiling is 0.005 walks per cycle. LLC-hot walks (150 cycles) raise both ceilings by 5.3× to 0.013 and 0.027 walks per cycle respectively.</p>
+
+<p>These ceilings must be compared to the walk demand generated by the workload. Walk demand equals the TLB miss rate (misses per instruction) multiplied by the instruction issue rate (IPC). A workload with a miss rate of 0.01 misses per instruction and an IPC of 3 generates 0.03 walks per cycle — exceeding Intel's LLC-hot ceiling and far exceeding the DRAM-miss ceiling. AMD's four-walker design meets the LLC-hot demand at this miss rate, but both architectures remain bottlenecked under DRAM-miss conditions.</p>
+
+<h3>Pipelining between walks</h3>
+<p>Within a single walk, stages are strictly sequential — the walker cannot issue the PDPTE fetch until the PML4E fetch has returned a physical address. However, two independent walkers (for two different virtual pages) can interleave their stage fetches through the cache hierarchy. Walker 0 at the PTE stage (waiting for an L2 cache response) and Walker 1 at the PDE stage (waiting for an LLC response) simultaneously occupy different cache banks and generate independent cache requests. This is the microarchitectural parallelism that makes concurrent walkers effective even when each individual walk is serialised across stages.</p>
+
+<h3>Interaction with huge pages</h3>
+<p>Huge pages (2 MB) improve PTW throughput through two independent mechanisms. The direct mechanism is the 25% reduction in walk stages (three levels vs four), which reduces average walk latency. The indirect mechanism is the reduction in MSHR occupancy time: a shorter walk frees the MSHR sooner, allowing it to be reallocated to a new miss more quickly. Under MSHR-bound conditions where all walker slots are perpetually occupied, the indirect mechanism can contribute as much throughput improvement as the direct mechanism.</p>
+
+<p>1 GB huge pages (1 GB pages using PDPTE with the PageSize bit set) reduce the walk to two levels — CR3 load and a single PDPTE fetch — providing a further 33% reduction in walk stages relative to 2 MB pages. However, 1 GB page mappings are rarely used for data in practice due to fragmentation pressure: a single 1 GB allocation requires a physically contiguous gigabyte of DRAM, which is increasingly difficult to satisfy in a long-running system with fragmented physical memory.</p>
+
+<h3>Workload characterisation and the TLB-to-PTW handoff</h3>
+<h3>Practical throughput optimisation strategies</h3>
+<h3>NUMA effects on PTW latency</h3>
+<p>On multi-socket NUMA systems, the physical location of page table entries relative to the executing core significantly affects PTW latency. When a process is migrated from socket 0 to socket 1 after its page tables were allocated on socket 0's local DRAM, all four PxE fetches during a cold walk must cross the inter-socket interconnect (UPI on Intel, Infinity Fabric on AMD), incurring a NUMA latency penalty of 1.5× to 2.5× relative to local access. For a cold four-level walk that would take 720 cycles with local page tables, cross-socket PTW can require 1,100 to 1,800 cycles — placing it firmly in the regime where PTW stalls dominate execution. The mitigation is NUMA-local page table allocation: the Linux kernel's <code>MADV_DONTFORK</code> and <code>move_pages</code> system calls can be used to migrate page table physical pages to the socket where a thread is pinned, and the <code>numactl --localalloc</code> policy ensures future page table allocations are NUMA-local. Production HPC and ML training frameworks that pin threads to sockets and use process migration consistently show 15 to 40 percent PTW latency reductions from NUMA-local page table allocation, a benefit that dwarfs the effect of many application-level memory access pattern optimisations.</p>
+
+<p>Given the throughput ceiling analysis, the available levers for PTW-bound workloads are limited but impactful. First, increasing huge page coverage reduces both walk depth and MSHR occupancy time. Linux's <code>transparent_hugepages=always</code> setting enables automatic 2 MB promotion for anonymous memory; explicitly using <code>madvise(MADV_HUGEPAGE)</code> on large allocations provides finer control for latency-critical code paths. Second, NUMA-local allocation policies reduce DRAM latency for page table fetches — a page table allocated on a remote NUMA node incurs NUMA latency multiplier (typically 1.5–2×) on every DRAM-miss PTW stage, compounding the cold walk penalty. Third, pre-faulting large memory regions with <code>mmap(MAP_POPULATE)</code> or <code>mlock()</code> eliminates first-access PTW overhead at the cost of upfront kernel time. Fourth, on AMD Zen 4 systems, the four-walker design means that workloads which saturate Intel's two-walker ceiling may achieve significantly better performance without any software changes.</p>
+
+<p>Not all high TLB miss workloads are PTW-bound. A workload that generates a high TLB miss rate but accesses page tables that are entirely LLC-resident (a common case for databases with hot buffer pool metadata) will have high walk frequency but low per-walk latency. The PTW-MSHR bottleneck manifests specifically when walk latency is high — i.e., when page tables are DRAM-resident. This occurs when the total size of the page table tree exceeds the LLC capacity, which for a workload using 4 KB pages and a 3-level tree happens at approximately LLC_size × 512 bytes of data (since each 4 KB page table entry maps 4 KB of data, and the page table overhead is 1/512th of the data size for a single-level mapping).</p>
+
+<h2 id="section-17.7">17.7 x86-64 PTW Microarchitecture</h2>
+
+<p>The x86-64 page table walker is implemented as a combination of a hardware finite-state machine and microcode routines stored in the processor's on-die microcode ROM. This dual implementation reflects the ISA's history: the x86 page table format was designed in the 1980s with complex exception semantics (reserved bit faults, A/D bit maintenance, NX enforcement) that are difficult to implement efficiently in pure hardware without significant silicon area. The microcode-assisted approach allows the common case (present pages, no permission violations, A bit already set) to be handled by the fast hardware FSM, while delegating exception cases to microcode sequences that can construct and deliver precise exceptions without adding hardware complexity.</p>
+
+<figure id="fig-17-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
+<div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
+    <svg width="900" height="360" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- Headers -->
+  <rect x="15" y="15" width="220" height="38" rx="4" fill="#34495E"/>
+  <text x="125" y="38" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">Property</text>
+  <rect x="240" y="15" width="200" height="38" rx="4" fill="#5E81AC"/>
+  <text x="340" y="38" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">x86-64</text>
+  <rect x="445" y="15" width="200" height="38" rx="4" fill="#4A8A99"/>
+  <text x="545" y="38" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">ARM64</text>
+  <rect x="650" y="15" width="235" height="38" rx="4" fill="#34495E"/>
+  <text x="767" y="38" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">RISC-V (base / w/ HW ext)</text>
+  <!-- Rows -->
+  <rect x="15" y="53" width="870" height="40" fill="#F5F5F5"/>
+  <text x="22" y="77" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">PTW trigger</text>
+  <text x="247" y="77" font-family="Arial,sans-serif" font-size="11" fill="#212121">HW FSM on TLB miss</text>
+  <text x="452" y="77" font-family="Arial,sans-serif" font-size="11" fill="#212121">HW FSM on TLB miss</text>
+  <text x="657" y="71" font-family="Arial,sans-serif" font-size="11" fill="#BF616A">SW trap (base)</text>
+  <text x="657" y="85" font-family="Arial,sans-serif" font-size="11" fill="#4A8A99">HW FSM (SiFive U74+)</text>
+  <rect x="15" y="93" width="870" height="40" fill="#fff"/>
+  <text x="22" y="117" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">Implementation</text>
+  <text x="247" y="111" font-family="Arial,sans-serif" font-size="11" fill="#212121">Microcode-assisted FSM</text>
+  <text x="247" y="125" font-family="Arial,sans-serif" font-size="10" fill="#616161">µcode ROMs + control logic</text>
+  <text x="452" y="111" font-family="Arial,sans-serif" font-size="11" fill="#212121">Pure hardware TTW FSM</text>
+  <text x="452" y="125" font-family="Arial,sans-serif" font-size="10" fill="#616161">No microcode involvement</text>
+  <text x="657" y="111" font-family="Arial,sans-serif" font-size="11" fill="#212121">OS/firmware routine</text>
+  <text x="657" y="125" font-family="Arial,sans-serif" font-size="10" fill="#616161">HW walker opt. in SiFive/T-Head</text>
+  <rect x="15" y="133" width="870" height="40" fill="#F5F5F5"/>
+  <text x="22" y="157" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">Root pointer reg</text>
+  <text x="247" y="157" font-family="Arial,sans-serif" font-size="11" fill="#212121">CR3 (PCID[11:0])</text>
+  <text x="452" y="157" font-family="Arial,sans-serif" font-size="11" fill="#212121">TTBR0/TTBR1_EL1 (ASID)</text>
+  <text x="657" y="157" font-family="Arial,sans-serif" font-size="11" fill="#212121">satp (MODE+ASID+PPN)</text>
+  <rect x="15" y="173" width="870" height="40" fill="#fff"/>
+  <text x="22" y="197" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">VA / page table modes</text>
+  <text x="247" y="191" font-family="Arial,sans-serif" font-size="11" fill="#212121">4-level (48-bit) / 5-level (57-bit)</text>
+  <text x="247" y="205" font-family="Arial,sans-serif" font-size="10" fill="#616161">PML5 on Intel Ice Lake+</text>
+  <text x="452" y="191" font-family="Arial,sans-serif" font-size="11" fill="#212121">4-level (48-bit) / 5-level (52-bit)</text>
+  <text x="452" y="205" font-family="Arial,sans-serif" font-size="10" fill="#616161">LPA2 ext for 52-bit PA</text>
+  <text x="657" y="191" font-family="Arial,sans-serif" font-size="11" fill="#212121">Sv39/Sv48/Sv57/Sv64</text>
+  <text x="657" y="205" font-family="Arial,sans-serif" font-size="10" fill="#616161">satp.MODE selects depth</text>
+  <rect x="15" y="213" width="870" height="40" fill="#F5F5F5"/>
+  <text x="22" y="237" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">Concurrent walkers</text>
+  <text x="247" y="231" font-family="Arial,sans-serif" font-size="11" fill="#212121">2 (Haswell–current)</text>
+  <text x="247" y="245" font-family="Arial,sans-serif" font-size="10" fill="#616161">AMD Zen 4: 4 walkers</text>
+  <text x="452" y="231" font-family="Arial,sans-serif" font-size="11" fill="#212121">Impl-defined (A710: 2)</text>
+  <text x="452" y="245" font-family="Arial,sans-serif" font-size="10" fill="#616161">Spec does not mandate count</text>
+  <text x="657" y="231" font-family="Arial,sans-serif" font-size="11" fill="#212121">N/A (SW serialises) / HW: 1</text>
+  <text x="657" y="245" font-family="Arial,sans-serif" font-size="10" fill="#616161">SW trap is inherently serial</text>
+  <rect x="15" y="253" width="870" height="40" fill="#fff"/>
+  <text x="22" y="277" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">Speculative walks</text>
+  <text x="247" y="271" font-family="Arial,sans-serif" font-size="11" fill="#BF616A">Yes — incl. P=0 (pre-L1TF µcode)</text>
+  <text x="247" y="285" font-family="Arial,sans-serif" font-size="10" fill="#BF616A">Mitigated by 2018 microcode update</text>
+  <text x="452" y="271" font-family="Arial,sans-serif" font-size="11" fill="#212121">Impl-defined; likely yes</text>
+  <text x="452" y="285" font-family="Arial,sans-serif" font-size="10" fill="#616161">No published L1TF equivalent</text>
+  <text x="657" y="271" font-family="Arial,sans-serif" font-size="11" fill="#4A8A99">No — trap handler checks PTE</text>
+  <text x="657" y="285" font-family="Arial,sans-serif" font-size="10" fill="#4A8A99">Structurally immune (SW path)</text>
+  <rect x="15" y="293" width="870" height="40" fill="#F5F5F5"/>
+  <text x="22" y="317" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#212121">Fault register</text>
+  <text x="247" y="317" font-family="Arial,sans-serif" font-size="11" fill="#212121">CR2 = faulting VA; #PF at retire</text>
+  <text x="452" y="317" font-family="Arial,sans-serif" font-size="11" fill="#212121">FAR_EL1 = VA; Data/Instr Abort</text>
+  <text x="657" y="317" font-family="Arial,sans-serif" font-size="11" fill="#212121">stval = VA; page-fault exception</text>
+  <!-- Grid lines -->
+  <line x1="15" y1="53" x2="885" y2="53" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="93" x2="885" y2="93" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="133" x2="885" y2="133" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="173" x2="885" y2="173" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="213" x2="885" y2="213" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="253" x2="885" y2="253" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="293" x2="885" y2="293" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="15" y1="333" x2="885" y2="333" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="240" y1="15" x2="240" y2="333" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="445" y1="15" x2="445" y2="333" stroke="#9E9E9E" stroke-width="1"/>
+  <line x1="650" y1="15" x2="650" y2="333" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="15" y="15" width="870" height="318" fill="none" stroke="#9E9E9E" stroke-width="1.5"/>
+</svg>
+  </div>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.5:</strong> PTW design comparison across x86-64, ARM64, and RISC-V across six properties. RISC-V base is structurally immune to speculative-walk attacks; Intel's microcode patch path allows L1TF mitigations without silicon re-spin.</figcaption>
+</figure>
+
+<h3>FSM structure and microcode handoff</h3>
+<p>Intel's hardware PTW FSM handles the walk stages described in Section 17.2. The FSM reads PxE entries from the cache hierarchy, validates the P bit and permission fields, maintains the A bit (and D bit in the leaf PTE), and computes the next stage's physical address. When the walk encounters a condition that requires exception delivery — P=0 PTE, reserved bit set, privilege violation, NX violation — the FSM transfers control to a microcode sequence. The microcode sequence constructs the page fault error code (indicating the type of violation), sets CR2 to the faulting virtual address, and initiates #PF delivery through the normal exception mechanism.</p>
+
+<p>The microcode-assisted design provides a critical operational advantage: security mitigations that require changes to PTW behaviour can be deployed through microcode updates without silicon re-spin. Intel's response to Spectre, Meltdown, L1TF, and subsequent vulnerabilities has relied extensively on microcode updates that modify the FSM's speculative behaviour. This capability is unavailable to ARM and RISC-V implementors with pure-hardware TTW designs.</p>
+
+<h3>PCID interaction and context-switch optimisation</h3>
+<p>Process-Context Identifiers (PCID), introduced in Intel Westmere and ARM64's equivalent ASID (Address Space Identifiers), allow the TLB and PWC to hold entries for multiple address spaces simultaneously. In the x86-64 PTW, the 12-bit PCID is included in the PWC tag, so PWC entries are not invalidated on a PCID-preserving context switch (MOV to CR3 with bit 63 set). This avoids the costly full PWC flush on every context switch, which was a significant source of overhead before PCID support was added to Linux (KPTI patch, 2018).</p>
+
+<p>The KPTI (Kernel Page-Table Isolation) mitigation for Meltdown doubles the cost of the user-to-kernel transition by switching to a separate page table that contains only the minimal kernel mappings needed for the interrupt/syscall entry path. KPTI uses PCID to maintain separate PCID values for the user and kernel page tables of each process, allowing the PTW and TLB to hold both mapping sets simultaneously and avoid cold-start penalties on the common system call path. The PTW overhead of this approach is approximately 5 to 10% on system-call-intensive workloads and negligible on compute-bound workloads.</p>
+
+<h3>Microcode update mechanics for PTW behaviour</h3>
+<p>Intel's microcode ROM update mechanism is worth understanding in depth because it is the primary delivery vehicle for PTW-related security mitigations. Intel processors contain a microcode ROM that is loaded during manufacturing and a smaller RAM-based microcode patch area that is written by BIOS or the operating system during boot. The OS delivers microcode updates via the <code>WRMSR</code> instruction on MSR 0x79 (IA32_BIOS_UPDT_TRIG) after the BIOS loads the primary update; subsequent late microcode loads can be applied per-core via the same mechanism. The PTW's finite-state machine can be redirected to execute different microcode sequences for specific PTE conditions — including the L1TF mitigation, which inserts a check on PTE.P before initiating the speculative L1D fill, and the Accessed bit atomicity improvements in SGX-capable processors. Because the PTW microcode patch area is per-core and persistent across reboots (loaded at each boot by the kernel's <code>intel-microcode</code> module), the effective PTW behaviour on a patched system differs from factory silicon in measurable ways: the L1TF-mitigated PTW adds 1 to 3 cycles per walk for the additional PTE.P validation step, an overhead visible in <code>DTLB_LOAD_MISSES.WALK_DURATION</code> counter comparisons between pre- and post-patch measurements.</p>
+
+<h3>5-level paging (LA57)</h3>
+<h3>Accessed and Dirty bit maintenance</h3>
+<p>The Accessed (A) and Dirty (D) bits in page table entries must be maintained by the hardware walker on x86-64. If the A bit in any non-leaf PTE is clear when a walk traverses it, the walker must set it atomically (using a locked CMPXCHG or equivalent microcode sequence) before proceeding to the next level. If the Dirty bit in the leaf PTE is clear on a write access, the walker must set it. These atomic RMW operations introduce additional latency when page table entries are cold: a first access to a freshly-mapped page incurs not just four sequential cache reads but also up to four atomic read-modify-write operations if the A bits are clear throughout the tree. On NUMA systems, this can cause cross-socket bus traffic for page table entries allocated on a different NUMA domain — an effect that is particularly pronounced in first-touch allocation policies where the page table itself may live far from the core executing the first access.</p>
+
+<p>Intel Ice Lake (2019) and AMD Zen 4 (2022) introduced 5-level paging support through the LA57 CPU feature flag. When enabled via CR4.LA57=1, the PTW inserts an additional PML5E fetch stage before the PML4E stage, extending virtual addresses to 57 bits (128 PiB user address space). The PTW FSM is extended with a fifth stage; the PWC acquires a fourth level caching PML5E lookups. The performance impact of LA57 is approximately one additional memory access per TLB miss on a cold walk (15 to 25 percent latency increase), and requires a larger PWC to maintain equivalent hit rates under the wider virtual address space.</p>
+
+<h2 id="section-17.8">17.8 ARM64 Translation Table Walk</h2>
+
+<p>ARM64's Translation Table Walker (TTW) is a pure-hardware finite-state machine with no microcode involvement. The TTW is specified in the ARM Architecture Reference Manual (ARM DDI 0487) and implemented independently by each licensee — resulting in varying walker counts, pipeline depths, and speculative behaviour across implementations from Apple, Qualcomm, Amazon, Ampere, and others.</p>
+
+<h3>TTW structure and TTBR organisation</h3>
+<p>ARM64 maintains two translation table base registers per exception level: TTBR0_EL1 for user-space mappings (VA[63]=0) and TTBR1_EL1 for kernel mappings (VA[63]=1). This split eliminates the need for separate page table trees at context switch — only TTBR0_EL1 must be updated when switching between user processes, while TTBR1_EL1 (the kernel mapping) remains constant. Each TTBR holds the base physical address of the L0 table and the ASID (Address Space Identifier), a 16-bit tag that identifies the address space for TLB and TTW cache entries.</p>
+
+<p>The ARM64 page table walk depth depends on the configured translation granule (4 KB, 16 KB, or 64 KB) and the VA width. With the common 4 KB granule and 48-bit VAs (TCR_EL1.T0SZ=16), the walk proceeds through four levels: L0 (VA[47:39]), L1 (VA[38:30]), L2 (VA[29:21]), and L3 (VA[20:12]). With 52-bit VAs (LPA2 extension) and 4 KB granule, a five-level walk is used. With 64 KB granule and 48-bit VAs, a three-level walk suffices because each table entry covers a larger VA range.</p>
+
+<h3>Stage-2 translation and nested walks</h3>
+<p>ARM64's hardware virtualisation extension (ARMv8-A VHE, implemented in Cortex-A55 and later) supports two-stage address translation: Stage 1 translates the guest virtual address to the guest physical address (IPA), and Stage 2 translates the IPA to the host physical address (HPA). The TTW performs both stages in sequence, meaning that each of the N Stage-1 PxE fetches must itself be translated through Stage 2 before it can be used. For a four-level Stage-1 walk with a four-level Stage-2 walk, the total number of memory accesses reaches (4+1) × 4 + 1 = 21 in the cold case — a catastrophic latency of several thousand cycles if all accesses miss the LLC.</p>
+
+<p>This nested walk penalty is mitigated in practice by the Stage-2 TLB (IPA-to-HPA cache), which caches the most recently used IPA-to-HPA translations and eliminates the Stage-2 re-walk for hot mappings. ARM processors also maintain a combined Stage-1/Stage-2 TLB that caches the fully-resolved guest-VA-to-HPA translation, bypassing both stages on a hit. The nested walk cost is therefore primarily visible during working set expansion or after VMID-tagged TLB flushes, not on steady-state access patterns.</p>
+
+<h3>TLBI instruction granularity</h3>
+<h3>Hardware Dirty State Management (HDBM)</h3>
+<p>ARM64's optional Hardware Dirty Bit Management (HDBM) extension, introduced in ARMv8.1-A, allows the hardware TTW to set the Dirty Bit Modifier (DBM) in page table entries rather than requiring a software page-fault handler for write-fault-on-clean-page flows. Without HDBM, a write to a read-only mapped page causes a permission fault; the OS handler sets the page's dirty bit and retries. With HDBM enabled, the TTW detects the dirty-bit-modifier flag in the PTE and atomically upgrades the mapping to writable without invoking software, eliminating one round-trip through the fault handler per initially-clean writable page. This is architecturally equivalent to x86-64's hardware A/D bit maintenance but is optional in ARM64 (the Cortex-A710 and Apple M-series both implement HDBM). Operating systems that exploit HDBM (Linux since 4.14 on ARMv8.1+ systems) see measurable reductions in page-fault overhead for copy-on-write workloads.</p>
+
+<h3>Implementation survey: Apple M-series and AWS Graviton</h3>
+<p>The ARM64 TTW specification's implementation freedom has produced meaningfully different designs across major licensees. Apple's M-series processors (M1 through M4) are notable for their extremely high L1 DTLB capacity — 192 entries in the M1 Firestorm cores versus 64 in contemporary ARM Cortex-A cores — combined with a large STLB (second-level TLB) shared between cores in each cluster. The practical effect is that M-series chips reach TLB saturation at far larger working sets than Cortex-A equivalents, deferring the PTW bottleneck to workloads that would be firmly PTW-bound on server-class ARM designs. Apple does not publish the M-series TTW walker count, but microbenchmarks by Dougall Johnson and others suggest a single hardware walker per performance core, compensated by the large TLB arrays that reduce miss frequency dramatically. The M-series also implements the HDBM extension (Hardware Dirty Bit Management), which Apple exploits in macOS's copy-on-write page fault path to reduce fault-handler overhead.</p>
+
+<p>AWS Graviton3 (Neoverse V1) and Graviton4 (Neoverse V2) are designed specifically for cloud workloads where memory footprint and TLB pressure are primary concerns. Graviton3 increased the Neoverse N1's 48-entry L1 DTLB to 64 entries and expanded the STLB, consistent with AWS's observation that many cloud workloads are TLB-miss-intensive at scale. Graviton4 is documented as having "improved" address translation throughput without specific public disclosure of walker count or STLB capacity. Both designs implement 16-bit ASIDs (as permitted by ARMv8.1-A), allowing simultaneous TLB residency for up to 65,535 distinct address spaces — a significant advantage for container-dense cloud workloads that would otherwise cause ASID exhaustion and forced TLB flushes.</p>
+
+<p>ARM64 provides a rich set of TLB invalidation instructions (TLBI) that allow fine-grained invalidation without full TLB flushes. TLBI VAE1IS invalidates the entry for a specific VA in the inner-shareable domain. TLBI ASIDE1IS invalidates all entries tagged with a specific ASID. TLBI VMALLE1IS invalidates all entries for the current VMID. The TTW cache (PWC equivalent) is invalidated by the same TLBI instructions, ensuring that subsequent walks use the updated page table entries. The granularity of ARM64 TLBI instructions exceeds that of x86-64's INVLPG in two important respects: TLBI can target specific ASID-tagged entries without invalidating entries for other address spaces, and TLBI operations are broadcast to all cores in the inner-shareable domain in a single instruction, eliminating the need for the explicit IPI-based TLB shootdown mechanism required on x86-64.</p>
+
+<h2 id="section-17.9">17.9 RISC-V Software-Managed PTW</h2>
+
+<p>The base RISC-V privileged architecture specification (The RISC-V Instruction Set Manual, Volume II: Privileged Architecture, version 1.12) deliberately omits a hardware page table walker. This is a conscious design choice: the RISC-V philosophy favours a minimal, composable base specification with optional extensions, rather than mandating microarchitectural choices that may not suit all implementation targets. For embedded and real-time systems where TLB miss rate is low and code size is at a premium, a software-managed TLB is perfectly adequate. For server and cloud deployments, hardware walker extensions are available from multiple vendors.</p>
+
+<h3>Base RISC-V TLB miss handling</h3>
+<p>When a TLB miss occurs in a RISC-V processor with satp.MODE set to Sv39, Sv48, or Sv57, the hardware raises a page-fault exception and transfers control to the supervisor exception handler at the address in stvec. The faulting virtual address is recorded in stval. The handler is responsible for walking the page table tree in software: loading satp to obtain the root PPN, computing the physical address of each page table entry using ordinary load instructions, validating the chain of entries, and installing the result into the TLB using a privileged instruction sequence followed by SFENCE.VMA.</p>
+
+<p>The software handler must be extremely fast — any instruction that faults during the handler's execution while executing at supervisor privilege may recursively invoke the same handler (a double fault scenario). For this reason, RISC-V operating systems pin the TLB miss handler and the page table structures it accesses in the TLB, typically using a dedicated wired TLB entry for the handler code and a locked physical region for the root page table. Linux's RISC-V port uses a global kernel direct mapping that is pre-populated in the TLB to avoid this recursion.</p>
+
+<h3>Sv39, Sv48, Sv57, and Sv64 modes</h3>
+<p>RISC-V supports four virtual address widths controlled by satp.MODE: Sv39 (39-bit VA, three levels), Sv48 (48-bit VA, four levels), Sv57 (57-bit VA, five levels), and the draft Sv64 (64-bit VA, six levels). The walk depth determines the number of load instructions the handler must execute and the number of TLB entries that must be wired. Sv48 is the most commonly implemented mode in current RISC-V server processors (SiFive P670, SpacemiT X60). Sv57 is available on the XuanTie C910 and has been announced for several upcoming server designs. Sv64 remains in draft status as of 2024.</p>
+
+<p>Each page table level for Sv39 and Sv48 uses a 512-entry array of 8-byte PTEs, identical in structure to the x86-64 format but with different bit assignments. The page table base address is computed from satp[43:0] (the PPN field) shifted left by 12 bits. The per-level index is extracted from the VA at the same 9-bit boundaries as x86-64, enabling direct comparisons of walk depth and latency.</p>
+
+<h3>Hardware walker extensions</h3>
+<p>Multiple RISC-V processor vendors have implemented optional hardware page table walkers. SiFive's U74 core (used in the HiFive Unmatched development board and RISC-V Linux reference platforms) implements a hardware walker for Sv39 and Sv48 with a two-level PWC. The walker reduces TLB miss latency from 100–500 cycles (software handler round-trip) to 20–200 cycles (hardware walk), bringing performance within a factor of two of equivalent ARM64 implementations. T-Head's XuanTie C910 (used in the Alibaba Xuantie series) implements hardware Sv39/Sv48/Sv57 walking with a similar two-level PWC structure.</p>
+
+<p>The RISC-V H extension (hypervisor extension, ratified in version 1.0) adds support for two-stage address translation (VS-stage and G-stage) equivalent to ARM64's Stage-1/Stage-2 mechanism. Hardware walker implementations that support the H extension must perform nested walks using the same combinatorial approach as ARM64, incurring equivalent nested walk penalties for guest VA-to-HPA translation. The Sv57×4 mode (57-bit guest VA with 4-level G-stage) is the most demanding supported configuration, requiring up to 25 memory accesses in the fully cold case.</p>
+
+<h3>Cost model and software-hardware tradeoff</h3>
+<h3>Impact on OS design</h3>
+<p>The software-managed TLB has a profound influence on RISC-V OS design. Because the TLB miss handler executes as ordinary supervisor code, it is fully observable and modifiable: OS developers can instrument miss handlers, add custom caching layers, or implement hardware-accelerated walks in firmware without any silicon involvement. The Linux RISC-V port leverages this flexibility in its hugetlb implementation: the supervisor-mode miss handler explicitly checks for 2 MB and 1 GB huge page PTEs during the walk, enabling huge page support without any hardware changes to the TLB fill mechanism. This contrasts with x86-64 and ARM64, where huge page handling is implemented in hardware FSMs that cannot be altered without a silicon revision.</p>
+
+<p>The tradéoff is portability of timing assumptions. Software miss handlers introduce variability that hardware FSM implementations eliminate: a cache miss in the miss handler code path (e.g., a cold branch prediction) can increase handler latency by 50 to 200 cycles, a variance that is invisible to the hardware-walker model and must be accounted for in real-time system design on RISC-V platforms. SiFive's hardware walker extensions address this by providing deterministic, firmware-transparent walk latency for time-critical embedded applications while preserving the software handler as a fallback for exceptional cases.</p>
+
+<p>The cost of a software-managed TLB miss on a RISC-V processor without a hardware walker includes: trap entry (save registers, switch to S-mode privilege: 20–40 cycles); satp read and root PPN extraction (2–4 cycles); per-level load and PTE validation (4–50 cycles per level depending on cache state); SFENCE.VMA and trap return (10–20 cycles). Total: 60–200 cycles for an L1D-hot walk, rising to 600–2,000 cycles for a walk where all PxEs miss the LLC. The software overhead relative to a hardware walk at equivalent cache state is 40–100 cycles — significant for high-miss-rate workloads but negligible for workloads where TLB miss rate is below 0.001 misses per instruction.</p>
+
+<h2 id="section-17.10">17.10 Chapter Summary</h2>
+
+<p>The hardware page table walker sits at the intersection of performance, security, and ISA design — a circuit that was once an implementation detail but has become a first-order constraint on system scalability as memory capacities have outpaced TLB coverage by three orders of magnitude over the past two decades. This chapter has built a complete microarchitectural model of PTW behaviour, from the six pipeline stages of a cold x86-64 walk to the ISA-level design choices that determine whether a vulnerability like L1TF can be patched in software or requires a silicon revision.</p>
+
+<p>The hardware page table walker is the circuit that converts a TLB miss into a TLB entry, and its microarchitectural properties determine the performance floor for any workload whose working set exceeds the TLB's coverage. This chapter has examined those properties in depth: from the pipeline stages of an individual walk through the concurrency limits imposed by MSHR capacity, to the security-critical speculative behaviour that produced the Foreshadow vulnerability class and its continuing influence on processor design.</p>
+
+<p>The x86-64 PTW proceeds through six sequential stages — TLB miss detection, CR3 load, and four page table level fetches — with each stage issuing a cache-coherent memory read through the L1D/L2/LLC/DRAM hierarchy. Cold walk latency ranges from 20 cycles when all PxEs are L1D-resident to 720–1,000 cycles when all four levels miss to DRAM. The page walk cache eliminates upper-level fetches for temporally local access patterns and is the single largest PTW performance lever available within the existing architecture: an L2 PWC hit reduces a four-level walk to a single PTE fetch, reducing worst-case walk latency by 75 percent. Machine learning training and large-scale graph workloads are the primary stress cases for PWC effectiveness, as their irregular access patterns exhaust the small PDPT-level PWC arrays.</p>
+
+<p>Miss-Status Holding Registers set a hard ceiling on PTW throughput that no software optimisation can exceed. Intel's two-walker design has remained constant since Haswell (2013); AMD Zen 4 doubled this to four walkers, a deliberate server-market differentiation for large-memory workloads. Coalescing — the sharing of a single walk across multiple loads to the same 4 KB page — is an underappreciated feature that makes access patterns within a page effectively free from a TLB perspective, and has implications for data structure alignment decisions. Under MSHR-bound conditions, huge pages improve throughput through two independent mechanisms: reduced walk depth (fewer PxE fetches) and reduced MSHR occupancy time (faster walk completion frees the slot sooner).</p>
+
+<p>Speculative page table walks are the microarchitectural feature that connects this chapter directly to security. Pre-2018 Intel processors speculatively issued L1D cache fills from the physical address encoded in not-present PTEs, enabling the L1 Terminal Fault (L1TF/Foreshadow) family of attacks. The critical design difference between x86-64 (microcode-assisted FSM) and ARM64 (pure hardware TTW) is not merely a performance consideration: it determines the patch surface. Intel can distribute L1TF mitigations through microcode updates; ARM implementors require silicon revision or software mitigation. RISC-V software-managed TLBs are structurally immune to this class of attack because the trap handler explicitly validates the PTE before acting on any physical address.</p>
+
+<p>ARM64's Translation Table Walker introduces two additional complexities not present in x86-64: the ASID-tagged dual-TTBR organisation eliminates kernel page table context switches at the cost of a split virtual address space, and the two-stage translation mechanism for virtualisation (Stage 1 + Stage 2) multiplies walk depth dramatically in the cold case, making the Stage-2 TLB critical for virtualisation performance. RISC-V's extensible design allows software-managed TLBs for resource-constrained deployments and hardware walkers (SiFive U74, XuanTie C910) for server deployments, with the H extension providing hardware-accelerated two-stage translation for hypervisor workloads.</p>
+
+<p>The three-ISA comparison crystallises a fundamental design tension in computer architecture. x86-64's microcode-assisted FSM prioritises flexibility and patchability: the L1TF mitigation, the PCID-preserving context switch optimisation, the LA57 extension, and the SGX shadow paging mechanism all required only microcode updates, delivered without silicon replacement to billions of deployed processors. The cost of this flexibility is complexity — the FSM-plus-microcode architecture requires careful validation, and microcode bugs have produced security vulnerabilities in their own right (e.g., the Reptar vulnerability in November 2023, which involved incorrect EEVEX prefix handling in the PTW-adjacent prefix decoder). ARM64's pure hardware TTW prioritises determinism and energy efficiency: the absence of a microcode ROM eliminates a category of microcode-specific bugs and reduces silicon area, but forces security mitigations into either new silicon tapeouts or software workarounds. RISC-V's software-managed base design maximises composability at the cost of miss-handler latency variance, with hardware walker extensions providing an opt-in performance path that avoids mandating area costs on resource-constrained implementations.</p>
+
+<p>For systems architects and performance engineers, the practical synthesis of this chapter is a decision framework for diagnosing and addressing PTW-related bottlenecks. The first diagnostic is measurement: <code>DTLB_LOAD_MISSES.WALK_DURATION</code> divided by <code>DTLB_LOAD_MISSES.MISS_CAUSES_A_WALK</code> gives average walk latency in cycles, immediately revealing whether the bottleneck is MSHR saturation (high walk count, low per-walk latency) or LLC/DRAM miss rate (low walk count, high per-walk latency). The second diagnostic is PWC hit rate: a walk duration consistently at the PTE-only level (~40 cycles LLC-hit) indicates excellent PWC effectiveness; a duration near the full four-fetch latency indicates PWC thrashing. The third is NUMA locality: walk latencies above 400 cycles on a system with LLC-resident page tables almost always indicate cross-socket PTW. Each diagnostic points to a distinct intervention: MSHR saturation → huge pages and working set reduction; high per-walk latency → NUMA-local page table allocation and LLC pressure reduction; PWC thrashing → huge pages to reduce PDPTE-level pressure. Chapter 20 will return to TLB consistency and shootdown overhead, the complementary side of TLB management that determines the cost of page table modification operations rather than page table walk operations.</p>
+
+<p>Chapter 18 examines Foreshadow and the broader microarchitectural data sampling (MDS) vulnerability class in depth — including RIDL, Fallout, and ZombieLoad — analysing how speculative execution properties of the load buffer, store buffer, and fill buffer extend the attack surface beyond the PTW itself and inform the design of current and future trusted execution environments.</p>
+
+<h2 id="references">References</h2>
+<ol>
+<li><p>Barr, T. W., Cox, A. L., and Rixner, S. (2010). Translation caching: Skip, don't walk (the page table). <em>Proceedings of the 37th Annual International Symposium on Computer Architecture (ISCA)</em>, 48–59. https://doi.org/10.1145/1815961.1815970</p></li>
+<li><p>Basu, A., Gandhi, J., Chang, J., Hill, M. D., and Swift, M. M. (2013). Efficient virtual memory for big memory servers. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 237–248. https://doi.org/10.1145/2485922.2485949</p></li>
+<li><p>Van Bulck, J., Minkin, M., Weisse, O., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow: Extracting the keys to the Intel SGX kingdom with transient out-of-order execution. <em>Proceedings of the 27th USENIX Security Symposium</em>, 991–1008.</p></li>
+<li><p>Intel Corporation. (2022). <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: Paging. https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</p></li>
+<li><p>Arm Limited. (2023). <em>ARM Architecture Reference Manual for A-profile Architecture</em> (DDI 0487J.a). Chapter D8: The AArch64 Virtual Memory System Architecture. https://developer.arm.com/documentation/ddi0487/</p></li>
+<li><p>RISC-V International. (2021). <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>, Version 1.12. Chapter 4: Supervisor-Level ISA. https://github.com/riscv/riscv-isa-manual</p></li>
+<li><p>Bhatt, D., Chang, J., Hill, M. D., and Swift, M. M. (2013). Agile paging: Exceeding the best of nested and shadow paging. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 196–208. https://doi.org/10.1145/2485922.2485946</p></li>
+<li><p>Gandhi, J., Basu, A., Hill, M. D., and Swift, M. M. (2014). Efficient memory virtualization: Reducing dimensionality of nested page walks. <em>Proceedings of the 47th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO)</em>, 442–453. https://doi.org/10.1109/MICRO.2014.37</p></li>
+<li><p>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., and Ünsal, O. (2015). Redundant memory mappings for fast access to large memories. <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, 66–78. https://doi.org/10.1145/2749469.2750471</p></li>
+<li><p>Bhatt, D., Rajwar, R., Ganesan, N., and Marathe, A. (2020). TLB-Shootdown overhead reduction using hardware-assisted invalidation. <em>IEEE Transactions on Computers</em>, 69(3), 374–387. https://doi.org/10.1109/TC.2019.2951282</p></li>
+<li><p>Weisse, O., Van Bulck, J., Minkin, M., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow-NG: Breaking the virtual memory abstraction with transient out-of-order execution. Technical Report. https://foreshadowattack.eu/foreshadow-NG.pdf</p></li>
+<li><p>SiFive Inc. (2021). <em>SiFive U74 Core Complex Manual</em>. Chapter 7: Memory Management Unit. https://www.sifive.com/documentation</p></li>
+<li><p>Yaniv, I., and Tsafrir, D. (2016). Hash, don't cache (the page table). <em>Proceedings of the 2016 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Science</em>, 337–350. https://doi.org/10.1145/2901318.2901333</p></li>
+</ol>
+
+<script>
+(function() {
+var CHAPTERS = [
+          {
+                "num": 1,
+                "file": "chapter-01-WITH-FIGURES.html",
+                "short": "Memory Management Basics",
+                "sections": [
+                      {
+                            "text": "1.1 Introduction: Why Virtual Memory Exists",
+                            "id": "introduction-why-virtual-memory-exists"
+                      },
+                      {
+                            "text": "1.2 What is Memory Management?",
+                            "id": "what-is-memory-management"
+                      },
+                      {
+                            "text": "1.3 The Evolution of Memory Management",
+                            "id": "the-evolution-of-memory-management"
+                      },
+                      {
+                            "text": "1.4 Hierarchical Levels of Memory Management",
+                            "id": "hierarchical-levels-of-memory-management"
+                      },
+                      {
+                            "text": "1.5 The Virtual Memory Abstraction",
+                            "id": "the-virtual-memory-abstraction"
+                      },
+                      {
+                            "text": "1.6 Key Concepts and Terminology",
+                            "id": "key-concepts-and-terminology"
+                      },
+                      {
+                            "text": "1.7 A Concrete Example: Address Translation",
+                            "id": "a-concrete-example-address-translation"
+                      },
+                      {
+                            "text": "1.8 The Translation Lookaside Buffer (TLB)",
+                            "id": "the-translation-lookaside-buffer-tlb"
+                      },
+                      {
+                            "text": "1.9 Multi-Level Page Tables",
+                            "id": "multi-level-page-tables"
+                      },
+                      {
+                            "text": "1.10 Why MMU Matters: Real-World Impact",
+                            "id": "why-mmu-matters-real-world-impact"
+                      },
+                      {
+                            "text": "1.11 Chapter Summary",
+                            "id": "chapter-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 2,
+                "file": "chapter-02-WITH-FIGURES.html",
+                "short": "Virtual Memory Concepts",
+                "sections": [
+                      {
+                            "text": "2.1 Introduction: The Illusion of Unlimited Memory",
+                            "id": "introduction-the-illusion-of-unlimited-memory"
+                      },
+                      {
+                            "text": "2.2 Demand Paging: Loading Pages on Demand",
+                            "id": "demand-paging-loading-pages-on-demand"
+                      },
+                      {
+                            "text": "2.3 Page Replacement Algorithms",
+                            "id": "page-replacement-algorithms"
+                      },
+                      {
+                            "text": "2.4 Thrashing and the Working Set Model",
+                            "id": "thrashing-and-the-working-set-model"
+                      },
+                      {
+                            "text": "2.5 Copy-on-Write (COW)",
+                            "id": "copy-on-write-cow"
+                      },
+                      {
+                            "text": "2.6 Memory-Mapped Files",
+                            "id": "memory-mapped-files"
+                      },
+                      {
+                            "text": "2.7 Advanced Topics",
+                            "id": "advanced-topics"
+                      },
+                      {
+                            "text": "2.8 Performance Optimization Strategies",
+                            "id": "performance-optimization-strategies"
+                      },
+                      {
+                            "text": "2.9 Chapter Summary",
+                            "id": "chapter-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 3,
+                "file": "chapter-03-WITH-FIGURES.html",
+                "short": "Page Table Structures and Implementation",
+                "sections": [
+                      {
+                            "text": "3.1 Introduction",
+                            "id": "3.1-introduction"
+                      },
+                      {
+                            "text": "3.2 Single-Level Page Tables: The Simplest Approach",
+                            "id": "3.2-single-level-page-tables-the-simplest-approach"
+                      },
+                      {
+                            "text": "3.3 Two-Level Page Tables",
+                            "id": "3.3-two-level-page-tables"
+                      },
+                      {
+                            "text": "3.4 Multi-Level Page Tables (3+ Levels)",
+                            "id": "3.4-multi-level-page-tables-3-levels"
+                      },
+                      {
+                            "text": "3.5 Virtualization: Two-Stage Address Translation",
+                            "id": "3.5-virtualization-two-stage-address-translation"
+                      },
+                      {
+                            "text": "3.6 What Gets Cached: TLB and Page Walk Caches",
+                            "id": "3.6-what-gets-cached-tlb-and-page-walk-caches"
+                      },
+                      {
+                            "text": "3.7 Hardware Page Table Walker",
+                            "id": "3.7-hardware-page-table-walker"
+                      },
+                      {
+                            "text": "3.8 Page Table Management from the OS Perspective",
+                            "id": "3.8-page-table-management-from-the-os-perspective"
+                      },
+                      {
+                            "text": "3.9 Design Trade-offs",
+                            "id": "3.9-design-trade-offs"
+                      },
+                      {
+                            "text": "3.10 Chapter Summary",
+                            "id": "3.10-chapter-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 4,
+                "file": "chapter-04-WITH-FIGURES.html",
+                "short": "Translation Lookaside Buffer (TLB) - Deep Dive",
+                "sections": [
+                      {
+                            "text": "4.1 Introduction: The Most Critical Cache You've Never Heard Of",
+                            "id": "introduction-the-most-critical-cache-youve-never-heard-of"
+                      },
+                      {
+                            "text": "4.2 TLB Architecture and Organization",
+                            "id": "tlb-architecture-and-organization"
+                      },
+                      {
+                            "text": "4.3 TLB Management: Hardware vs Software",
+                            "id": "tlb-management-hardware-vs-software"
+                      },
+                      {
+                            "text": "4.4 Address Space Identifiers: ASID, PCID, and VMID",
+                            "id": "address-space-identifiers-asid-pcid-and-vmid"
+                      },
+                      {
+                            "text": "4.5 TLB Operations and Instructions",
+                            "id": "tlb-operations-and-instructions"
+                      },
+                      {
+                            "text": "4.6 Large Pages and TLB Coverage",
+                            "id": "large-pages-and-tlb-coverage"
+                      },
+                      {
+                            "text": "4.7 Multicore TLB Coherency",
+                            "id": "multicore-tlb-coherency"
+                      },
+                      {
+                            "text": "4.8 Platform-Specific TLB Implementations",
+                            "id": "platform-specific-tlb-implementations"
+                      },
+                      {
+                            "text": "4.9 Alternative Page Table Structures and TLB Implications",
+                            "id": "alternative-page-table-structures-and-tlb-implications"
+                      },
+                      {
+                            "text": "4.10 Self-Modifying Code and Instruction/Data Coherency",
+                            "id": "self-modifying-code-and-instructiondata-coherency"
+                      },
+                      {
+                            "text": "4.11 Multithreading and TLB Sharing",
+                            "id": "multithreading-and-tlb-sharing"
+                      },
+                      {
+                            "text": "4.12 Virtualization with Mismatched Page Sizes",
+                            "id": "virtualization-with-mismatched-page-sizes"
+                      },
+                      {
+                            "text": "4.13 GPU and Hardware Accelerator MMUs",
+                            "id": "gpu-and-hardware-accelerator-mmus"
+                      },
+                      {
+                            "text": "4.14 Chapter Summary",
+                            "id": "chapter-4-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "chapter-4-references"
+                      }
+                ]
+          },
+          {
+                "num": 5,
+                "file": "chapter-05-WITH-FIGURES.html",
+                "short": "IOMMU and DMA Remapping - Deep Dive",
+                "sections": [
+                      {
+                            "text": "5.1 Introduction: The I/O Device Memory Access Problem",
+                            "id": "introduction-the-io-device-memory-access-problem"
+                      },
+                      {
+                            "text": "5.2 IOMMU Architecture Fundamentals",
+                            "id": "iommu-architecture-fundamentals"
+                      },
+                      {
+                            "text": "5.3 Intel VT-d (Virtualization Technology for Directed I/O)",
+                            "id": "intel-vt-d-virtualization-technology-for-directed-io"
+                      },
+                      {
+                            "text": "5.4 AMD IOMMU (AMD-Vi)",
+                            "id": "amd-iommu-amd-vi"
+                      },
+                      {
+                            "text": "5.5 ARM SMMU (System Memory Management Unit)",
+                            "id": "arm-smmu-system-memory-management-unit"
+                      },
+                      {
+                            "text": "5.6 IOMMU Page Tables: Cross-Platform Analysis",
+                            "id": "iommu-page-tables-cross-platform-analysis"
+                      },
+                      {
+                            "text": "5.7 IOTLB Performance and Optimization",
+                            "id": "iotlb-performance-and-optimization"
+                      },
+                      {
+                            "text": "5.8 Device Assignment and SR-IOV",
+                            "id": "device-assignment-and-sr-iov"
+                      },
+                      {
+                            "text": "5.11 Chapter Summary",
+                            "id": "chapter-summary-and-key-takeaways"
+                      },
+                      {
+                            "text": "5.9 IOMMU in Operating Systems",
+                            "id": "iommu-in-operating-systems"
+                      },
+                      {
+                            "text": "5.10 Performance Optimization and Best Practices",
+                            "id": "performance-optimization-and-best-practices"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 6,
+                "file": "chapter-06-WITH-FIGURES.html",
+                "short": "Memory Protection and Access Control",
+                "sections": [
+                      {
+                            "text": "6.1 Introduction: Memory Protection Fundamentals",
+                            "id": "6.1-introduction-memory-protection-fundamentals"
+                      },
+                      {
+                            "text": "6.2 Page-Level Protection Bits",
+                            "id": "6.2-page-level-protection-bits"
+                      },
+                      {
+                            "text": "6.3 The No-Execute (NX) Bit",
+                            "id": "6.3-the-no-execute-nx-bit"
+                      },
+                      {
+                            "text": "6.4 Privilege Levels and Protection Rings",
+                            "id": "6.4-privilege-levels-and-protection-rings"
+                      },
+                      {
+                            "text": "6.5 User vs Supervisor Pages",
+                            "id": "6.5-user-vs-supervisor-pages"
+                      },
+                      {
+                            "text": "6.6 Advanced Protection Features",
+                            "id": "6.6-advanced-protection-features"
+                      },
+                      {
+                            "text": "6.7 Protection Keys and Domains",
+                            "id": "6.7-protection-keys-and-domains"
+                      },
+                      {
+                            "text": "6.8 Trusted Execution Environments (TEE) - Deep Dive",
+                            "id": "6.8-trusted-execution-environments-tee-deep-dive"
+                      },
+                      {
+                            "text": "6.9 Copy-On-Write (COW)",
+                            "id": "6.9-copy-on-write-cow"
+                      },
+                      {
+                            "text": "6.10 Memory Access Ordering and Protection",
+                            "id": "6.10-memory-access-ordering-and-protection"
+                      },
+                      {
+                            "text": "6.11 Confidential Computing: Hardware-Based VM Isolation",
+                            "id": "6.11-confidential-computing-hardware-based-vm-isolation"
+                      },
+                      {
+                            "text": "6.12 AMD Memory Guard and Memory Encryption",
+                            "id": "6.12-amd-memory-guard-and-memory-encryption"
+                      },
+                      {
+                            "text": "6.13 RISC-V Security Extensions",
+                            "id": "6.13-risc-v-security-extensions"
+                      },
+                      {
+                            "text": "6.14 GPU and Accelerator Security",
+                            "id": "6.14-gpu-and-accelerator-security"
+                      },
+                      {
+                            "text": "6.15 Heterogeneous Computing Security",
+                            "id": "6.15-heterogeneous-computing-security"
+                      },
+                      {
+                            "text": "6.16 Performance vs Security Trade-offs",
+                            "id": "6.16-performance-vs-security-trade-offs"
+                      },
+                      {
+                            "text": "6.17 Best Practices and Guidelines",
+                            "id": "6.17-best-practices-and-guidelines"
+                      },
+                      {
+                            "text": "6.18 Common Pitfalls and How to Avoid Them",
+                            "id": "6.18-common-pitfalls-and-how-to-avoid-them"
+                      },
+                      {
+                            "text": "6.19 Chapter Summary",
+                            "id": "6.19-summary-and-future-directions"
+                      },
+                      {
+                            "text": "References",
+                            "id": "chapter-6-references"
+                      }
+                ]
+          },
+          {
+                "num": 7,
+                "file": "chapter-07-WITH-FIGURES.html",
+                "short": "Page Faults and Exception Handling",
+                "sections": [
+                      {
+                            "text": "7.1 Introduction: When Address Translation Fails",
+                            "id": "introduction-when-address-translation-fails"
+                      },
+                      {
+                            "text": "7.2 Page Fault Fundamentals",
+                            "id": "page-fault-fundamentals"
+                      },
+                      {
+                            "text": "7.3 x86-64 Page Faults (#PF)",
+                            "id": "x86-64-page-faults-pf"
+                      },
+                      {
+                            "text": "7.4 ARM64 Data and Instruction Aborts",
+                            "id": "arm64-data-and-instruction-aborts"
+                      },
+                      {
+                            "text": "7.5 RISC-V Page Faults",
+                            "id": "risc-v-page-faults"
+                      },
+                      {
+                            "text": "7.6 TLB-Related Exceptions",
+                            "id": "tlb-related-exceptions"
+                      },
+                      {
+                            "text": "7.7 Page Table Walk Failures",
+                            "id": "page-table-walk-failures"
+                      },
+                      {
+                            "text": "7.8 Page Overlapping and Aliasing Faults",
+                            "id": "page-overlapping-and-aliasing-faults"
+                      },
+                      {
+                            "text": "7.9 Permission Violations",
+                            "id": "permission-violations"
+                      },
+                      {
+                            "text": "7.10 Page Fault Handling Flow",
+                            "id": "page-fault-handling-flow"
+                      },
+                      {
+                            "text": "7.11 Performance Implications",
+                            "id": "performance-implications"
+                      },
+                      {
+                            "text": "7.12 Historical Architectures: SPARC, MIPS, PowerPC",
+                            "id": "historical-architectures-sparc-mips-powerpc"
+                      },
+                      {
+                            "text": "7.13 Architecture Comparison",
+                            "id": "architecture-comparison"
+                      },
+                      {
+                            "text": "7.14 Debugging Page Faults",
+                            "id": "debugging-page-faults"
+                      },
+                      {
+                            "text": "7.15 Chapter Summary",
+                            "id": "advanced-topics-and-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 8,
+                "file": "chapter-08-WITH-FIGURES.html",
+                "short": "Advanced MMU Topics: System Integration and Optimization",
+                "sections": [
+                      {
+                            "text": "8.1 Introduction: The Crisis Point",
+                            "id": "introduction-the-crisis-point"
+                      },
+                      {
+                            "text": "8.2 Nested Page Tables: Beyond the Basics",
+                            "id": "nested-page-tables-beyond-the-basics"
+                      },
+                      {
+                            "text": "8.3 Architecture Differences in Nested Fault Handling",
+                            "id": "architecture-differences-nested-fault-handling"
+                      },
+                      {
+                            "text": "8.4 Accessed and Dirty Bits",
+                            "id": "accessed-dirty-bits"
+                      },
+                      {
+                            "text": "8.5 Page Replacement Algorithms: From Theory to Practice",
+                            "id": "page-replacement-algorithms"
+                      },
+                      {
+                            "text": "8.6 Memory Reclaim: When and How to Free Pages",
+                            "id": "memory-reclaim"
+                      },
+                      {
+                            "text": "8.7 Page Table Management: The Meta-Problem",
+                            "id": "page-table-management"
+                      },
+                      {
+                            "text": "8.8 Performance Analysis and Tuning",
+                            "id": "performance-analysis-and-tuning"
+                      },
+                      {
+                            "text": "8.9 Chapter Summary",
+                            "id": "chapter-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 9,
+                "file": "chapter-09-WITH-FIGURES.html",
+                "short": "Advanced Page Table Optimizations",
+                "sections": [
+                      {
+                            "text": "9.1 Introduction: The Container Crisis",
+                            "id": "introduction-the-container-crisis"
+                      },
+                      {
+                            "text": "9.2 Memory Deduplication: Kernel Samepage Merging",
+                            "id": "memory-deduplication-kernel-samepage-merging"
+                      },
+                      {
+                            "text": "9.3 Page Table Locking and Concurrency",
+                            "id": "page-table-locking-and-concurrency"
+                      },
+                      {
+                            "text": "9.4 NUMA-Aware Page Table Management",
+                            "id": "numa-aware-page-table-management"
+                      },
+                      {
+                            "text": "9.5 Advanced Huge Page Strategies",
+                            "id": "advanced-huge-page-strategies"
+                      },
+                      {
+                            "text": "9.6 Page Table Compaction and Sharing",
+                            "id": "page-table-compaction-and-sharing"
+                      },
+                      {
+                            "text": "9.7 Parallel Page Table Operations",
+                            "id": "parallel-page-table-operations"
+                      },
+                      {
+                            "text": "9.8 Memory Compression Integration",
+                            "id": "memory-compression-integration"
+                      },
+                      {
+                            "text": "9.9 Production Case Study: Cloud Provider Memory Optimization Stack",
+                            "id": "production-case-study-cloud-provider-memory-optimization-stack"
+                      },
+                      {
+                            "text": "9.10 Chapter Summary",
+                            "id": "summary-and-best-practices"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 10,
+                "file": "chapter-10-WITH-FIGURES.html",
+                "short": "Hardware Accelerators and External MMU Access",
+                "sections": [
+                      {
+                            "text": "10.1 Introduction: Beyond the CPU Core",
+                            "id": "introduction-beyond-the-cpu-core"
+                      },
+                      {
+                            "text": "10.2 IOMMU Architecture Deep Dive",
+                            "id": "iommu-architecture-deep-dive"
+                      },
+                      {
+                            "text": "10.3 PCIe ATS and Address Translation Services",
+                            "id": "pcie-ats-and-address-translation-services"
+                      },
+                      {
+                            "text": "10.4 RDMA and Memory Registration",
+                            "id": "rdma-and-memory-registration"
+                      },
+                      {
+                            "text": "10.5 Smart NICs and Data Processing Units",
+                            "id": "smart-nics-and-data-processing-units"
+                      },
+                      {
+                            "text": "10.6 Video and Media Accelerators",
+                            "id": "video-and-media-accelerators"
+                      },
+                      {
+                            "text": "10.7 Multi-Device Coherency and Coordination",
+                            "id": "multi-device-coherency-and-coordination"
+                      },
+                      {
+                            "text": "10.8 Chapter Summary",
+                            "id": "summary-and-best-practices"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 11,
+                "file": "chapter-11-WITH-FIGURES.html",
+                "short": "Virtual Memory Challenges in AI/ML Accelerators",
+                "sections": [
+                      {
+                            "text": "11.1 Introduction: Scale Changes Everything",
+                            "id": "introduction-scale-changes-everything"
+                      },
+                      {
+                            "text": "11.2 Google TPU: Compiler-Managed Memory",
+                            "id": "section-11.2"
+                      },
+                      {
+                            "text": "11.3 NVIDIA GPU Unified Virtual Memory",
+                            "id": "section-11.3"
+                      },
+                      {
+                            "text": "11.4 Multi-GPU TLB Synchronization: NVLink and NVSwitch",
+                            "id": "section-11.4"
+                      },
+                      {
+                            "text": "11.5 Page Size Strategy for AI Workloads",
+                            "id": "section-11.5"
+                      },
+                      {
+                            "text": "11.6 AMD MI300X: Chiplet Architecture and Unified Memory",
+                            "id": "section-11.6"
+                      },
+                      {
+                            "text": "11.7 Intel Gaudi 2 and RDMA Integration",
+                            "id": "section-11.7"
+                      },
+                      {
+                            "text": "11.8 Apple M-Series Unified Memory Architecture",
+                            "id": "section-11.8"
+                      },
+                      {
+                            "text": "11.9 Common Pitfalls and Production Best Practices",
+                            "id": "section-11.9"
+                      },
+                      {
+                            "text": "11.10 Chapter Summary",
+                            "id": "chapter-11-summary"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 12,
+                "file": "chapter-12-WITH-FIGURES.html",
+                "short": "When MMU Architecture Breaks - AI at Scale",
+                "sections": [
+                      {
+                            "text": "12.1 The Six Drivers of AI Memory Systems",
+                            "id": "section-12.1"
+                      },
+                      {
+                            "text": "12.2 The Architectural Cost of Runtime Address Translation",
+                            "id": "section-12.2"
+                      },
+                      {
+                            "text": "12.3 Introduction - When Good Architecture Faces New Constraints",
+                            "id": "section-12.3"
+                      },
+                      {
+                            "text": "12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem",
+                            "id": "section-12.4"
+                      },
+                      {
+                            "text": "12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs",
+                            "id": "section-12.5"
+                      },
+                      {
+                            "text": "12.6 Virtualization - The Page Fault Challenge",
+                            "id": "section-12.6"
+                      },
+                      {
+                            "text": "12.7 Chapter Summary",
+                            "id": "section-12.7"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 13,
+                "file": "chapter-13-WITH-FIGURES.html",
+                "short": "Machine Learning for Memory Management - The False Hope",
+                "sections": [
+                      {
+                            "text": "13.1 Introduction: The ML Seduction",
+                            "id": "section-13.1"
+                      },
+                      {
+                            "text": "13.2 Pythia: Why Hardware RL Failed",
+                            "id": "section-13.2"
+                      },
+                      {
+                            "text": "13.3 LVM: Can Learned Indexes Save Page Tables?",
+                            "id": "section-13.3"
+                      },
+                      {
+                            "text": "13.4 LeCaR: The Rare Success (And Why)",
+                            "id": "section-13.4"
+                      },
+                      {
+                            "text": "13.5 Chapter Summary",
+                            "id": "section-13.5"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 14,
+                "file": "chapter-14-WITH-FIGURES.html",
+                "short": "Software-Managed Memory for AI Workloads",
+                "sections": [
+                      {
+                            "text": "14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving",
+                            "id": "section-14.1"
+                      },
+                      {
+                            "text": "14.2 Memory Management Failure Modes",
+                            "id": "section-14.2"
+                      },
+                      {
+                            "text": "14.3 Software-Managed Memory: The vLLM System",
+                            "id": "section-14.3"
+                      },
+                      {
+                            "text": "14.4 Translation-Bypass Mechanisms: Direct Segment Addressing",
+                            "id": "section-14.4"
+                      },
+                      {
+                            "text": "14.5 Comparative Analysis and Design Trade-offs",
+                            "id": "section-14.5"
+                      },
+                      {
+                            "text": "14.6 Future Research Directions",
+                            "id": "section-14.6"
+                      },
+                      {
+                            "text": "14.7 Chapter Summary",
+                            "id": "section-14.7"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 15,
+                "file": "chapter-15-WITH-FIGURES.html",
+                "short": "Beyond Traditional MMU - Alternative Translation Architectures",
+                "sections": [
+                      {
+                            "text": "15.1 Introduction",
+                            "id": "section-15.1"
+                      },
+                      {
+                            "text": "15.2 Network-Level Translation",
+                            "id": "section-15.2"
+                      },
+                      {
+                            "text": "15.3 Processing-in-Memory Translation (PIM-TLB)",
+                            "id": "section-15.3"
+                      },
+                      {
+                            "text": "15.4 Utopia: Hybrid Radix-Segments Architecture",
+                            "id": "section-15.4"
+                      },
+                      {
+                            "text": "15.5 Comparative Analysis",
+                            "id": "section-15.5"
+                      },
+                      {
+                            "text": "15.6 Chapter Summary",
+                            "id": "section-15.6"
+                      },
+                      {
+                            "text": "References",
+                            "id": "references"
+                      }
+                ]
+          },
+          {
+                "num": 16,
+                "file": "chapter-16-WITH-FIGURES.html",
+                "short": "Advanced TLB Optimization Techniques",
+                "sections": [
+                      {"text": "16.1 Introduction: The TLB Reach Crisis", "id": "section-16.1"},
+                      {"text": "16.2 Entry-Level Coalescing: COLT and Production Implementations", "id": "section-16.2"},
+                      {"text": "16.3 Request-Level Coalescing: Pichai's Page Walk Optimization", "id": "section-16.3"},
+                      {"text": "16.4 Speculative Translation: SpecTLB and Avatar", "id": "section-16.4"},
+                      {"text": "16.5 Predictive Prefetching: SnakeByte Markov Model", "id": "section-16.5"},
+                      {"text": "16.6 Hashing-Based Compression: Mosaic Pages", "id": "section-16.6"},
+                      {"text": "16.7 Range-Based Translation: FlexPointer", "id": "section-16.7"},
+                      {"text": "16.8 Hierarchical Translation: Intermediate Address Space (IAS)", "id": "section-16.8"},
+                      {"text": "16.9 Comparative Analysis: When to Use Each Technique", "id": "section-16.9"},
+                      {"text": "16.10 Chapter Summary", "id": "section-16.10"},
+                      {"text": "References", "id": "references"}
+                ]
+          },
+          {
+                "num": 17,
+                "file": "chapter-17-WITH-FIGURES.html",
+                "short": "Page Table Walker Microarchitecture",
+                "sections": [
+                      {"text": "17.1 Introduction", "id": "section-17.1"},
+                      {"text": "17.2 PTW Pipeline Stages", "id": "section-17.2"},
+                      {"text": "17.3 Page Walk Caches", "id": "section-17.3"},
+                      {"text": "17.4 MSHR and Concurrent Walks", "id": "section-17.4"},
+                      {"text": "17.5 Speculative Page Table Walks", "id": "section-17.5"},
+                      {"text": "17.6 PTW Parallelism and Throughput", "id": "section-17.6"},
+                      {"text": "17.7 x86-64 PTW Microarchitecture", "id": "section-17.7"},
+                      {"text": "17.8 ARM64 Translation Table Walk", "id": "section-17.8"},
+                      {"text": "17.9 RISC-V Software-Managed PTW", "id": "section-17.9"},
+                      {"text": "17.10 Chapter Summary", "id": "section-17.10"},
+                      {"text": "References", "id": "references"}
+                ]
+          }
+    ];
+
+  var file = location.pathname.split('/').pop() || 'chapter-01-WITH-FIGURES.html';
+  var curCh = CHAPTERS.find(function(c) { return c.file === file; }) || CHAPTERS[0];
+
+  /* Build HTML */
+  var html = '';
+  CHAPTERS.forEach(function(ch) {
+    var isCur = ch.num === curCh.num;
+    var toc = '';
+    ch.sections.forEach(function(s) {
+      var href = isCur ? '#' + s.id : ch.file + '#' + s.id;
+      toc += '<a class="sb-sec" href="' + href + '" title="' + s.text.replace(/"/g,'&quot;') + '">'
+           + s.text + '</a>';
+    });
+    var n = ch.num < 10 ? '0' + ch.num : '' + ch.num;
+    var arrow = ch.sections.length
+      ? '<svg class="sb-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="4,2 8,6 4,10"/></svg>'
+      : '';
+    html += '<div class="sb-ch' + (isCur?' active open':'') + '" data-c="' + ch.num + '">'
+      + '<div class="sb-ch-head" onclick=\"sbChClick(' + ch.num + ',\'' + ch.file + '\')\">'
+      + '<span class="sb-num">' + n + '</span>'
+      + (isCur
+        ? '<span class="sb-ch-link">' + ch.short + '</span>'
+        : '<a class="sb-ch-link" href="' + ch.file + '">' + ch.short + '</a>')
+      + arrow + '</div>'
+      + (toc ? '<div class="sb-toc">' + toc + '</div>' : '')
+      + '</div>';
+  });
+
+  var nav = document.createElement('nav');
+  nav.id = 'sb';
+  nav.innerHTML =
+    '<div id="sb-head">'
+    + '<div id="sb-logo"><div id="sb-icon">M</div>'
+    + '<div id="sb-wordmark">MMU<br>Handbook</div></div>'
+    + '<button id="sb-btn" onclick="sbCollapse()" title="Toggle sidebar [\\]">'
+    + '<svg viewBox="0 0 18 18" fill="currentColor">'
+    + '<rect x="1" y="3" width="16" height="2" rx="1"/>'
+    + '<rect x="1" y="8" width="16" height="2" rx="1"/>'
+    + '<rect x="1" y="13" width="16" height="2" rx="1"/>'
+    + '</svg></button></div>'
+    + '<div id="sb-scroll">' + html + '</div>';
+  document.body.insertBefore(nav, document.body.firstChild);
+
+
+  /* Inject Home link before scroll area */
+  var homeLink = document.createElement('a');
+  homeLink.id = 'sb-home-link';
+  homeLink.href = '../index.html';
+  homeLink.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;opacity:0.7"><path d="M8 1L1 7v8h5v-5h4v5h5V7z"/></svg><span>Home</span>';
+  nav.insertBefore(homeLink, document.getElementById('sb-scroll'));
+
+  /* Restore state */
+  if (localStorage.getItem('sb-off') === '1') {
+    nav.classList.add('collapsed');
+    document.body.classList.add('sb-collapsed');
+  }
+
+  /* Scroll current chapter into view */
+  var el = nav.querySelector('.sb-ch.active');
+  if (el) setTimeout(function() { el.scrollIntoView({block:'center',behavior:'smooth'}); }, 100);
+
+  /* Active-section tracking — uses Pandoc IDs directly */
+  var links = Array.from(nav.querySelectorAll('.sb-ch.active .sb-sec'));
+  var map = links.map(function(a) {
+    var id = a.getAttribute('href').replace(/^.*#/, '');
+    return { a: a, el: document.getElementById(id) };
+  }).filter(function(h) { return h.el; });
+
+  function tick() {
+    if (!map.length) return;
+    var y = window.scrollY + 90;
+    var cur = map[0];
+    map.forEach(function(h) { if (h.el.offsetTop <= y) cur = h; });
+    links.forEach(function(a) { a.classList.remove('here'); });
+    cur.a.classList.add('here');
+  }
+  var pending = false;
+  window.addEventListener('scroll', function() {
+    if (!pending) { pending = true; requestAnimationFrame(function() { tick(); pending = false; }); }
+  });
+  tick();
+
+  /* Keyboard shortcut */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '\\' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') sbCollapse();
+  });
+
+  window.sbCollapse = function() {
+    var s = document.getElementById('sb');
+    s.classList.toggle('collapsed');
+    document.body.classList.toggle('sb-collapsed');
+    localStorage.setItem('sb-off', s.classList.contains('collapsed') ? '1' : '0');
+  };
+  window.sbChClick = function(n, file) {
+    var s = document.getElementById('sb');
+    if (s.classList.contains('collapsed')) {
+      location.href = file;
+      return;
+    }
+    var item = document.querySelector('.sb-ch[data-c="' + n + '"]');
+    if (!item) return;
+    if (item.classList.contains('active')) {
+      /* Current chapter — toggle expand/collapse in place */
+      item.classList.toggle('open');
+    } else {
+      /* Different chapter — toggle its TOC preview, then navigate */
+      item.classList.toggle('open');
+      location.href = file;
+    }
+  };
+  window.sbToggle = window.sbChClick;
+})();
+
+
+</script>
+</body>
+</html>
