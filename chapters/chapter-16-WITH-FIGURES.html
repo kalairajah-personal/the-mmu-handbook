@@ -977,7 +977,7 @@ Result: 4 TLB entries consumed for 16KB of contiguous memory
 Result: 1 TLB entry covers 16KB (4× improvement)
 </code></pre>
 
-<p>The coalescing logic operates during TLB insertion. When a new translation arrives from a page table walk, hardware checks:</p>
+<p>The coalescing logic operates during TLB insertion. When a new translation arrives from a page table walk, hardware checks: Chapter 17 covers the complementary microarchitectural view of the PTW circuit itself — the pipeline stages, MSHR coalescing behaviour, page walk caches, and the speculative execution properties that motivate the security mitigations discussed there.</p>
 
 <ol>
 <li><strong>Address alignment:</strong> Is the virtual address aligned to a potential coalescing boundary (e.g., 8-page = 32KB)?</li>

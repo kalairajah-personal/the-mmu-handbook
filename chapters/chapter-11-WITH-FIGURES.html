@@ -1334,7 +1334,7 @@ covered the hardware architecture of these MMUs. This chapter explores
 when and how to use them effectively—how to select page sizes that
 provide adequate TLB coverage for multi-gigabyte models, how to
 structure memory access patterns to avoid page faults, and how to
-coordinate TLB invalidations across dozens or thousands of devices.</p>
+coordinate TLB invalidations across dozens or thousands of devices. Chapter 17 analyses the microarchitectural PTW properties — MSHR capacity, page walk cache effectiveness, and NUMA interaction — that determine the performance floor for large-working-set AI workloads.</p>
 <p><strong>Approach 2: No MMU (Google TPU v1-v3)</strong></p>
 <p>Google took the opposite approach with TPU v1, v2, and v3: eliminate
 the MMU entirely. These accelerators use pure physical addressing with

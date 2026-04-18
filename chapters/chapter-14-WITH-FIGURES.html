@@ -762,7 +762,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The measured impact, as reported by Kwon et al. (2023) in their characterization of LLM serving workloads, is severe. With 4KB pages, TLB miss rates exceed 99.9% for large model serving. Even with 2MB huge pages, the KV cache—which grows dynamically and unpredictably—causes frequent TLB misses as new memory regions are allocated.</p>
 
-<p>Each TLB miss triggers a hardware page table walk. On modern x86-64 systems with four-level page tables, a page walk requires four sequential memory accesses: to the PML4, PDPT, PD, and PT entries. With typical DRAM latencies of 50-100ns per access, and assuming perfect page table entry caching in L2/L3 cache (an optimistic assumption), each page walk costs approximately 200ns. For a workload experiencing 99.9% TLB miss rate across 87,500 page accesses, the aggregate translation overhead is:</p>
+<p>Each TLB miss triggers a hardware page table walk. On modern x86-64 systems with four-level page tables, a page walk requires four sequential memory accesses: to the PML4, PDPT, PD, and PT entries. With typical DRAM latencies of 50-100ns per access, and assuming perfect page table entry caching in L2/L3 cache (an optimistic assumption), each page walk costs approximately 200ns. For a workload experiencing 99.9% TLB miss rate across 87,500 page accesses, the aggregate translation overhead is: Chapter 17 provides a complete microarchitectural treatment of this walk — including the per-stage latency model, MSHR concurrent walk limits, and the throughput ceiling analysis that explains PTW-bound behaviour under large LLM working sets.</p>
 
 <pre>
 Translation overhead = 87,500 × 0.999 × 200ns ≈ 17.5ms per forward pass

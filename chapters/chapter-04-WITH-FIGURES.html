@@ -734,7 +734,7 @@ Introduction: The Most Critical Cache You've Never Heard Of</h2>
 a specialized cache that stores recent virtual-to-physical address
 translations. We saw how TLB hits provide translations in 1-2 CPU cycles
 (~1 nanosecond), while TLB misses require a full page table walk taking
-~100 cycles (~100 nanoseconds)—a 50-100× performance difference.</p>
+~100 cycles (~100 nanoseconds)—a 50-100× performance difference. Chapter 17 examines the microarchitectural implementation of the hardware page table walker in depth, covering PTW pipeline stages, MSHR concurrent walks, and the speculative execution properties that underlie the L1TF/Foreshadow vulnerability.</p>
 <p>This chapter explores the TLB in comprehensive detail. While most
 programmers are familiar with CPU caches (L1, L2, L3), the TLB remains
 relatively obscure despite being equally critical to system performance.
